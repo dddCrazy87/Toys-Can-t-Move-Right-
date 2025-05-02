@@ -6,13 +6,11 @@ using TMPro;
 public class PlayerController : MonoBehaviour
 {
     
-    public string playerID;
     public TextMeshProUGUI playerIDUI;
 
-    public void Initialize(string id, Color color)
+    public void Initialize(string id)
     {
-        playerID = id;
-        playerIDUI.text = playerID;
+        if (playerIDUI != null) playerIDUI.text = id;
     }
 
     public float speed = 5f;
@@ -23,6 +21,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        speed *= -1;
 
         // 初始化玩家位置歷史
         for (int i = 0; i < trailLength; i++) {
@@ -108,12 +107,5 @@ public class PlayerController : MonoBehaviour
                 Time.deltaTime * 5f // 調整這個值來改變跟隨的速度
             );
         }
-    }
-
-
-    // 當手機輸入時呼叫這個方法
-    public void MoveByPhone(Vector2 direction)
-    {
-        movement = direction;
     }
 }
