@@ -132,8 +132,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1478549513847235074}
   - component: {fileID: 6624217751060887920}
-  - component: {fileID: 2018460444051591780}
   - component: {fileID: 6093729764927335604}
+  - component: {fileID: 2018460444051591780}
   m_Layer: 0
   m_Name: yellowPlayer
   m_TagString: Player
@@ -185,22 +185,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 1
---- !u!114 &2018460444051591780
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5939775617135125237}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b3232b55381d874fa527af29be4d93e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerIDUI: {fileID: 9155882509902872423}
-  speed: 5
-  playerModel: {fileID: 2454201664072373128}
-  itemFollowPoint: {fileID: 8413345065079275841}
 --- !u!65 &6093729764927335604
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -222,6 +206,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.4693958, y: 0.8526659, z: 1}
   m_Center: {x: -0.024739444, y: 0.45755804, z: 0}
+--- !u!114 &2018460444051591780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5939775617135125237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b3232b55381d874fa527af29be4d93e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerIDUI: {fileID: 9155882509902872423}
+  speed: 5
+  playerModel: {fileID: 2454201664072373128}
 --- !u!1 &6176727455677349425
 GameObject:
   m_ObjectHideFlags: 0

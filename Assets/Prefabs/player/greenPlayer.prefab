@@ -41,8 +41,8 @@ GameObject:
   m_Component:
   - component: {fileID: 9014904279622009483}
   - component: {fileID: 3463101623902516837}
-  - component: {fileID: 470735864311970054}
   - component: {fileID: 889868507532990401}
+  - component: {fileID: 470735864311970054}
   m_Layer: 0
   m_Name: greenPlayer
   m_TagString: Player
@@ -94,22 +94,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 1
---- !u!114 &470735864311970054
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1281488040642541567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b3232b55381d874fa527af29be4d93e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerIDUI: {fileID: 950999897477659606}
-  speed: 5
-  playerModel: {fileID: 1982526566604741061}
-  itemFollowPoint: {fileID: 1208691427326332831}
 --- !u!65 &889868507532990401
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -131,6 +115,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.4693958, y: 0.8526659, z: 1}
   m_Center: {x: -0.024739444, y: 0.45755804, z: 0}
+--- !u!114 &470735864311970054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1281488040642541567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b3232b55381d874fa527af29be4d93e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerIDUI: {fileID: 950999897477659606}
+  speed: 5
+  playerModel: {fileID: 1982526566604741061}
 --- !u!1 &2258887595582354178
 GameObject:
   m_ObjectHideFlags: 0
