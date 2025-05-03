@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,13 +17,11 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (Instance == null)
-        {
+        if (Instance == null) {
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else
-        {
+        else {
             Destroy(gameObject);
             return;
         }
@@ -44,9 +43,10 @@ public class GameManager : MonoBehaviour
         // 分配出生點
         AssignSpawnPoints();
         // 生成玩家
-        SpawnPlayers();
+        //SpawnPlayers();
+        SpawnPlayersForTest();
         // 生成道具
-        // itemManager.StartSpawnItems();
+        itemManager.StartSpawnItems();
 
         gameStarted = true;
         // Debug.Log("遊戲開始!");
@@ -63,8 +63,36 @@ public class GameManager : MonoBehaviour
         foreach (var player in playersInfo)
         {
             int index = rnd.Next(availablePoints.Count);
-            player.spawnPoint = availablePoints[index];
+            player.spawnPoint = availablePoints[index].position;
             availablePoints.RemoveAt(index);
+        }
+    }
+
+    private void SpawnPlayersForTest()
+    {
+        foreach (var player in playersInfo)
+        {
+            GameObject go = null;
+            switch (player.skin) {
+                case "yellow":
+                    go = Instantiate(yellowPlayersPrefab, player.spawnPoint, Quaternion.identity);
+                    go.GetComponent<PlayerController>().isP1 = true;
+                    break;
+                case "blue":
+                    go = Instantiate(bluePlayersPrefab, player.spawnPoint, Quaternion.identity);
+                    go.GetComponent<PlayerController>().isP2 = true;
+                    break;
+                case "green":
+                    go = Instantiate(greenPlayersPrefab, player.spawnPoint, Quaternion.identity);
+                    Destroy(go.GetComponent<PlayerController>());
+                    break;
+                case "red":
+                    go = Instantiate(redPlayersPrefab, player.spawnPoint, Quaternion.identity);
+                    Destroy(go.GetComponent<PlayerController>());
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -72,28 +100,22 @@ public class GameManager : MonoBehaviour
     {
         foreach (var player in playersInfo)
         {
-            GameObject go = null;
-            switch (player.skin)
-            {
-                
+            switch (player.skin) {
                 case "yellow":
-                    go = Instantiate(yellowPlayersPrefab);
+                    Instantiate(yellowPlayersPrefab, player.spawnPoint, Quaternion.identity);
                     break;
                 case "blue":
-                    go = Instantiate(bluePlayersPrefab);
+                    Instantiate(bluePlayersPrefab, player.spawnPoint, Quaternion.identity);
                     break;
                 case "green":
-                    go = Instantiate(greenPlayersPrefab);
+                    Instantiate(greenPlayersPrefab, player.spawnPoint, Quaternion.identity);
                     break;
                 case "red":
-                    go = Instantiate(redPlayersPrefab);
+                    Instantiate(redPlayersPrefab, player.spawnPoint, Quaternion.identity);
                     break;
                 default:
                     break;
             }
-            go.transform.position = player.spawnPoint.position;
-            print(go.name);
-            //go.GetComponent<PlayerController>().Initialize(player.name);
         }
     }
 }
@@ -106,5 +128,5 @@ public class Player
 {
     public string name = "";
     public string skin = "";
-    public Transform spawnPoint;
+    public Vector3 spawnPoint;
 }

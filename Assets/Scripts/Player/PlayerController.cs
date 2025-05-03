@@ -5,6 +5,7 @@ using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
+    public bool isP1 = false, isP2 = false;
     public TextMeshProUGUI playerIDUI;
     public void Initialize(string id) {
         if (playerIDUI != null) playerIDUI.text = id;
@@ -16,29 +17,37 @@ public class PlayerController : MonoBehaviour
     
     [Tooltip("玩家旋轉速度")]
     public float rotateSpeed = 15f;
-    
-    [Header("道具設置")]
-    [Tooltip("要收集的道具預製體")]
-    public GameObject itemPrefab;
 
-
-    // 跟隨系統組件
-    private PlayerItemFollowSystem followSystem;
     private Rigidbody rb;
     private void Awake() {
+        isP1 = false; isP2 = false;
         rb = GetComponent<Rigidbody>();
         ConfigureRigidbody();
-        followSystem = GetComponent<PlayerItemFollowSystem>();
+        followPoint.position += new Vector3(0, 0, -itemFollowSpace);
         moveSpeed *= -1;
     }
 
-
-    public Transform playerModel;
     private Vector3 movement;
     void Update() {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-        movement = new Vector3(horizontal, 0f, vertical).normalized;
+        // float horizontal = Input.GetAxisRaw("Horizontal");
+        // float vertical = Input.GetAxisRaw("Vertical");
+        // movement = new Vector3(horizontal, 0f, vertical).normalized;
+
+        // for demo and test
+        if(isP1) {
+            float horizontal = Input.GetAxisRaw("Horizontal");
+            float vertical = Input.GetAxisRaw("Vertical");
+            movement = new Vector3(horizontal, 0f, vertical).normalized;
+        }
+        else if (isP2) {
+            float horizontal = 0f;
+            float vertical = 0f;
+            if (Input.GetKey(KeyCode.J)) horizontal = -1f;
+            else if (Input.GetKey(KeyCode.L)) horizontal = 1f;
+            if (Input.GetKey(KeyCode.I)) vertical = 1f;
+            else if (Input.GetKey(KeyCode.K)) vertical = -1f;
+            movement = new Vector3(horizontal, 0f, vertical).normalized;
+        }
     }
 
     void FixedUpdate() {
@@ -68,33 +77,61 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// 處理玩家與道具的碰撞
     /// </summary>
-    private void OnTriggerEnter(Collider other) {
-        // 檢查是否碰到了可收集的道具
-        if (other.CompareTag("Collectable")) {
-            if (other.transform.parent != null) return;
-            CollectItem(other.gameObject);
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Collectable")) {
+            if (collectedItems.Contains(other.transform)) return;
+            CollectItem(other.transform);
         }
     }
 
     /// <summary>
     /// 收集道具的處理邏輯
     /// </summary>
-    private void CollectItem(GameObject item)
+    [Header("道具設置")]
+    [Tooltip("道具跟隨時的間距")]
+    public float itemFollowSpace;
+    [Tooltip("道具跟隨的點")]
+    public Transform followPoint;
+    List<Transform> collectedItems = new();
+    private void CollectItem(Transform item)
     {
-        // 添加到跟隨系統
-        if (followSystem != null) {
-            followSystem.AddExistingItem(item);
+        ItemData itemData = item.GetComponent<ItemData>();
+
+        ItemManager itemManager = FindFirstObjectByType<ItemManager>();
+        //itemManager.ItemCollected(item.gameObject);
+        Destroy(item.GetComponent<ItemFollow>());
+        ItemFollow itemFollow = item.gameObject.AddComponent<ItemFollow>();
+
+        if (itemData.owner == null) {
+            itemFollow.maxDistance = itemFollowSpace;
+            itemFollow.followSpeed = rotateSpeed;
+            itemData.collectedItemIndex = collectedItems.Count;
+            itemFollow.follow = collectedItems.Count == 0 ? followPoint : collectedItems[^1];
+            collectedItems.Add(item);
         }
+        else {
+            List<Transform> newItems = itemData.owner.GetComponent<PlayerController>().OnPlayerItemStolen(transform, itemData.collectedItemIndex);
+            itemFollow.follow = collectedItems.Count == 0 ? followPoint : collectedItems[^1];
+            collectedItems.AddRange(newItems);
+            for (int i = 0; i < collectedItems.Count; i++) {
+                collectedItems[i].GetComponent<ItemData>().collectedItemIndex = i;
+            }
+        }
+        itemData.owner = transform;
     }
 
-    private List<GameObject> collectedItems = new List<GameObject>();
-
-    public void AddItem(GameObject item) {
-        item.transform.parent = transform;
-        collectedItems.Add(item);
+    public List<Transform> OnPlayerItemStolen(Transform stealer, int index) {
+        List<Transform> removedItems = new();
+        for (int i = index; i < collectedItems.Count; i++) {
+            collectedItems[i].GetComponent<ItemData>().owner = stealer;
+            removedItems.Add(collectedItems[i]);
+        }
+        collectedItems.RemoveRange(index, collectedItems.Count - index);
+        return removedItems;
     }
 
-        /// <summary>
+    /// <summary>
     /// 配置剛體的物理屬性
     /// </summary>
     private void ConfigureRigidbody()

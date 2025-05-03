@@ -11,7 +11,7 @@ public class ItemManager : MonoBehaviour
     public Transform[] spawnPoints;
     
     // 儲存每個點位上的道具
-    private Dictionary<int, GameObject> spawnedItems = new Dictionary<int, GameObject>();
+    private Dictionary<int, GameObject> spawnedItems = new();
     
     private void Awake()
     {
@@ -32,7 +32,7 @@ public class ItemManager : MonoBehaviour
         int spawnCount = Mathf.Min(maxItems, spawnPoints.Length);
         
         // 建立一個包含所有可用點位索引的列表
-        List<int> availableIndices = new List<int>();
+        List<int> availableIndices = new();
         for (int i = 0; i < spawnPoints.Length; i++) {
             availableIndices.Add(i);
         }
@@ -65,16 +65,15 @@ public class ItemManager : MonoBehaviour
         GameObject itemPrefab = itemPrefabs[Random.Range(0, itemPrefabs.Length)];
         
         // 在指定點位生成道具
-        Transform spawnPoint = spawnPoints[pointIndex];
-        float randomYRotation = Random.Range(0f, 360f);
-        Quaternion randomRotation = Quaternion.Euler(0f, randomYRotation, 0f);
-        GameObject item = Instantiate(itemPrefab, spawnPoint.position, randomRotation);
+        GameObject item = Instantiate(itemPrefab);
+        item.transform.position += new Vector3(spawnPoints[pointIndex].position.x, 0f, spawnPoints[pointIndex].position.z);
+        item.transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
         
         // 記錄該道具對應的點位索引
         spawnedItems[pointIndex] = item;
         
         // 將點位索引保存在道具的 component 中
-        ItemData itemData = item.AddComponent<ItemData>();
+        ItemData itemData = item.GetComponent<ItemData>();
         itemData.spawnPointIndex = pointIndex;
     }
     
@@ -95,50 +94,34 @@ public class ItemManager : MonoBehaviour
         }
         
         // 在一個新的隨機點位生成道具
-        SpawnItemAtRandomPoint();
+        Invoke(nameof(SpawnItemAtRandomPoint), 1.5f);
     }
     
     private void SpawnItemAtRandomPoint()
     {
         // 找出所有未使用的點位
-        List<int> unusedIndices = new List<int>();
-        for (int i = 0; i < spawnPoints.Length; i++)
-        {
+        List<int> unusedIndices = new();
+        for (int i = 0; i < spawnPoints.Length; i++) {
             if (!spawnedItems.ContainsKey(i))
                 unusedIndices.Add(i);
         }
         
         // 如果有未使用的點位，選一個生成道具
-        if (unusedIndices.Count > 0)
-        {
+        if (unusedIndices.Count > 0) {
             int randomIndex = Random.Range(0, unusedIndices.Count);
             SpawnItemAtPoint(unusedIndices[randomIndex]);
         }
-        else
-        {
-            Debug.Log("所有點位都已使用");
-        }
+        else Debug.Log("所有點位都已使用");
     }
     
-    public void ClearAllItems()
-    {
-        foreach (GameObject item in spawnedItems.Values)
-        {
-            if (item != null)
-            {
-                Destroy(item);
-            }
+    public void ClearAllItems() {
+        foreach (GameObject item in spawnedItems.Values) {
+            if (item != null)  Destroy(item);
         }
-        
-        spawnedItems.Clear();
+         spawnedItems.Clear();
     }
     
-    private void OnDestroy()
-    {
+    private void OnDestroy() {
         ClearAllItems();
     }
-}
-
-public class ItemData : MonoBehaviour {
-    public int spawnPointIndex;
 }
