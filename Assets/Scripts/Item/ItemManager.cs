@@ -15,14 +15,12 @@ public class ItemManager : MonoBehaviour
     
     private void Awake()
     {
-        if (spawnPoints == null || spawnPoints.Length == 0)
-        {
-            Debug.LogError("沒有設置生成點!");
+        if (spawnPoints == null || spawnPoints.Length == 0) {
+            Debug.LogError("沒有設置生成點");
         }
         
-        if (itemPrefabs == null || itemPrefabs.Length == 0)
-        {
-            Debug.LogError("沒有設置道具預製體!");
+        if (itemPrefabs == null || itemPrefabs.Length == 0) {
+            Debug.LogError("沒有設置道具預製體");
         }
     }
     
@@ -35,24 +33,19 @@ public class ItemManager : MonoBehaviour
         
         // 建立一個包含所有可用點位索引的列表
         List<int> availableIndices = new List<int>();
-        for (int i = 0; i < spawnPoints.Length; i++)
-        {
+        for (int i = 0; i < spawnPoints.Length; i++) {
             availableIndices.Add(i);
         }
         
         // 隨機選擇點位生成道具
-        for (int i = 0; i < spawnCount; i++)
-        {
-            if (availableIndices.Count == 0)
-                break;
-                
+        for (int i = 0; i < spawnCount; i++) {
+
+            if (availableIndices.Count == 0) break;
             // 隨機選擇一個索引
             int randomIndex = Random.Range(0, availableIndices.Count);
             int pointIndex = availableIndices[randomIndex];
-            
             // 從可用列表中移除該索引
             availableIndices.RemoveAt(randomIndex);
-            
             // 在該點位生成道具
             SpawnItemAtPoint(pointIndex);
         }
@@ -60,11 +53,9 @@ public class ItemManager : MonoBehaviour
     
     private void SpawnItemAtPoint(int pointIndex)
     {
-        if (pointIndex < 0 || pointIndex >= spawnPoints.Length)
-            return;
+        if (pointIndex < 0 || pointIndex >= spawnPoints.Length) return;
             
-        if (spawnedItems.ContainsKey(pointIndex))
-        {
+        if (spawnedItems.ContainsKey(pointIndex)) {
             // 如果該點位已有道具，先移除
             Destroy(spawnedItems[pointIndex]);
             spawnedItems.Remove(pointIndex);
@@ -75,7 +66,7 @@ public class ItemManager : MonoBehaviour
         
         // 在指定點位生成道具
         Transform spawnPoint = spawnPoints[pointIndex];
-        float randomYRotation = UnityEngine.Random.Range(0f, 360f);
+        float randomYRotation = Random.Range(0f, 360f);
         Quaternion randomRotation = Quaternion.Euler(0f, randomYRotation, 0f);
         GameObject item = Instantiate(itemPrefab, spawnPoint.position, randomRotation);
         
@@ -103,9 +94,6 @@ public class ItemManager : MonoBehaviour
             spawnedItems.Remove(pointIndex);
         }
         
-        // 銷毀道具
-        // Destroy(item);
-        
         // 在一個新的隨機點位生成道具
         SpawnItemAtRandomPoint();
     }
@@ -117,9 +105,7 @@ public class ItemManager : MonoBehaviour
         for (int i = 0; i < spawnPoints.Length; i++)
         {
             if (!spawnedItems.ContainsKey(i))
-            {
                 unusedIndices.Add(i);
-            }
         }
         
         // 如果有未使用的點位，選一個生成道具
@@ -153,8 +139,6 @@ public class ItemManager : MonoBehaviour
     }
 }
 
-// 用於保存道具對應的點位索引
-public class ItemData : MonoBehaviour
-{
+public class ItemData : MonoBehaviour {
     public int spawnPointIndex;
 }

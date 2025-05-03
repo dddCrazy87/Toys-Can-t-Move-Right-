@@ -4,6 +4,20 @@ using UnityEngine;
 
 public class Item : MonoBehaviour
 {
+    private Rigidbody rb;
+    private void Start() {
+        rb = GetComponent<Rigidbody>();
+    }
+
+    public void lerpMoveToPosition(Vector3 targetPosition) {
+        Vector3 newPosition = Vector3.Lerp(
+            transform.position,
+            targetPosition,
+            Time.deltaTime * 30f
+        );
+        rb.MovePosition(newPosition);
+    }
+
     private bool isCollected = false;
     private void OnTriggerEnter(Collider other) {
         

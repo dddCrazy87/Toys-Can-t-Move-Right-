@@ -101,11 +101,13 @@ public class PlayerController : MonoBehaviour
             Vector3 targetPosition = GetPositionInPast(framesAgo);
             
             // 平滑移動道具到目標位置
-            collectedItems[i].transform.position = Vector3.Lerp(
-                collectedItems[i].transform.position,
-                targetPosition,
-                Time.deltaTime * 5f // 調整這個值來改變跟隨的速度
-            );
+            // collectedItems[i].transform.position = Vector3.Lerp(
+            //     collectedItems[i].transform.position,
+            //     targetPosition,
+            //     Time.deltaTime * 5f
+            // );
+
+            collectedItems[i].GetComponent<Item>().lerpMoveToPosition(targetPosition);
         }
     }
 }
