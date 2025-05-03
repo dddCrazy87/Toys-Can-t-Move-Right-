@@ -81,12 +81,6 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void CollectItem(GameObject item)
     {
-        // 禁用道具的碰撞器，防止重複收集
-        // Collider itemCollider = item.GetComponent<Collider>();
-        // if (itemCollider != null) {
-        //     itemCollider.enabled = false;
-        // }
-        
         // 添加到跟隨系統
         if (followSystem != null) {
             followSystem.AddExistingItem(item);
