@@ -3,15 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-
-    public GameObject yellowPlayersPrefab, bluePlayersPrefab, greenPlayersPrefab, redPlayersPrefab;
-    public List<Player> playersInfo = new List<Player>();
-
-    private bool gameStarted = false;
 
     void Awake() {
         if (Instance == null) {
@@ -24,21 +20,28 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // 從網頁收玩家的資料
-    public ItemManager itemManager;
+    private bool gameStarted = false;
+
+    [Header("Player Data")]
+    public List<Player> playersInfo = new List<Player>();
+    public GameObject yellowPlayersPrefab, bluePlayersPrefab, greenPlayersPrefab, redPlayersPrefab;
     public void StartGame(List<Player> players)
     {
         if (gameStarted) return;
 
         playersInfo = players;
+        if (playersInfo.Count < 2 || playersInfo.Count > 4) {
+            Debug.LogWarning("超過限制");
+            return;
+        }
         // 設定玩家Id
         AssignPlayerIndex();
+        // 生成分數UI
+        RenderPointUI();
         // 分配出生點
         AssignSpawnPoints();
         // 生成玩家
         SpawnPlayers();
-        // 生成分數UI
-        RenderPointUI();
         // 生成道具
         itemManager.StartSpawnItems();
 
@@ -51,6 +54,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    [Header("Item Script")]
+    public ItemManager itemManager;
     public Transform[] spawnPoints;
     public float playerSpawnSpacing = 1.5f;
     private void AssignSpawnPoints()
@@ -95,22 +100,41 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public List<GameObject> playerPointUI = new();
+    [Header("UI Setting")]
+    public List<Transform> pointUiTypes = new();
+    public List<Sprite> pointUiSkins = new();
+    List<Transform> playerPointUI = new();
     private void RenderPointUI() {
-        for (int i = 0; i < 4; i ++) {
-            if (playersInfo.Count > i) {
-                playerPointUI[i].SetActive(true);
-                playerPointUI[i].transform.GetChild(0).GetComponent<TextMeshProUGUI> ().text = playersInfo[i].name;
-                playerPointUI[i].transform.GetChild(1).GetComponent<TextMeshProUGUI> ().text = playersInfo[i].point.ToString();
+        foreach (var item in pointUiTypes) {
+            item.gameObject.SetActive(false);
+        }
+        pointUiTypes[playersInfo.Count-2].gameObject.SetActive(true);
+        for (int i = 0; i < playersInfo.Count; i++) {
+            playerPointUI.Add(pointUiTypes[playersInfo.Count-2].GetChild(i));
+        }
+        for (int i = 0; i < playersInfo.Count; i ++) {
+            switch (playersInfo[i].skin) {
+                case "blue":
+                    playerPointUI[i].GetChild(0).GetComponent<Image>().sprite = pointUiSkins[0];
+                    break;
+                case "yellow":
+                    playerPointUI[i].GetChild(0).GetComponent<Image>().sprite = pointUiSkins[1];
+                    break;
+                case "green":
+                    playerPointUI[i].GetChild(0).GetComponent<Image>().sprite = pointUiSkins[2];
+                    break;
+                case "red":
+                    playerPointUI[i].GetChild(0).GetComponent<Image>().sprite = pointUiSkins[3];
+                    break;
+                default:
+                    break;
             }
-            else {
-                playerPointUI[i].SetActive(false);
-            }
+            playerPointUI[i].GetChild(1).GetComponent<TextMeshProUGUI>().text = playersInfo[i].point.ToString();
         }
     }
     public void PlayerIncreasePointByNumber(int playerIndex, int number) {
         playersInfo[playerIndex].point += number;
-        playerPointUI[playerIndex].transform.GetChild(1).GetComponent<TextMeshProUGUI> ().text = playersInfo[playerIndex].point.ToString();
+        playerPointUI[playerIndex].GetChild(1).GetComponent<TextMeshProUGUI>().text = playersInfo[playerIndex].point.ToString();
     }
 }
 

@@ -10,8 +10,8 @@ public class NetworkManager : MonoBehaviour
         {
             new Player { name = "yellowP", skin = "yellow" },
             new Player { name = "blueP",   skin = "blue" },
-            //new Player { name = "redP",    skin = "red" },
-            //new Player { name = "greenP",  skin = "green" },
+            new Player { name = "redP",    skin = "red" },
+            new Player { name = "greenP",  skin = "green" },
         };
 
         // 傳資料到 GameManager 後才會開始遊戲
