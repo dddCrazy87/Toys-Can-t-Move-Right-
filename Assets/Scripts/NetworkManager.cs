@@ -6,7 +6,6 @@ public class NetworkManager : MonoBehaviour
 {
     void Start()
     {
-        // 模擬手動設定隊伍資訊
         List<Player> playersInfo = new List<Player>
         {
             new Player { name = "yellowP", skin = "yellow" },
@@ -15,7 +14,7 @@ public class NetworkManager : MonoBehaviour
             //new Player { name = "greenP",  skin = "green" },
         };
 
-        // 傳送資料給 GameManager
+        // 傳資料到 GameManager 後才會開始遊戲
         GameManager.Instance.StartGame(playersInfo);
     }
 }
