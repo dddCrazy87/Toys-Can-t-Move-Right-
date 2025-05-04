@@ -38,6 +38,8 @@ public class GameManager : MonoBehaviour
         if (gameStarted) return;
 
         playersInfo = players;
+        // 設定玩家Id
+        AssignPlayerIndex();
         // 分配出生點
         AssignSpawnPoints();
         // 生成玩家
@@ -49,6 +51,12 @@ public class GameManager : MonoBehaviour
 
         gameStarted = true;
         // Debug.Log("遊戲開始!");
+    }
+
+    void AssignPlayerIndex() {
+        for(int i = 0; i < playersInfo.Count; i ++) {
+            playersInfo[i].index = i;
+        }
     }
 
     // 預先設定好的出生點
@@ -106,12 +114,11 @@ public class GameManager : MonoBehaviour
             }
             else {
                 playerPointUI[i].SetActive(false);
-                break;
             }
         }
     }
-    public void PlayerIncreasePoint(int playerIndex) {
-        playersInfo[playerIndex].point ++;
+    public void PlayerIncreasePointByNumber(int playerIndex, int number) {
+        playersInfo[playerIndex].point += number;
         playerPointUI[playerIndex].transform.GetChild(1).GetComponent<TextMeshProUGUI> ().text = playersInfo[playerIndex].point.ToString();
     }
 }

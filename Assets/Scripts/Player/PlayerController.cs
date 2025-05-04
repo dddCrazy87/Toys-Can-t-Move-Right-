@@ -104,10 +104,7 @@ public class PlayerController : MonoBehaviour
     {
         // 取得道具的資料元件
         ItemData itemData = item.GetComponent<ItemData>();
-        // GameManager gameManager = FindFirstObjectByType<GameManager>();
-        // gameManager.PlayerIncreasePoint(playerIndex);
-        ItemManager itemManager = FindFirstObjectByType<ItemManager>();
-        //itemManager.ItemCollected(item.gameObject);
+
         // 先移除原有的 ItemFollow（避免殘留追蹤設定）
         Destroy(item.GetComponent<ItemFollow>());
 
@@ -167,15 +164,15 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// 移除一個收集的物件
     /// </summary>
-    public void CollectItemToCastle(int index) {
-        if (index + 1 < collectedItems.Count) {
-            collectedItems[index + 1].GetComponent<ItemFollow>().follow = collectedItems[index].GetComponent<ItemFollow>().follow;
-            for (int i = index + 1; i < collectedItems.Count; i++) {
-                collectedItems[i].GetComponent<ItemData>().collectedItemIndex = i - 1;
-            }
+    public void CompeleItemCollection() {
+        if (collectedItems.Count <= 0) return;
+        GameManager gameManager = FindFirstObjectByType<GameManager>();
+        gameManager.PlayerIncreasePointByNumber(playerIndex, collectedItems.Count);
+        ItemManager itemManager = FindFirstObjectByType<ItemManager>();
+        foreach (var item in collectedItems) {
+            itemManager.ItemCollected(item.gameObject);
+            Destroy(item.gameObject);
         }
-        GameObject go = collectedItems[index].gameObject;
-        collectedItems.RemoveAt(index);
-        Destroy(go);
+        collectedItems.Clear();
     }
 }

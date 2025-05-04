@@ -6,10 +6,7 @@ public class CastleController : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         GameObject go = other.gameObject;
-        if (go.CompareTag("Collectable")) {
-            PlayerController player = go.GetComponent<ItemData>().owner.GetComponent<PlayerController>();
-            gameManager.PlayerIncreasePoint(player.playerIndex);
-            player.CollectItemToCastle(go.GetComponent<ItemData>().collectedItemIndex);
-        }
+        if (!go.CompareTag("Player")) return;
+        go.GetComponent<PlayerController>().CompeleItemCollection();
     }
 }
