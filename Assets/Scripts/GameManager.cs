@@ -1,16 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public GameObject yellowPlayersPrefab;
-    public GameObject bluePlayersPrefab;
-    public GameObject greenPlayersPrefab;
-    public GameObject redPlayersPrefab;
+    public GameObject yellowPlayersPrefab, bluePlayersPrefab, greenPlayersPrefab, redPlayersPrefab;
     public List<Player> playersInfo = new List<Player>();
 
     private bool gameStarted = false;
@@ -43,8 +41,9 @@ public class GameManager : MonoBehaviour
         // 分配出生點
         AssignSpawnPoints();
         // 生成玩家
-        //SpawnPlayers();
-        SpawnPlayersForTest();
+        SpawnPlayers();
+        // 生成分數UI
+        RenderPointUI();
         // 生成道具
         itemManager.StartSpawnItems();
 
@@ -68,7 +67,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void SpawnPlayersForTest()
+    private void SpawnPlayers()
     {
         foreach (var player in playersInfo)
         {
@@ -93,30 +92,27 @@ public class GameManager : MonoBehaviour
                 default:
                     break;
             }
+            go.GetComponent<PlayerController>().Initialize(player.name, player.index);
         }
     }
 
-    private void SpawnPlayers()
-    {
-        foreach (var player in playersInfo)
-        {
-            switch (player.skin) {
-                case "yellow":
-                    Instantiate(yellowPlayersPrefab, player.spawnPoint, Quaternion.identity);
-                    break;
-                case "blue":
-                    Instantiate(bluePlayersPrefab, player.spawnPoint, Quaternion.identity);
-                    break;
-                case "green":
-                    Instantiate(greenPlayersPrefab, player.spawnPoint, Quaternion.identity);
-                    break;
-                case "red":
-                    Instantiate(redPlayersPrefab, player.spawnPoint, Quaternion.identity);
-                    break;
-                default:
-                    break;
+    public List<GameObject> playerPointUI = new();
+    private void RenderPointUI() {
+        for (int i = 0; i < 4; i ++) {
+            if (playersInfo.Count > i) {
+                playerPointUI[i].SetActive(true);
+                playerPointUI[i].transform.GetChild(0).GetComponent<TextMeshProUGUI> ().text = playersInfo[i].name;
+                playerPointUI[i].transform.GetChild(1).GetComponent<TextMeshProUGUI> ().text = playersInfo[i].point.ToString();
+            }
+            else {
+                playerPointUI[i].SetActive(false);
+                break;
             }
         }
+    }
+    public void PlayerIncreasePoint(int playerIndex) {
+        playersInfo[playerIndex].point ++;
+        playerPointUI[playerIndex].transform.GetChild(1).GetComponent<TextMeshProUGUI> ().text = playersInfo[playerIndex].point.ToString();
     }
 }
 
@@ -129,4 +125,6 @@ public class Player
     public string name = "";
     public string skin = "";
     public Vector3 spawnPoint;
+    public int point = 0;
+    public int index;
 }
