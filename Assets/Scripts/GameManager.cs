@@ -13,8 +13,7 @@ public class GameManager : MonoBehaviour
 
     private bool gameStarted = false;
 
-    void Awake()
-    {
+    void Awake() {
         if (Instance == null) {
             Instance = this;
             DontDestroyOnLoad(gameObject);
@@ -25,13 +24,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-    void Start()
-    {
-        // Debug.Log("等待玩家註冊...");
-    }
-
-    // 當從網頁接收到玩家資訊時，呼叫這個函式
+    // 從網頁收玩家的資料
     public ItemManager itemManager;
     public void StartGame(List<Player> players)
     {
@@ -50,7 +43,6 @@ public class GameManager : MonoBehaviour
         itemManager.StartSpawnItems();
 
         gameStarted = true;
-        // Debug.Log("遊戲開始!");
     }
 
     void AssignPlayerIndex() {
@@ -59,7 +51,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // 預先設定好的出生點
     public Transform[] spawnPoints;
     public float playerSpawnSpacing = 1.5f;
     private void AssignSpawnPoints()
@@ -125,10 +116,8 @@ public class GameManager : MonoBehaviour
 
 
 
-// 定義隊伍資料結構
 [System.Serializable]
-public class Player
-{
+public class Player {
     public string name = "";
     public string skin = "";
     public Vector3 spawnPoint;
