@@ -11,8 +11,8 @@ public class NetworkManager : MonoBehaviour
         {
             new Player { name = "yellowP", skin = "yellow" },
             new Player { name = "blueP",   skin = "blue" },
-            new Player { name = "redP",    skin = "red" },
-            new Player { name = "greenP",  skin = "green" },
+            //new Player { name = "redP",    skin = "red" },
+            //new Player { name = "greenP",  skin = "green" },
         };
 
         // 傳送資料給 GameManager

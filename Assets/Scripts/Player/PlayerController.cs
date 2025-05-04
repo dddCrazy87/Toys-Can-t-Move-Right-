@@ -24,17 +24,18 @@ public class PlayerController : MonoBehaviour
     private void Awake() {
         isP1 = false; isP2 = false;
         rb = GetComponent<Rigidbody>();
-        ConfigureRigidbody();
         followPoint.position += new Vector3(0, 0, -itemFollowSpace);
         moveSpeed *= -1;
     }
 
+    public bool avilibleMovement = true;
     private Vector3 movement;
     void Update() {
         // float horizontal = Input.GetAxisRaw("Horizontal");
         // float vertical = Input.GetAxisRaw("Vertical");
         // movement = new Vector3(horizontal, 0f, vertical).normalized;
 
+        if (!avilibleMovement) return;
         // for demo and test
         if(isP1) {
             float horizontal = Input.GetAxisRaw("Horizontal");
@@ -176,31 +177,5 @@ public class PlayerController : MonoBehaviour
         GameObject go = collectedItems[index].gameObject;
         collectedItems.RemoveAt(index);
         Destroy(go);
-    }
-
-    /// <summary>
-    /// 配置剛體的物理屬性
-    /// </summary>
-    private void ConfigureRigidbody()
-    {
-        // 設置為非運動學剛體，這樣可以接收物理力和進行碰撞檢測
-        rb.isKinematic = false;
-        
-        // 設置合適的質量和拖曳力
-        rb.mass = 5f;
-        rb.linearDamping = 1f;
-        rb.angularDamping = 5f;
-        
-        // 防止玩家休眠
-        rb.sleepThreshold = 0f;
-        
-        // 設置插值模式，使運動更平滑
-        rb.interpolation = RigidbodyInterpolation.Interpolate;
-        
-        // 碰撞檢測設置
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        
-        // 限制旋轉以防止不必要的翻滾
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
     }
 }
