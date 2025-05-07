@@ -47,9 +47,9 @@ public class PlayerController : MonoBehaviour
         else if (isP2) {
             float horizontal = 0f;
             float vertical = 0f;
-            if (Input.GetKey(KeyCode.J)) horizontal = -1f;
+            if (Input.GetKey(KeyCode.J))      horizontal = -1f;
             else if (Input.GetKey(KeyCode.L)) horizontal = 1f;
-            if (Input.GetKey(KeyCode.I)) vertical = 1f;
+            if (Input.GetKey(KeyCode.I))      vertical = 1f;
             else if (Input.GetKey(KeyCode.K)) vertical = -1f;
             movement = new Vector3(horizontal, 0f, vertical).normalized;
         }
@@ -109,6 +109,7 @@ public class PlayerController : MonoBehaviour
 
         // 道具是自由的（沒被其他玩家擁有）
         if (itemData.owner == null) {
+            FindAnyObjectByType<GameSoundEffect>().PlayGetItemSound();
             itemFollow.maxDistance = itemFollowSpace;
             itemFollow.followSpeed = rotateSpeed;
             itemData.collectedItemIndex = collectedItems.Count;
@@ -124,7 +125,8 @@ public class PlayerController : MonoBehaviour
         else {
             // 向對方玩家要求從指定 index 開始的道具清單
             List<Transform> newItems = itemData.owner.GetComponent<PlayerController>().OnPlayerItemStolen(transform, itemData.collectedItemIndex);
-
+            FindAnyObjectByType<GameSoundEffect>().PlayStealItemSound();
+            
             // 設定新串接的第一個道具的跟隨對象
             itemFollow.follow = collectedItems.Count == 0 ? followPoint : collectedItems[^1];
 
@@ -160,6 +162,7 @@ public class PlayerController : MonoBehaviour
     //移除收集的物件
     public void CompeleItemCollection() {
         if (collectedItems.Count <= 0) return;
+        FindAnyObjectByType<GameSoundEffect>().PlayGetPointSound();
         GameManager gameManager = FindFirstObjectByType<GameManager>();
         gameManager.PlayerIncreasePointByNumber(playerIndex, collectedItems.Count);
         ItemManager itemManager = FindFirstObjectByType<ItemManager>();

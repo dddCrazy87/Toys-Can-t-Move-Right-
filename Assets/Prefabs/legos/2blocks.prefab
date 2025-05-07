@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2f5daf45df73e249a8cf6972f2a86ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blue: {fileID: 0}
-  red: {fileID: 0}
-  green: {fileID: 0}
-  yellow: {fileID: 0}
+  blue: {fileID: 2100000, guid: 43951157328f07c4195e642da26d9692, type: 2}
+  red: {fileID: 2100000, guid: 162a0d7cdbcd6d741b05a5e3540bcc62, type: 2}
+  green: {fileID: 2100000, guid: d645129c1b9795f4686589b086542a3f, type: 2}
+  yellow: {fileID: 2100000, guid: 04d8315e1bc2c034aaa8aba5668a7191, type: 2}

@@ -5,10 +5,8 @@ public class GameStartUI : MonoBehaviour
 {
     UIFadeScript fadeScript;
     public float fadeInSpeed, fadeOutSpeed;
-    private bool isHide = false;
     public AudioSource startAudio;
     void Start() {
-        isHide = false;
         if (!(fadeScript = GetComponent<UIFadeScript>())) {
             fadeScript = gameObject.AddComponent<UIFadeScript>();
         }
