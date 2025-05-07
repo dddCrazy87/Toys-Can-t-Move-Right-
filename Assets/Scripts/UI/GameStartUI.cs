@@ -6,7 +6,7 @@ public class GameStartUI : MonoBehaviour
     UIFadeScript fadeScript;
     public float fadeInSpeed, fadeOutSpeed;
     public AudioSource startAudio;
-    void Start() {
+    void Awake() {
         if (!(fadeScript = GetComponent<UIFadeScript>())) {
             fadeScript = gameObject.AddComponent<UIFadeScript>();
         }
@@ -15,7 +15,7 @@ public class GameStartUI : MonoBehaviour
         fadeScript.HideUI(fadeOutSpeed);
         FindFirstObjectByType<BgmPlayer>().PauseBGM();
         startAudio.Play();
-        Invoke("ChangeScene", 1 / fadeOutSpeed + fadeOutSpeed);
+        Invoke(nameof(ChangeScene), 1 / fadeOutSpeed + fadeOutSpeed);
     }
     public string nextSceneName = "";
     void ChangeScene() {

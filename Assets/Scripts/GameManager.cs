@@ -7,18 +7,10 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    private bool gameStarted = false;
-
-    [Header("Player Data")]
-    public List<Player> playersInfo = new List<Player>();
-    public GameObject yellowPlayersPrefab, bluePlayersPrefab, greenPlayersPrefab, redPlayersPrefab;
-    public void StartGame(List<Player> players)
-    {
-        if (gameStarted) return;
-
-        playersInfo = players;
-        if (playersInfo.Count < 2 || playersInfo.Count > 4) {
-            Debug.LogWarning("超過限制");
+    public bool isGameStart = false;
+    public void StartGame() {
+        if (playersInfo.Count <= 0) {
+            print("No player registered");
             return;
         }
         // 設定玩家Id
@@ -30,28 +22,62 @@ public class GameManager : MonoBehaviour
         // 生成玩家
         SpawnPlayers();
         // 生成道具
-        itemManager.StartSpawnItems();
-
-        gameStarted = true;
+        ;
+        if (itemManager = FindFirstObjectByType<ItemManager>()) {
+            itemManager.StartSpawnItems();
+        }
+        else {
+            print("No Item Manager");
+        }
     }
 
+    public void LoadPlayerData(List<Player> players) {
+        playersInfo = players;
+        if (playersInfo.Count < 2 || playersInfo.Count > 4) {
+            Debug.LogWarning("超過限制");
+            return;
+        }
+    }
+
+    // ------------- Increase Player Point --------------
+    public void PlayerIncreasePointByNumber(int playerIndex, int number) {
+        playersInfo[playerIndex].point += number;
+        playerPointUI[playerIndex].GetChild(1).GetComponent<TextMeshProUGUI>().text = playersInfo[playerIndex].point.ToString();
+    }
+
+    // ------- Assign Player Index -------
+
+    [Header("Player Data")]
+    public List<Player> playersInfo = new List<Player>();
+    public GameObject yellowPlayersPrefab, bluePlayersPrefab, greenPlayersPrefab, redPlayersPrefab;
     void AssignPlayerIndex() {
         for(int i = 0; i < playersInfo.Count; i ++) {
             playersInfo[i].index = i;
         }
     }
 
-    [Header("Item Script")]
-    public ItemManager itemManager;
+    // --------- Spawn Players -----------
+    
     [Header("Player Spawn Setting")]
-    public Transform[] spawnPoints;
+    public List<Transform> playerSpawnPoints = new();
     private void AssignSpawnPoints()
     {
-        List<Transform> availablePoints = new List<Transform>(spawnPoints);
-        System.Random rnd = new System.Random();
+        playerSpawnPoints.Clear();
+        GameObject go = GameObject.Find("PlayerSpwanPoint");
+        if (go != null) {
+            Transform tf = go.transform;
+            for (int i = 0; i < tf.childCount; ++i) {
+                playerSpawnPoints.Add(tf.GetChild(i));
+            }
+        } else {
+            print("No Player Spwan Point");
+            return;
+        }
 
-        foreach (var player in playersInfo)
-        {
+        List<Transform> availablePoints = new (playerSpawnPoints);
+        System.Random rnd = new();
+
+        foreach (var player in playersInfo) {
             int index = rnd.Next(availablePoints.Count);
             player.spawnPoint = availablePoints[index].position;
             availablePoints.RemoveAt(index);
@@ -87,6 +113,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // ------------- UI Setting -------------
+
     [Header("UI Setting")]
     public List<Transform> pointUiTypes = new();
     public List<Sprite> pointUiSkins = new();
@@ -119,9 +147,24 @@ public class GameManager : MonoBehaviour
             playerPointUI[i].GetChild(1).GetComponent<TextMeshProUGUI>().text = playersInfo[i].point.ToString();
         }
     }
-    public void PlayerIncreasePointByNumber(int playerIndex, int number) {
-        playersInfo[playerIndex].point += number;
-        playerPointUI[playerIndex].GetChild(1).GetComponent<TextMeshProUGUI>().text = playersInfo[playerIndex].point.ToString();
+
+    // ----------- Item Script -----------
+
+    [Header("Item Script")]
+    public ItemManager itemManager;
+
+    // ------------- Dont Destroy On Load -------------
+
+    private static GameManager instance;
+
+    void Awake() {
+        if (instance == null) {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else {
+            Destroy(gameObject);
+        }
     }
 }
 

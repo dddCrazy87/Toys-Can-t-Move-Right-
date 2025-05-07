@@ -6,7 +6,7 @@ public class UIFadeScript : MonoBehaviour
     private CanvasGroup canvasGroup;
     private bool fadeIn = false, fadeOut = false;
     private float fadeInSpeed = 1, fadeOutSpeed = 1;
-    void Start() {
+    void Awake() {
         if (!(canvasGroup = GetComponent<CanvasGroup>())) {
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
