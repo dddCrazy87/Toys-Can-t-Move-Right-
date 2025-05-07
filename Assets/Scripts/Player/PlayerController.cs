@@ -157,7 +157,7 @@ public class PlayerController : MonoBehaviour
         return removedItems;
     }
 
-    //移除一個收集的物件
+    //移除收集的物件
     public void CompeleItemCollection() {
         if (collectedItems.Count <= 0) return;
         GameManager gameManager = FindFirstObjectByType<GameManager>();
