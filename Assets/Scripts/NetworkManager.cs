@@ -35,7 +35,9 @@ public class NetworkManager : MonoBehaviour
     public Transform toyboxCameraPostion;
     public CameraMovement cameraMovement;
     public SceneFadeInFadeOut sceneFadeInFadeOut;
+    public GameObject ui1, ui2, ui3, ui4;
     void StartToyBoxGame() {
+        ui1.SetActive(false); ui2.SetActive(false); ui3.SetActive(false); ui4.SetActive(false);
         cameraMovement.MoveToTarget(toyboxCameraPostion);
         cameraMovement.OnMovementComplete += () => {
             FindFirstObjectByType<BgmPlayer>().ChangeBgm("Toybox");

@@ -129,15 +129,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2364892695881951858, guid: d449d8335488e0d49a61f16897035cbc, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.6318457
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2364892695881951858, guid: d449d8335488e0d49a61f16897035cbc, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.6318457
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2364892695881951858, guid: d449d8335488e0d49a61f16897035cbc, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.6318457
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2364892695881951858, guid: d449d8335488e0d49a61f16897035cbc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -146,6 +146,10 @@ PrefabInstance:
     - target: {fileID: 2364892695881951858, guid: d449d8335488e0d49a61f16897035cbc, type: 3}
       propertyPath: m_LocalPosition.z
       value: -4.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2364892695881951858, guid: d449d8335488e0d49a61f16897035cbc, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3112961201081635703, guid: d449d8335488e0d49a61f16897035cbc, type: 3}
       propertyPath: m_Name
@@ -1435,6 +1439,10 @@ MonoBehaviour:
   toyboxCameraPostion: {fileID: 398929630}
   cameraMovement: {fileID: 1722669613}
   sceneFadeInFadeOut: {fileID: 246100340}
+  ui1: {fileID: 1249341371}
+  ui2: {fileID: 2041154395}
+  ui3: {fileID: 1382401199}
+  ui4: {fileID: 2033458139}
 --- !u!82 &1921423018
 AudioSource:
   m_ObjectHideFlags: 0
