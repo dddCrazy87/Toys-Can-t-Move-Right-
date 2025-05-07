@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class FingerToyController : MonoBehaviour
 {
+    public AudioSource sound;
+
     [Header("旋轉設定")]
     [Tooltip("旋轉的速度 (度/秒)")]
     public float rotationSpeed = 30f;
@@ -30,6 +32,7 @@ public class FingerToyController : MonoBehaviour
                 player.avilibleMovement = false;
                 Vector3 bounceDir = -collision.contacts[0].normal;
                 StartCoroutine(ApplyBounce(player, playerRb, bounceDir, bounceForce, 0.3f));
+                sound.Play();
             }
         }
     }

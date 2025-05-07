@@ -7,19 +7,6 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
-
-    void Awake() {
-        if (Instance == null) {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else {
-            Destroy(gameObject);
-            return;
-        }
-    }
-
     private bool gameStarted = false;
 
     [Header("Player Data")]
@@ -56,8 +43,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Item Script")]
     public ItemManager itemManager;
+    [Header("Player Spawn Setting")]
     public Transform[] spawnPoints;
-    public float playerSpawnSpacing = 1.5f;
     private void AssignSpawnPoints()
     {
         List<Transform> availablePoints = new List<Transform>(spawnPoints);

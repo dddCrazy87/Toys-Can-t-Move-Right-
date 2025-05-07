@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
         if (playerIDUI != null) playerIDUI.text = name;
         playerIndex = id;
     }
+    [Header("玩家顏色")]
+    public string color;
 
     [Header("移動設置")]
     [Tooltip("玩家移動速度")]
@@ -57,9 +59,7 @@ public class PlayerController : MonoBehaviour
         Move();
     }
 
-    /// <summary>
-    /// 移動玩家
-    /// </summary>
+    //移動玩家
     private void Move()
     {
         if (movement != Vector3.zero) {
@@ -86,9 +86,7 @@ public class PlayerController : MonoBehaviour
     public Transform followPoint;
     List<Transform> collectedItems = new();
 
-    /// <summary>
-    /// 處理玩家與道具的碰撞
-    /// </summary>
+    //處理玩家與道具的碰撞
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Collectable")) {
@@ -97,9 +95,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 收集道具的處理邏輯
-    /// </summary>
+    //收集道具的處理邏輯
     private void CollectItem(Transform item)
     {
         // 取得道具的資料元件
@@ -122,6 +118,7 @@ public class PlayerController : MonoBehaviour
 
             // 加入當前收集清單
             collectedItems.Add(item);
+            item.GetComponent<ItemController>().ChangeMaterial(color);
         }
         // 道具屬於其他玩家，需要搶奪整串道具
         else {
@@ -137,15 +134,14 @@ public class PlayerController : MonoBehaviour
             // 重新編號所有道具的 index
             for (int i = 0; i < collectedItems.Count; i++) {
                 collectedItems[i].GetComponent<ItemData>().collectedItemIndex = i;
+                collectedItems[i].GetComponent<ItemController>().ChangeMaterial(color);
             }
         }
         // 最後更新該道具的 owner 為自己
         itemData.owner = transform;
     }
 
-    /// <summary>
-    /// 被搶奪時，從指定 index 起的所有道具都被轉移給搶奪者
-    /// </summary>
+    //被搶奪時，從指定 index 起的所有道具都被轉移給搶奪者
     public List<Transform> OnPlayerItemStolen(Transform stealer, int index) {
         List<Transform> removedItems = new();
         // 把所有要被搶的道具記錄下來，同時設定它們的新擁有者
@@ -161,9 +157,7 @@ public class PlayerController : MonoBehaviour
         return removedItems;
     }
 
-    /// <summary>
-    /// 移除一個收集的物件
-    /// </summary>
+    //移除一個收集的物件
     public void CompeleItemCollection() {
         if (collectedItems.Count <= 0) return;
         GameManager gameManager = FindFirstObjectByType<GameManager>();

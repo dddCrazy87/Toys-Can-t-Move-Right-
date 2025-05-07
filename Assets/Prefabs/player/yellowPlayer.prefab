@@ -248,8 +248,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 8, z: 8}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1025796905602248560}
   - {fileID: 8883688886425300605}
@@ -320,6 +320,7 @@ MonoBehaviour:
   isP2: 0
   playerIDUI: {fileID: 2322266587842573656}
   playerIndex: 0
+  color: yellow
   moveSpeed: 10
   rotateSpeed: 15
   avilibleMovement: 1

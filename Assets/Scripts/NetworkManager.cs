@@ -15,6 +15,6 @@ public class NetworkManager : MonoBehaviour
         };
 
         // 傳資料到 GameManager 後才會開始遊戲
-        GameManager.Instance.StartGame(playersInfo);
+        FindFirstObjectByType<GameManager>().StartGame(playersInfo);
     }
 }
