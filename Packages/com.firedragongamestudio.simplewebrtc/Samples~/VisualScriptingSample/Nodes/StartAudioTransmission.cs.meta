@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: e15d8ed9a89db3a4883fb8729e71785a
+AssetOrigin:
+  serializedVersion: 1
+  productId: 309727
+  packageName: SimpleWebRTC
+  packageVersion: 1.4.0
+  assetPath: Packages/com.firedragongamestudio.simplewebrtc/Samples~/VisualScriptingSample/Nodes/StartAudioTransmission.cs
+  uploadId: 766404

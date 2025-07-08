@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: cfb24951fbee2ae46bb090f2077932f6
+AssetOrigin:
+  serializedVersion: 1
+  productId: 309727
+  packageName: SimpleWebRTC
+  packageVersion: 1.4.0
+  assetPath: Packages/com.firedragongamestudio.simplewebrtc/Samples~/VisualScriptingSample/Utils/SimpleWebRTCSceneVariables.cs
+  uploadId: 766404
