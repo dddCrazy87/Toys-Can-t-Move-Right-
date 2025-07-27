@@ -2,12 +2,11 @@ using UnityEngine;
 using ZXing;
 using ZXing.QrCode;
 using UnityEngine.UI;
-using TMPro;
 
 public class QrCodeGenerator : MonoBehaviour
 {
     [SerializeField] private RawImage rawImageReceiver;
-    [SerializeField] private TMP_InputField textInputField;
+    [SerializeField] private string textToEncode;
 
     private Texture2D storeEncodedTexture;
 
@@ -26,14 +25,15 @@ public class QrCodeGenerator : MonoBehaviour
         return writer.Write(textForEncoding);
     }
 
-    public void OnClickEncode()
+    public void EncodeTextToQrCode(string text = "")
     {
-        EncodeTextToQrCode();
+        textToEncode = text;
+        EncodeText2QrCode();
     }
 
-    private void EncodeTextToQrCode()
+    private void EncodeText2QrCode()
     {
-        string textWrite = string.IsNullOrEmpty(textInputField.text) ? "nothing here" : textInputField.text;
+        string textWrite = string.IsNullOrEmpty(textToEncode) ? "nothing here" : textToEncode;
         Color32[] covertPixelToTexture = Encode(textWrite, storeEncodedTexture.width, storeEncodedTexture.height);
         storeEncodedTexture.SetPixels32(covertPixelToTexture);
         storeEncodedTexture.Apply();
