@@ -119,6 +119,182 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &531182758
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 531182764}
+  - component: {fileID: 531182763}
+  - component: {fileID: 531182762}
+  - component: {fileID: 531182761}
+  - component: {fileID: 531182760}
+  - component: {fileID: 531182759}
+  m_Layer: 0
+  m_Name: Cube (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &531182759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 531182758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9822655c941394f459fc612c4963ee6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  timeoutSeconds: 0.2
+  localPeerId: red
+--- !u!114 &531182760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 531182758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7588ce98b751e28419e83a73016454e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WebSocketServerAddress: 'wss://server-for-toy-cant-move.onrender.com/ '
+  StunServerAddress: stun:stun.l.google.com:19302
+  LocalPeerId: red
+  UseHTTPHeader: 1
+  IsVideoAudioSender: 1
+  IsVideoAudioReceiver: 0
+  RandomUniquePeerId: 0
+  ShowLogs: 1
+  ShowDataChannelLogs: 1
+  WebSocketConnectionActive: 1
+  SendWebSocketTestMessage: 0
+  WebSocketConnectionChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  WebRTCConnectionActive: 1
+  WebRTCConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  SendDataChannelTestMessage: 0
+  DataChannelConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  DataChannelMessageReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  StartStopVideoTransmission: 0
+  VideoResolution: {x: 1280, y: 720}
+  StreamingCamera: {fileID: 0}
+  OptionalPreviewRawImage: {fileID: 0}
+  ReceivingRawImagesParent: {fileID: 0}
+  VideoTransmissionReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  StartStopAudioTransmission: 0
+  StreamingAudioSource: {fileID: 0}
+  ReceivingAudioSourceParent: {fileID: 0}
+  AudioTransmissionReceived:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!65 &531182761
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 531182758}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &531182762
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 531182758}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 2c39f18f39d3036418156147681e9b04, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &531182763
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 531182758}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &531182764
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 531182758}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.65, y: 0.5, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &786662731
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,6 +450,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 3
+  timeoutSeconds: 0.2
+  localPeerId: yellow
 --- !u!114 &1223465900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,13 +464,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7588ce98b751e28419e83a73016454e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WebSocketServerAddress: wss://toy-cant-move-server.glitch.me
+  WebSocketServerAddress: 'wss://server-for-toy-cant-move.onrender.com/ '
   StunServerAddress: stun:stun.l.google.com:19302
-  LocalPeerId: PeerId
+  LocalPeerId: yellow
   UseHTTPHeader: 1
   IsVideoAudioSender: 1
   IsVideoAudioReceiver: 0
-  RandomUniquePeerId: 1
+  RandomUniquePeerId: 0
   ShowLogs: 1
   ShowDataChannelLogs: 1
   WebSocketConnectionActive: 1
@@ -408,7 +586,7 @@ Transform:
   m_GameObject: {fileID: 1223465898}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: -2.19, y: 0.5, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -668,3 +846,4 @@ SceneRoots:
   - {fileID: 786662733}
   - {fileID: 1680329534}
   - {fileID: 1223465904}
+  - {fileID: 531182764}

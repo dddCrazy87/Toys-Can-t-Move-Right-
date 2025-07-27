@@ -18,7 +18,7 @@ namespace SimpleWebRTC
         public event Action OnWebRTCConnection;
         public event Action<string> OnDataChannelConnection;
         public event Action<string> OnDataChannelMessageReceived;
-        public static event Action<string> OnDataMessageReceived_Static;
+        public static event Action<string, string> OnDataMessageReceived_Static;
         public event Action OnVideoStreamEstablished;
         public event Action OnAudioStreamEstablished;
 
@@ -160,7 +160,7 @@ namespace SimpleWebRTC
                     var message = Encoding.UTF8.GetString(bytes);
                     SimpleWebRTCLogger.LogDataChannel($"{localPeerId} received on {peerId} receiverDataChannel: {message}");
                     OnDataChannelMessageReceived?.Invoke(Encoding.UTF8.GetString(bytes));
-                    OnDataMessageReceived_Static?.Invoke(message);
+                    OnDataMessageReceived_Static?.Invoke(message, localPeerId);
                 };
 
                 SimpleWebRTCLogger.LogDataChannel($"ReceiverDataChannel connection for {peerId} established on {localPeerId}.");
