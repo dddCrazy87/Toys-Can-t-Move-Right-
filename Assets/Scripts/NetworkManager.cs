@@ -6,27 +6,30 @@ using UnityEngine.UI;
 public class NetworkManager : MonoBehaviour
 {
     List<Player> playersInfo = new();
-    void Start() {
-        playersInfo = new () {
+    void Start()
+    {
+        playersInfo = new() {
             new Player { name = "yellowP", skin = "yellow" },
             new Player { name = "blueP",   skin = "blue" },
             // new Player { name = "redP",    skin = "red" },
             // new Player { name = "greenP",  skin = "green" },
         };
-        FindFirstObjectByType<GameManager>().LoadPlayerData(playersInfo);
-        Invoke(nameof(BlueRegistered), 7f);
+        // FindFirstObjectByType<GameManager>().LoadPlayerData(playersInfo);
+        // Invoke(nameof(BlueRegistered), 7f);
     }
 
     public AudioSource registeredSound;
     public Sprite blueRegistered, yellowRegistered;
     public Image blueQrcode, yellowQrcode;
-    void BlueRegistered() {
+    void BlueRegistered()
+    {
         registeredSound.Play();
         blueQrcode.sprite = blueRegistered;
         Invoke(nameof(YellowRegistered), 3f);
     }
 
-    void YellowRegistered() {
+    void YellowRegistered()
+    {
         registeredSound.Play();
         yellowQrcode.sprite = yellowRegistered;
         Invoke(nameof(StartToyBoxGame), 1.5f);
@@ -36,10 +39,12 @@ public class NetworkManager : MonoBehaviour
     public CameraMovement cameraMovement;
     public SceneFadeInFadeOut sceneFadeInFadeOut;
     public GameObject ui1, ui2, ui3, ui4;
-    void StartToyBoxGame() {
+    void StartToyBoxGame()
+    {
         ui1.SetActive(false); ui2.SetActive(false); ui3.SetActive(false); ui4.SetActive(false);
         cameraMovement.MoveToTarget(toyboxCameraPostion);
-        cameraMovement.OnMovementComplete += () => {
+        cameraMovement.OnMovementComplete += () =>
+        {
             FindFirstObjectByType<BgmPlayer>().ChangeBgm("Toybox");
             sceneFadeInFadeOut.LoadNextSceneWithFadeOut();
         };

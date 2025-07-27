@@ -1397,6 +1397,7 @@ GameObject:
   - component: {fileID: 1921423016}
   - component: {fileID: 1921423017}
   - component: {fileID: 1921423018}
+  - component: {fileID: 1921423019}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -1540,6 +1541,57 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1921423019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1921423015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7588ce98b751e28419e83a73016454e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WebSocketServerAddress: wss://server-for-toy-cant-move.onrender.com
+  StunServerAddress: stun:stun.l.google.com:19302
+  LocalPeerId: NetworkManager
+  UseHTTPHeader: 1
+  IsVideoAudioSender: 1
+  IsVideoAudioReceiver: 0
+  RandomUniquePeerId: 0
+  ShowLogs: 1
+  ShowDataChannelLogs: 1
+  WebSocketConnectionActive: 1
+  SendWebSocketTestMessage: 0
+  WebSocketConnectionChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  WebRTCConnectionActive: 1
+  WebRTCConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  SendDataChannelTestMessage: 0
+  DataChannelConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  DataChannelMessageReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  StartStopVideoTransmission: 0
+  VideoResolution: {x: 1280, y: 720}
+  StreamingCamera: {fileID: 0}
+  OptionalPreviewRawImage: {fileID: 0}
+  ReceivingRawImagesParent: {fileID: 0}
+  VideoTransmissionReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  StartStopAudioTransmission: 0
+  StreamingAudioSource: {fileID: 0}
+  ReceivingAudioSourceParent: {fileID: 0}
+  AudioTransmissionReceived:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2033458139
 GameObject:
   m_ObjectHideFlags: 0
