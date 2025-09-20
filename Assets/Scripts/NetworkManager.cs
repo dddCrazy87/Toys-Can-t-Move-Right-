@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class NetworkManager : MonoBehaviour
 {
     List<Player> playersInfo = new();
+    [SerializeField] private QrCodeGenerator qrCodeGenerator;
     void Start()
     {
         playersInfo = new() {
@@ -16,6 +17,11 @@ public class NetworkManager : MonoBehaviour
         };
         // FindFirstObjectByType<GameManager>().LoadPlayerData(playersInfo);
         // Invoke(nameof(BlueRegistered), 7f);
+
+        string roomId = System.Guid.NewGuid().ToString("N")[..8];
+        string unityPeerId = $"unity-{roomId}";
+        qrCodeGenerator.EncodeTextToQrCode("https://dddcrazy87.github.io/Web-for-toy-cant-move/?roomId="
+                                            + roomId + "&unityPeerId=" + unityPeerId);
     }
 
     public AudioSource registeredSound;
