@@ -25,7 +25,7 @@ namespace SimpleWebRTC
         [SerializeField] private string StunServerAddress = "stun:stun.l.google.com:19302";
         [SerializeField] private string LocalPeerId = "PeerId";
         [SerializeField] private bool UseHTTPHeader = true;
-        [SerializeField] private bool IsVideoAudioSender = true;
+        [SerializeField] private bool IsVideoAudioSender = false;
         [SerializeField] private bool IsVideoAudioReceiver = true;
         [SerializeField] private bool RandomUniquePeerId = true;
         [SerializeField] private bool ShowLogs = true;
@@ -65,6 +65,8 @@ namespace SimpleWebRTC
 
         private void Awake()
         {
+            DontDestroyOnLoad(gameObject); 
+            
             SimpleWebRTCLogger.EnableLogging = ShowLogs;
             SimpleWebRTCLogger.EnableDataChannelLogging = ShowDataChannelLogs;
 

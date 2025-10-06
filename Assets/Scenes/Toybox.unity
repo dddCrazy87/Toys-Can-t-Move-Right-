@@ -831,6 +831,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4475293707222408260, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
+      propertyPath: qrCodeGenerator
+      value: 
+      objectReference: {fileID: 1958109453}
+    - target: {fileID: 4475293707222408260, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
+      propertyPath: webRTCConnection
+      value: 
+      objectReference: {fileID: 276571238}
     - target: {fileID: 7985060073131310480, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
       propertyPath: m_Name
       value: GameManager
@@ -884,6 +892,89 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
+--- !u!1 &276571237
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 276571239}
+  - component: {fileID: 276571238}
+  m_Layer: 0
+  m_Name: WebRTCConnection
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &276571238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 276571237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7588ce98b751e28419e83a73016454e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WebSocketServerAddress: wss://server-for-toy-cant-move.onrender.com/
+  StunServerAddress: stun:stun.l.google.com:19302
+  LocalPeerId: PeerId
+  UseHTTPHeader: 1
+  IsVideoAudioSender: 0
+  IsVideoAudioReceiver: 1
+  RandomUniquePeerId: 1
+  ShowLogs: 1
+  ShowDataChannelLogs: 1
+  WebSocketConnectionActive: 0
+  SendWebSocketTestMessage: 0
+  WebSocketConnectionChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  WebRTCConnectionActive: 0
+  WebRTCConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  SendDataChannelTestMessage: 0
+  DataChannelConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  DataChannelMessageReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  StartStopVideoTransmission: 0
+  VideoResolution: {x: 1280, y: 720}
+  StreamingCamera: {fileID: 0}
+  OptionalPreviewRawImage: {fileID: 0}
+  ReceivingRawImagesParent: {fileID: 0}
+  VideoTransmissionReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  StartStopAudioTransmission: 0
+  StreamingAudioSource: {fileID: 0}
+  ReceivingAudioSourceParent: {fileID: 0}
+  AudioTransmissionReceived:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!4 &276571239
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 276571237}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &345822029
 GameObject:
   m_ObjectHideFlags: 0
@@ -1323,6 +1414,78 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1853794068}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &619801188
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 619801191}
+  - component: {fileID: 619801190}
+  - component: {fileID: 619801189}
+  m_Layer: 5
+  m_Name: Qrcode
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &619801189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619801188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 0}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+--- !u!222 &619801190
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619801188}
+  m_CullTransparentMesh: 1
+--- !u!224 &619801191
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619801188}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.78, y: 1.78, z: 1.78}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 753651323}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &631307621
 GameObject:
   m_ObjectHideFlags: 0
@@ -1524,6 +1687,108 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 717242463}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &753651322
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 753651323}
+  - component: {fileID: 753651326}
+  - component: {fileID: 753651325}
+  - component: {fileID: 753651324}
+  m_Layer: 5
+  m_Name: Canvas
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &753651323
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753651322}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 619801191}
+  m_Father: {fileID: 1958109454}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0, y: 0}
+--- !u!114 &753651324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753651322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!114 &753651325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753651322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UiScaleMode: 1
+  m_ReferencePixelsPerUnit: 100
+  m_ScaleFactor: 1
+  m_ReferenceResolution: {x: 800, y: 600}
+  m_ScreenMatchMode: 0
+  m_MatchWidthOrHeight: 0
+  m_PhysicalUnit: 3
+  m_FallbackScreenDPI: 96
+  m_DefaultSpriteDPI: 96
+  m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
+--- !u!223 &753651326
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753651322}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 0
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!1 &767082871
 GameObject:
   m_ObjectHideFlags: 0
@@ -3193,6 +3458,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1853794068}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1958109452
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1958109454}
+  - component: {fileID: 1958109453}
+  m_Layer: 0
+  m_Name: QRCodeGenerater
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1958109453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1958109452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7efc5a61292e87b419c2787a72643ef5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rawImageReceiver: {fileID: 619801189}
+  textToEncode: 
+--- !u!4 &1958109454
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1958109452}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 753651323}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1987771784
 GameObject:
   m_ObjectHideFlags: 0
@@ -3598,18 +3910,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1f68e6d5b3b5374691a81ed19de3709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  registeredSound: {fileID: 2125111390}
-  blueRegistered: {fileID: 21300000, guid: 6a501ee91af6d8b42830acdf51463d94, type: 3}
-  yellowRegistered: {fileID: 21300000, guid: c9ada2eb5c74e10488263c0d421ccf9c, type: 3}
-  blueQrcode: {fileID: 0}
-  yellowQrcode: {fileID: 0}
-  toyboxCameraPostion: {fileID: 0}
-  cameraMovement: {fileID: 0}
-  sceneFadeInFadeOut: {fileID: 0}
-  ui1: {fileID: 0}
-  ui2: {fileID: 0}
-  ui3: {fileID: 0}
-  ui4: {fileID: 0}
+  qrCodeGenerator: {fileID: 0}
+  webRTCConnection: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!4 &2125111392
 Transform:
   m_ObjectHideFlags: 0
@@ -3706,3 +4009,5 @@ SceneRoots:
   - {fileID: 1853425861}
   - {fileID: 216358356}
   - {fileID: 2125111392}
+  - {fileID: 276571239}
+  - {fileID: 1958109454}

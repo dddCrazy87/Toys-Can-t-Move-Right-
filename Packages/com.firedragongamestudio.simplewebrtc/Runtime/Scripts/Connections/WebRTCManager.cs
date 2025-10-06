@@ -19,6 +19,7 @@ namespace SimpleWebRTC
         public event Action<string> OnDataChannelConnection;
         public event Action<string> OnDataChannelMessageReceived;
         public static event Action<string, string> OnDataMessageReceived_Static;
+        public static event Action<string> OnPeerDisconnected_Static;
         public event Action OnVideoStreamEstablished;
         public event Action OnAudioStreamEstablished;
 
@@ -139,6 +140,11 @@ namespace SimpleWebRTC
                     // send completed to other peer of connection too
                     SendWebSocketMessage(SignalingMessageType.COMPLETE, localPeerId, peerId, $"Peerconnection between {localPeerId} and {peerId} completed.");
                 }
+
+                if (state == RTCIceConnectionState.Disconnected || state == RTCIceConnectionState.Failed || state == RTCIceConnectionState.Closed)
+                {
+                    OnPeerDisconnected_Static?.Invoke(peerId);
+                }
             };
 
             senderDataChannels.Add(peerId, peerConnections[peerId].CreateDataChannel(peerId));
@@ -160,7 +166,7 @@ namespace SimpleWebRTC
                     var message = Encoding.UTF8.GetString(bytes);
                     SimpleWebRTCLogger.LogDataChannel($"{localPeerId} received on {peerId} receiverDataChannel: {message}");
                     OnDataChannelMessageReceived?.Invoke(Encoding.UTF8.GetString(bytes));
-                    OnDataMessageReceived_Static?.Invoke(message, localPeerId);
+                    OnDataMessageReceived_Static?.Invoke(message, peerId);
                 };
 
                 SimpleWebRTCLogger.LogDataChannel($"ReceiverDataChannel connection for {peerId} established on {localPeerId}.");
@@ -215,17 +221,24 @@ namespace SimpleWebRTC
             {
                 case SignalingMessageType.NEWPEER:
 
-                    // only create receiving resources for remote peers which are going to send multimedia data and receiving local peer
-                    if (signalingMessage.IsVideoAudioSender && isLocalPeerVideoAudioReceiver)
+                    if (!peerConnections.ContainsKey(signalingMessage.SenderPeerId))
                     {
-                        CreateNewPeerVideoAudioReceivingResources(signalingMessage.SenderPeerId);
+                        // only create receiving resources for remote peers which are going to send multimedia data and receiving local peer
+                        if (signalingMessage.IsVideoAudioSender && isLocalPeerVideoAudioReceiver)
+                        {
+                            CreateNewPeerVideoAudioReceivingResources(signalingMessage.SenderPeerId);
+                        }
+
+                        SetupPeerConnection(signalingMessage.SenderPeerId);
+                        SimpleWebRTCLogger.Log($"NEWPEER: Created new peerconnection {signalingMessage.SenderPeerId} on peer {localPeerId}");
+
+                        // send ACK to all clients to reach convergence
+                        SendWebSocketMessage(SignalingMessageType.NEWPEERACK, localPeerId, "ALL", "New peer ACK", peerConnections.Count, isLocalPeerVideoAudioSender);
+                    } 
+                    else
+                    {
+                        SimpleWebRTCLogger.Log($"NEWPEER: Received NEWPEER from {signalingMessage.SenderPeerId}, but peer already exists. Ignoring.");
                     }
-
-                    SetupPeerConnection(signalingMessage.SenderPeerId);
-                    SimpleWebRTCLogger.Log($"NEWPEER: Created new peerconnection {signalingMessage.SenderPeerId} on peer {localPeerId}");
-
-                    // send ACK to all clients to reach convergence
-                    SendWebSocketMessage(SignalingMessageType.NEWPEERACK, localPeerId, "ALL", "New peer ACK", peerConnections.Count, isLocalPeerVideoAudioSender);
                     break;
                 case SignalingMessageType.NEWPEERACK:
                     if (!peerConnections.ContainsKey(signalingMessage.SenderPeerId))
@@ -301,6 +314,7 @@ namespace SimpleWebRTC
                         }
 
                         SimpleWebRTCLogger.Log($"DISPOSE: Peerconnection for {signalingMessage.SenderPeerId} removed on peer {localPeerId}");
+                        OnPeerDisconnected_Static?.Invoke(signalingMessage.SenderPeerId);
                     }
                     break;
                 case SignalingMessageType.DATA:
@@ -555,15 +569,29 @@ namespace SimpleWebRTC
 
         public void SendViaDataChannel(string message)
         {
-            foreach (var senderDataChannel in senderDataChannels)
+            var allPeerIds = new HashSet<string>(senderDataChannels.Keys);
+            allPeerIds.UnionWith(receiverDataChannels.Keys);
+
+            foreach (var peerId in allPeerIds)
             {
-                senderDataChannel.Value?.Send(message);
+                SendViaDataChannel(peerId, message); 
             }
         }
 
         public void SendViaDataChannel(string targetPeerId, string message)
         {
-            senderDataChannels[targetPeerId]?.Send(message);
+             if (senderDataChannels.TryGetValue(targetPeerId, out RTCDataChannel senderDC) && senderDC.ReadyState == RTCDataChannelState.Open)
+            {
+                senderDC.Send(message);
+            }
+            else if (receiverDataChannels.TryGetValue(targetPeerId, out RTCDataChannel receiverDC) && receiverDC.ReadyState == RTCDataChannelState.Open)
+            {
+                receiverDC.Send(message);
+            }
+            else
+            {
+                SimpleWebRTCLogger.LogWarning($"Data channel to {targetPeerId} not open, skipping message.");
+            }
         }
 
         public void AddVideoTrack(VideoStreamTrack videoStreamTrack)

@@ -32,26 +32,42 @@ public class PlayerController : MonoBehaviour
 
     public bool avilibleMovement = true;
     private Vector3 movement;
-    void Update() {
+    private Vector3 networkMovement;
+
+    public void SetNetworkInput(float x, float z)
+    {
+        if (!isP1 && !isP2)
+        {
+            networkMovement = new Vector3(x, 0f, z).normalized;
+        }
+    }
+    void Update()
+    {
         // float horizontal = Input.GetAxisRaw("Horizontal");
         // float vertical = Input.GetAxisRaw("Vertical");
         // movement = new Vector3(horizontal, 0f, vertical).normalized;
 
         if (!avilibleMovement) return;
         // for demo and test
-        if(isP1) {
+        if (isP1)
+        {
             float horizontal = Input.GetAxisRaw("Horizontal");
             float vertical = Input.GetAxisRaw("Vertical");
             movement = new Vector3(horizontal, 0f, vertical).normalized;
         }
-        else if (isP2) {
+        else if (isP2)
+        {
             float horizontal = 0f;
             float vertical = 0f;
-            if (Input.GetKey(KeyCode.J))      horizontal = -1f;
+            if (Input.GetKey(KeyCode.J)) horizontal = -1f;
             else if (Input.GetKey(KeyCode.L)) horizontal = 1f;
-            if (Input.GetKey(KeyCode.I))      vertical = 1f;
+            if (Input.GetKey(KeyCode.I)) vertical = 1f;
             else if (Input.GetKey(KeyCode.K)) vertical = -1f;
             movement = new Vector3(horizontal, 0f, vertical).normalized;
+        }
+        else 
+        {
+            movement = networkMovement;
         }
     }
 

@@ -10,7 +10,7 @@ public class QrCodeGenerator : MonoBehaviour
 
     private Texture2D storeEncodedTexture;
 
-    private void Start()
+    private void Awake()
     {
         storeEncodedTexture = new(256, 256);
     }
@@ -33,11 +33,23 @@ public class QrCodeGenerator : MonoBehaviour
 
     private void EncodeText2QrCode()
     {
+        if (storeEncodedTexture == null)
+        {
+            storeEncodedTexture = new(256, 256);
+        }
+
         string textWrite = string.IsNullOrEmpty(textToEncode) ? "nothing here" : textToEncode;
         Color32[] covertPixelToTexture = Encode(textWrite, storeEncodedTexture.width, storeEncodedTexture.height);
         storeEncodedTexture.SetPixels32(covertPixelToTexture);
         storeEncodedTexture.Apply();
 
-        rawImageReceiver.texture = storeEncodedTexture;
+        if (rawImageReceiver != null)
+        {
+            rawImageReceiver.texture = storeEncodedTexture;
+        }
+        else
+        {
+            Debug.LogError("QrCodeGenerator: Raw Image Receiver did not set！");
+        }
     }
 }
