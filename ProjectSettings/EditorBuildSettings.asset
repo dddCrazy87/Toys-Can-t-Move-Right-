@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Setting.unity
     guid: 7a5c79ca098b44a49b51381d9fac124b
   - enabled: 1
+    path: Assets/Scenes/Tutorial.unity
+    guid: 113f86e13d4a84b639a8dcbaffb52beb
+  - enabled: 1
     path: Assets/Scenes/Toybox.unity
     guid: 45de330629b04944288463e0f3d4ca13
   m_configObjects:

@@ -232,6 +232,9 @@ namespace SimpleWebRTC
                         SetupPeerConnection(signalingMessage.SenderPeerId);
                         SimpleWebRTCLogger.Log($"NEWPEER: Created new peerconnection {signalingMessage.SenderPeerId} on peer {localPeerId}");
 
+                        connectionGameObject.StartCoroutine(CreateOffer(signalingMessage.SenderPeerId));
+                        
+
                         // send ACK to all clients to reach convergence
                         SendWebSocketMessage(SignalingMessageType.NEWPEERACK, localPeerId, "ALL", "New peer ACK", peerConnections.Count, isLocalPeerVideoAudioSender);
                     } 
@@ -360,6 +363,56 @@ namespace SimpleWebRTC
             // refresh layout group for proper display - not needed i guess
             //var parentGroupLayout = connectionGameObject.ReceivingRawImagesParent.GetComponent<LayoutGroup>();
             //LayoutRebuilder.ForceRebuildLayoutImmediate(parentGroupLayout.GetComponent<RectTransform>());
+        }
+
+        private IEnumerator CreateOffer(string peerId)
+        {
+            if (!peerConnections.ContainsKey(peerId))
+            {
+                Debug.LogError($"CreateOffer: PeerConnection for {peerId} does not exist.");
+                yield break;
+            }
+
+            var peerConnection = peerConnections[peerId];
+
+            // 設置編碼器偏好
+            var transceivers = peerConnection.GetTransceivers();
+            foreach (var transceiver in transceivers)
+            {
+                if (transceiver.Sender != null && transceiver.Sender.Track?.Kind == TrackKind.Video)
+                {
+                    var vp8 = RTCRtpSender.GetCapabilities(TrackKind.Video).codecs.Where(c => c.mimeType == "video/VP8").ToArray();
+                    transceiver.SetCodecPreferences(vp8);
+                }
+            }
+
+            Debug.Log($"Creating offer for peer: {peerId}");
+
+            // 創建 Offer
+            var offer = peerConnection.CreateOffer();
+            yield return offer;
+
+            if (!offer.IsError)
+            {
+                var offerDesc = offer.Desc;
+                var localDescOp = peerConnection.SetLocalDescription(ref offerDesc);
+                yield return localDescOp;
+
+                var offerSessionDesc = new SessionDescription
+                {
+                    type = peerConnection.LocalDescription.type.ToString().ToLower(),
+                    sdp = peerConnection.LocalDescription.sdp
+                };
+
+                Debug.Log($"Offer created successfully for peer: {peerId}");
+
+                // 發送 Offer 給對方
+                SendWebSocketMessage(SignalingMessageType.OFFER, localPeerId, peerId, offerSessionDesc.ConvertToJSON());
+            }
+            else
+            {
+                Debug.LogError($"{localPeerId} - Failed to create offer for {peerId}. {offer.Error.message}");
+            }
         }
 
         private IEnumerator CreateOffer()

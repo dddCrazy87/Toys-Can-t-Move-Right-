@@ -27,12 +27,14 @@ public class PlayerController : MonoBehaviour
         isP1 = false; isP2 = false;
         rb = GetComponent<Rigidbody>();
         followPoint.position += new Vector3(0, 0, -itemFollowSpace);
-        moveSpeed *= -1;
+        // moveSpeed *= -1;
     }
 
     public bool avilibleMovement = true;
     private Vector3 movement;
     private Vector3 networkMovement;
+
+    private Vector3 cameraRelativeMovement; 
 
     public void SetNetworkInput(float x, float z)
     {
@@ -72,6 +74,17 @@ public class PlayerController : MonoBehaviour
     }
 
     void FixedUpdate() {
+        Transform camTransform = Camera.main.transform;
+
+        Vector3 forward = camTransform.forward;
+        Vector3 right = camTransform.right;
+        forward.y = 0;
+        right.y = 0;
+        forward.Normalize();
+        right.Normalize();
+
+        cameraRelativeMovement = (forward * movement.z + right * movement.x);
+
         Move();
     }
 
@@ -80,11 +93,11 @@ public class PlayerController : MonoBehaviour
     {
         if (movement != Vector3.zero) {
             // 計算目標移動位置
-            Vector3 targetVelocity = movement * moveSpeed;
+            Vector3 targetVelocity = cameraRelativeMovement * moveSpeed;
             // 使用物理系統移動玩家
             rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
             // 平滑旋轉玩家面向移動方向
-            Quaternion targetRotation = Quaternion.LookRotation(movement);
+            Quaternion targetRotation = Quaternion.LookRotation(cameraRelativeMovement);
             rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotateSpeed * Time.fixedDeltaTime);
         }
         else {

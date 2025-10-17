@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cb85220a352eb45cb8ccee6ee4f1dd65
+guid: 5e6fd53707d5246fcbbbda9d4990a1d0
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Noto Sans TC
+  - NaniFont
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

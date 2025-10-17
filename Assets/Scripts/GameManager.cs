@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     public WebRTCConnection webRTCConnection;
 
     private static string hostPeerId = null;
-    private Dictionary<string, Player> peerIdToPlayer = new Dictionary<string, Player>();
+    public Dictionary<string, Player> peerIdToPlayer = new Dictionary<string, Player>();
     public Dictionary<string, PlayerController> playerControllers = new Dictionary<string, PlayerController>();
 
 
@@ -335,7 +335,7 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log("Host Requested Start Game！");
                     BroadcastNavigateToGame();
-                    StartCoroutine(LoadGameSceneAndStart("Toybox"));
+                    StartCoroutine(LoadGameSceneAndStart("Tutorial"));
                 }
             }
             else if (data.type == "move" || data.type == "manualMove")
@@ -381,8 +381,19 @@ public class GameManager : MonoBehaviour
         webRTCConnection.SendDataChannelMessage(jsonMessage);
         Debug.Log("Broadcasting Navigate to Game: " + jsonMessage);
     }
+
+    public void BroadcastNavigateToPlaying()
+    {
+        if (webRTCConnection == null) return;
+        
+        BaseMessage navigateMessage = new BaseMessage { type = "navigate_to_playing" };
+        string jsonMessage = JsonUtility.ToJson(navigateMessage);
+        
+        webRTCConnection.SendDataChannelMessage(jsonMessage);
+        Debug.Log("Broadcasting Navigate to Playing: " + jsonMessage);
+    }
     
-    private IEnumerator LoadGameSceneAndStart(string sceneName)
+    public IEnumerator LoadGameSceneAndStart(string sceneName)
     {
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
 
