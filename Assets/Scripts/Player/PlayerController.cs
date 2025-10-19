@@ -8,7 +8,8 @@ public class PlayerController : MonoBehaviour
     public bool isP1 = false, isP2 = false;
     public TextMeshProUGUI playerIDUI;
     public int playerIndex;
-    public void Initialize(string name, int id) {
+    public void Initialize(string name, int id)
+    {
         if (playerIDUI != null) playerIDUI.text = name;
         playerIndex = id;
     }
@@ -18,15 +19,16 @@ public class PlayerController : MonoBehaviour
     [Header("移動設置")]
     [Tooltip("玩家移動速度")]
     public float moveSpeed = 5f;
-    
+
     [Tooltip("玩家旋轉速度")]
     public float rotateSpeed = 15f;
 
     private Rigidbody rb;
-    private void Awake() {
+    private void Awake()
+    {
         isP1 = false; isP2 = false;
         rb = GetComponent<Rigidbody>();
-        followPoint.position += new Vector3(0, 0, -itemFollowSpace);
+        // followPoint.position += new Vector3(0, 0, -itemFollowSpace);
         // moveSpeed *= -1;
     }
 
@@ -34,7 +36,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 movement;
     private Vector3 networkMovement;
 
-    private Vector3 cameraRelativeMovement; 
+    private Vector3 cameraRelativeMovement;
 
     public void SetNetworkInput(float x, float z)
     {
@@ -67,13 +69,14 @@ public class PlayerController : MonoBehaviour
             else if (Input.GetKey(KeyCode.K)) vertical = -1f;
             movement = new Vector3(horizontal, 0f, vertical).normalized;
         }
-        else 
+        else
         {
             movement = networkMovement;
         }
     }
 
-    void FixedUpdate() {
+    void FixedUpdate()
+    {
         Transform camTransform = Camera.main.transform;
 
         Vector3 forward = camTransform.forward;
@@ -91,7 +94,8 @@ public class PlayerController : MonoBehaviour
     //移動玩家
     private void Move()
     {
-        if (movement != Vector3.zero) {
+        if (movement != Vector3.zero)
+        {
             // 計算目標移動位置
             Vector3 targetVelocity = cameraRelativeMovement * moveSpeed;
             // 使用物理系統移動玩家
@@ -100,7 +104,8 @@ public class PlayerController : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(cameraRelativeMovement);
             rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotateSpeed * Time.fixedDeltaTime);
         }
-        else {
+        else
+        {
             // 停止水平移動
             rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
         }
@@ -118,7 +123,8 @@ public class PlayerController : MonoBehaviour
     //處理玩家與道具的碰撞
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Collectable")) {
+        if (other.gameObject.CompareTag("Collectable"))
+        {
             if (collectedItems.Contains(other.transform)) return;
             CollectItem(other.transform);
         }
@@ -137,7 +143,8 @@ public class PlayerController : MonoBehaviour
         ItemFollow itemFollow = item.gameObject.AddComponent<ItemFollow>();
 
         // 道具是自由的（沒被其他玩家擁有）
-        if (itemData.owner == null) {
+        if (itemData.owner == null)
+        {
             FindAnyObjectByType<GameSoundEffect>().PlayGetItemSound();
             itemFollow.maxDistance = itemFollowSpace;
             itemFollow.followSpeed = rotateSpeed;
@@ -151,11 +158,12 @@ public class PlayerController : MonoBehaviour
             item.GetComponent<ItemController>().ChangeMaterial(color);
         }
         // 道具屬於其他玩家，需要搶奪整串道具
-        else {
+        else
+        {
             // 向對方玩家要求從指定 index 開始的道具清單
             List<Transform> newItems = itemData.owner.GetComponent<PlayerController>().OnPlayerItemStolen(transform, itemData.collectedItemIndex);
             FindAnyObjectByType<GameSoundEffect>().PlayStealItemSound();
-            
+
             // 設定新串接的第一個道具的跟隨對象
             itemFollow.follow = collectedItems.Count == 0 ? followPoint : collectedItems[^1];
 
@@ -163,7 +171,8 @@ public class PlayerController : MonoBehaviour
             collectedItems.AddRange(newItems);
 
             // 重新編號所有道具的 index
-            for (int i = 0; i < collectedItems.Count; i++) {
+            for (int i = 0; i < collectedItems.Count; i++)
+            {
                 collectedItems[i].GetComponent<ItemData>().collectedItemIndex = i;
                 collectedItems[i].GetComponent<ItemController>().ChangeMaterial(color);
             }
@@ -173,10 +182,12 @@ public class PlayerController : MonoBehaviour
     }
 
     //被搶奪時，從指定 index 起的所有道具都被轉移給搶奪者
-    public List<Transform> OnPlayerItemStolen(Transform stealer, int index) {
+    public List<Transform> OnPlayerItemStolen(Transform stealer, int index)
+    {
         List<Transform> removedItems = new();
         // 把所有要被搶的道具記錄下來，同時設定它們的新擁有者
-        for (int i = index; i < collectedItems.Count; i++) {
+        for (int i = index; i < collectedItems.Count; i++)
+        {
             collectedItems[i].GetComponent<ItemData>().owner = stealer;
             removedItems.Add(collectedItems[i]);
         }
@@ -189,13 +200,15 @@ public class PlayerController : MonoBehaviour
     }
 
     //移除收集的物件
-    public void CompeleItemCollection() {
+    public void CompeleItemCollection()
+    {
         if (collectedItems.Count <= 0) return;
         FindAnyObjectByType<GameSoundEffect>().PlayGetPointSound();
         GameManager gameManager = FindFirstObjectByType<GameManager>();
         gameManager.PlayerIncreasePointByNumber(playerIndex, collectedItems.Count);
         ItemManager itemManager = FindFirstObjectByType<ItemManager>();
-        foreach (var item in collectedItems) {
+        foreach (var item in collectedItems)
+        {
             itemManager.ItemCollected(item.gameObject);
             Destroy(item.gameObject);
         }
