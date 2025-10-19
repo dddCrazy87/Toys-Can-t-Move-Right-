@@ -303,6 +303,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4224040911093629312, guid: 9eb861df13e250d48b4a6868ae846807, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4668803755021651777, guid: 9eb861df13e250d48b4a6868ae846807, type: 3}
       propertyPath: m_Name
       value: TransitionBgCanvas

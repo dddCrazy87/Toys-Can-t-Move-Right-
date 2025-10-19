@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour
         {
             print("No Item Manager");
         }
+        isGameStart = true;
     }
 
     // ------------- Increase Player Point --------------
@@ -167,6 +168,7 @@ public class GameManager : MonoBehaviour
 
     public void OnRemotePlayerMove(string skin, float x, float y)
     {
+        if (!isGameStart) return;
         if (playerControllers.TryGetValue(skin, out PlayerController pc))
         {
             pc.SetNetworkInput(x, y);

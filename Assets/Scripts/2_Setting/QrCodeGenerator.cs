@@ -17,11 +17,19 @@ public class QrCodeGenerator : MonoBehaviour
 
     private Color32[] Encode(string textForEncoding, int width, int height)
     {
+        var options = new QrCodeEncodingOptions
+        {
+            Height = height,
+            Width = width,
+            Margin = 1
+        };
+
         BarcodeWriter writer = new BarcodeWriter
         {
             Format = BarcodeFormat.QR_CODE,
-            Options = new QrCodeEncodingOptions { Height = height, Width = width }
+            Options = options
         };
+
         return writer.Write(textForEncoding);
     }
 
