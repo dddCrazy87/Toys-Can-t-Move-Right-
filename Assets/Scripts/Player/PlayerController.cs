@@ -5,7 +5,6 @@ using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
-    public bool isP1 = false, isP2 = false;
     public TextMeshProUGUI playerIDUI;
     public int playerIndex;
     public void Initialize(string name, int id)
@@ -26,10 +25,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private void Awake()
     {
-        isP1 = false; isP2 = false;
         rb = GetComponent<Rigidbody>();
-        // followPoint.position += new Vector3(0, 0, -itemFollowSpace);
-        // moveSpeed *= -1;
     }
 
     public bool avilibleMovement = true;
@@ -38,12 +34,10 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 cameraRelativeMovement;
 
-    public void SetNetworkInput(float x, float z)
+    public void SetNetworkInput(float x, float y)
     {
-        if (!isP1 && !isP2)
-        {
-            networkMovement = new Vector3(x, 0f, z).normalized;
-        }
+        if (y < 0) networkMovement = new Vector3(x, 0f, -y).normalized;
+        else networkMovement = new Vector3(-x, 0f, -y).normalized;
     }
     void Update()
     {
@@ -52,41 +46,22 @@ public class PlayerController : MonoBehaviour
         // movement = new Vector3(horizontal, 0f, vertical).normalized;
 
         if (!avilibleMovement) return;
-        // for demo and test
-        if (isP1)
-        {
-            float horizontal = Input.GetAxisRaw("Horizontal");
-            float vertical = Input.GetAxisRaw("Vertical");
-            movement = new Vector3(horizontal, 0f, vertical).normalized;
-        }
-        else if (isP2)
-        {
-            float horizontal = 0f;
-            float vertical = 0f;
-            if (Input.GetKey(KeyCode.J)) horizontal = -1f;
-            else if (Input.GetKey(KeyCode.L)) horizontal = 1f;
-            if (Input.GetKey(KeyCode.I)) vertical = 1f;
-            else if (Input.GetKey(KeyCode.K)) vertical = -1f;
-            movement = new Vector3(horizontal, 0f, vertical).normalized;
-        }
-        else
-        {
-            movement = networkMovement;
-        }
+        movement = networkMovement;
     }
 
     void FixedUpdate()
     {
-        Transform camTransform = Camera.main.transform;
+        // Transform camTransform = Camera.main.transform;
 
-        Vector3 forward = camTransform.forward;
-        Vector3 right = camTransform.right;
-        forward.y = 0;
-        right.y = 0;
-        forward.Normalize();
-        right.Normalize();
+        // Vector3 forward = camTransform.forward;
+        // Vector3 right = camTransform.right;
+        // forward.y = 0;
+        // right.y = 0;
+        // forward.Normalize();
+        // right.Normalize();
 
-        cameraRelativeMovement = (forward * movement.z + right * movement.x);
+        // cameraRelativeMovement = (forward * movement.z + right * movement.x);
+        cameraRelativeMovement = networkMovement;
 
         Move();
     }
