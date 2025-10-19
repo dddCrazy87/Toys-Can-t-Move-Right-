@@ -86,7 +86,7 @@ public class TutorialManager : MonoBehaviour
 
     void Start()
     {
-        gameManager = FindObjectOfType<GameManager>();
+        gameManager = FindFirstObjectByType<GameManager>();
         if (gameManager == null)
         {
             Debug.LogError("TutorialManager 找不到 GameManager！");
@@ -344,7 +344,7 @@ public class TutorialManager : MonoBehaviour
         if (videoPlayer == null) return;
 
         VideoClip clipToPlay = null;
-        
+
         switch (step)
         {
             case "calibrate":
@@ -375,13 +375,13 @@ public class TutorialManager : MonoBehaviour
     void OnVideoPrepared(VideoPlayer vp)
     {
         Debug.Log("影片準備完成，開始播放");
-        
+
         // 將影片 texture 指定給 RawImage
         if (videoRawImage != null)
         {
             videoRawImage.texture = vp.texture;
         }
-        
+
         vp.Play();
     }
 

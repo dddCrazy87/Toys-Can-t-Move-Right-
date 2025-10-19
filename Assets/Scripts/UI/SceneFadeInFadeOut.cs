@@ -5,23 +5,28 @@ public class SceneFadeInFadeOut : MonoBehaviour
 {
     UIFadeScript fadeScript;
     public float fadeInSpeed, fadeOutSpeed;
-    void Awake() {
+    void Awake()
+    {
         gameObject.SetActive(true);
-        if (!(fadeScript = GetComponent<UIFadeScript>())) {
+        if (!(fadeScript = GetComponent<UIFadeScript>()))
+        {
             fadeScript = gameObject.AddComponent<UIFadeScript>();
         }
     }
 
-    void Start() {
+    void Start()
+    {
         fadeScript.HideUI(fadeOutSpeed);
     }
 
     public string nextSceneName = "";
-    public void LoadNextSceneWithFadeOut() {
+    public void LoadNextSceneWithFadeOut()
+    {
         fadeScript.ShowUI(fadeInSpeed);
-        Invoke(nameof(LoadNextScene), 1/fadeInSpeed);
+        Invoke(nameof(LoadNextScene), 1 / fadeInSpeed);
     }
-    private void LoadNextScene() {
+    private void LoadNextScene()
+    {
         SceneManager.LoadScene(nextSceneName);
     }
 }

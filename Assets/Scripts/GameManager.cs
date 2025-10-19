@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using SimpleWebRTC;
-using UnityEngine.SceneManagement; 
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 #region MessageTypeClasses
@@ -280,7 +280,7 @@ public class GameManager : MonoBehaviour
         {
             Player leavingPlayer = peerIdToPlayer[senderPeerId];
             playersInfo.Remove(leavingPlayer);
-            
+
             peerIdToPlayer.Remove(senderPeerId);
 
             if (hostPeerId == senderPeerId)
@@ -370,14 +370,14 @@ public class GameManager : MonoBehaviour
         webRTCConnection.SendDataChannelMessage(jsonMessage);
         Debug.Log("Broadcasting Host Update: " + jsonMessage);
     }
-    
+
     private void BroadcastNavigateToGame()
     {
         if (webRTCConnection == null) return;
-        
+
         BaseMessage navigateMessage = new BaseMessage { type = "navigate_to_game" };
         string jsonMessage = JsonUtility.ToJson(navigateMessage);
-        
+
         webRTCConnection.SendDataChannelMessage(jsonMessage);
         Debug.Log("Broadcasting Navigate to Game: " + jsonMessage);
     }
@@ -385,14 +385,14 @@ public class GameManager : MonoBehaviour
     public void BroadcastNavigateToPlaying()
     {
         if (webRTCConnection == null) return;
-        
+
         BaseMessage navigateMessage = new BaseMessage { type = "navigate_to_playing" };
         string jsonMessage = JsonUtility.ToJson(navigateMessage);
-        
+
         webRTCConnection.SendDataChannelMessage(jsonMessage);
         Debug.Log("Broadcasting Navigate to Playing: " + jsonMessage);
     }
-    
+
     public IEnumerator LoadGameSceneAndStart(string sceneName)
     {
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
@@ -402,14 +402,15 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        StartGame();
+        //StartGame();
     }
 }
 
 
 
 [System.Serializable]
-public class Player {
+public class Player
+{
     public string name = "";
     public string skin = "";
     public Vector3 spawnPoint;

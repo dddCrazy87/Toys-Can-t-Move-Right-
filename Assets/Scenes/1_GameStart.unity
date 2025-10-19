@@ -942,7 +942,7 @@ MonoBehaviour:
   fadeInSpeed: 0
   fadeOutSpeed: 0.5
   startAudio: {fileID: 1873429598}
-  nextSceneName: Setting
+  nextSceneName: 2_Setting
 --- !u!225 &1873429597
 CanvasGroup:
   m_ObjectHideFlags: 0
