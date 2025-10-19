@@ -32,8 +32,6 @@ public class PlayerController : MonoBehaviour
     private Vector3 movement;
     private Vector3 networkMovement;
 
-    private Vector3 cameraRelativeMovement;
-
     public void SetNetworkInput(float x, float y)
     {
         if (y < 0) networkMovement = new Vector3(x, 0f, -y).normalized;
@@ -51,32 +49,14 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Transform camTransform = Camera.main.transform;
-
-        // Vector3 forward = camTransform.forward;
-        // Vector3 right = camTransform.right;
-        // forward.y = 0;
-        // right.y = 0;
-        // forward.Normalize();
-        // right.Normalize();
-
-        // cameraRelativeMovement = (forward * movement.z + right * movement.x);
-        cameraRelativeMovement = networkMovement;
-
-        Move();
-    }
-
-    //移動玩家
-    private void Move()
-    {
         if (movement != Vector3.zero)
         {
             // 計算目標移動位置
-            Vector3 targetVelocity = cameraRelativeMovement * moveSpeed;
+            Vector3 targetVelocity = networkMovement * moveSpeed;
             // 使用物理系統移動玩家
             rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
             // 平滑旋轉玩家面向移動方向
-            Quaternion targetRotation = Quaternion.LookRotation(cameraRelativeMovement);
+            Quaternion targetRotation = Quaternion.LookRotation(networkMovement);
             rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotateSpeed * Time.fixedDeltaTime);
         }
         else
