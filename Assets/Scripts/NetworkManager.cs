@@ -1,42 +1,75 @@
-using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 using SimpleWebRTC;
+using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
+
+#region MessageTypeClasses
+[System.Serializable]
+public class BaseMessage { public string type; }
+[System.Serializable]
+public class IdentityMessage : BaseMessage { public string characterName; public string nickname; }
+[System.Serializable]
+public class Vector2Data { public float x; public float y; }
+[System.Serializable]
+public class MoveMessage : BaseMessage { public Vector2Data vector; }
+[System.Serializable]
+public class HostUpdateMessage { public string type; public string hostId; }
+#endregion
 
 public class NetworkManager : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private QrCodeGenerator qrCodeGenerator;
-    [SerializeField] private WebRTCConnection webRTCConnection;
-    [SerializeField] private GameManager gameManager;
+    [Header("WebRTCConnection")]
+    public WebRTCConnection webRTCConnection;
+    [Header("GameManager")]
+    public GameManager gameManager;
+    [Header("Player Info")]
+    public List<Player> playersInfo = new();
+    public Dictionary<string, Player> peerIdToPlayer = new();
 
     private static string hostPeerId = null;
-    private List<Player> pendingPlayers = new List<Player>();
-    private Dictionary<string, string> peerIdToCharacter = new Dictionary<string, string>();
-
-
     void Start()
     {
         WebRTCManager.OnDataMessageReceived_Static += OnDataReceived;
-
-        if (qrCodeGenerator == null || webRTCConnection == null || gameManager == null)
-        {
-            Debug.LogError("NetworkManager requires References (QrCodeGenerator, WebRTCConnection, GameManager)！");
-            return;
-        }
-
-        string roomId = System.Guid.NewGuid().ToString("N")[..8];
-        qrCodeGenerator.EncodeTextToQrCode("https://web-toy-cant-move.vercel.app/?roomId=" + roomId);
-        
-        string unityPeerId = $"unity-{roomId}";
+        WebRTCManager.OnPeerDisconnected_Static += OnPeerDisconnected;
+        gameManager = FindFirstObjectByType<GameManager>();
+    }
+    void OnDestroy()
+    {
+        WebRTCManager.OnDataMessageReceived_Static -= OnDataReceived;
+        WebRTCManager.OnPeerDisconnected_Static -= OnPeerDisconnected;
+    }
+    public void SetwebRTCConnection(string unityPeerId)
+    {
         webRTCConnection.SetUniquePlayerName(unityPeerId);
         webRTCConnection.Connect();
     }
 
-    void OnDestroy()
+    // ------------- OnPeerDisconnected -------------
+
+    private void OnPeerDisconnected(string senderPeerId)
     {
-        WebRTCManager.OnDataMessageReceived_Static -= OnDataReceived;
+        Debug.Log($"Peer {senderPeerId} is disconnected.");
+        if (peerIdToPlayer.ContainsKey(senderPeerId))
+        {
+            Player leavingPlayer = peerIdToPlayer[senderPeerId];
+            playersInfo.Remove(leavingPlayer);
+
+            peerIdToPlayer.Remove(senderPeerId);
+
+            if (hostPeerId == senderPeerId)
+            {
+                Debug.LogWarning("Host has disconnected. Clearing host.");
+                hostPeerId = null;
+            }
+        }
     }
+
+    // ------------- OnDataReceived -------------
 
     private void OnDataReceived(string message, string senderPeerId)
     {
@@ -44,67 +77,150 @@ public class NetworkManager : MonoBehaviour
         {
             BaseMessage data = JsonUtility.FromJson<BaseMessage>(message);
 
-            if (data.type == "identify")
+            switch (data.type)
             {
-                IdentityMessage identity = JsonUtility.FromJson<IdentityMessage>(message);
-                Debug.Log($"Received identify message from {senderPeerId} ({identity.nickname}) is now controlling {identity.characterName}");
+                case "identify":
+                    HandleIdentifyMessage(message, senderPeerId);
+                    break;
 
-                Player newPlayer = new Player
-                {
-                    name = identity.nickname,
-                    skin = identity.characterName
-                };
-                pendingPlayers.Add(newPlayer);
-
-                // 綁定 peerId -> 角色
-                peerIdToCharacter[senderPeerId] = identity.characterName;
-
-                // 指定 Host
-                if (hostPeerId == null)
-                {
-                    hostPeerId = senderPeerId;
-                    Debug.Log($" {senderPeerId} ({identity.nickname}) is now the host.");
-                    BroadcastHostUpdate();
-                }
-            }
-            else if (data.type == "start_game")
-            {
-                if (senderPeerId == hostPeerId)
-                {
-                    Debug.Log("Host 請求開始遊戲！");
-                    gameManager.LoadPlayerData(pendingPlayers);
-                    gameManager.StartGame();
-                }
-            }
-            else if (data.type == "move" || data.type == "manualMove")
-            {
-                if (peerIdToCharacter.ContainsKey(senderPeerId))
-                {
-                    string characterSkin = peerIdToCharacter[senderPeerId];
-                    PlayerController pc = gameManager.GetPlayerControllerBySkin(characterSkin);
-
-                    if (pc != null)
+                case "start_game":
+                    if (senderPeerId == hostPeerId)
                     {
-                        MoveMessage msg = JsonUtility.FromJson<MoveMessage>(message);
-                        pc.SetNetworkInput(msg.vector.x, msg.vector.y);
+                        Debug.Log("Host Requested Start Game！");
+                        BroadcastNavigateToGame();
+                        gameManager.UpdatePlayerInfo(playersInfo);
+                        SceneManager.LoadScene("3_Tutorial");
                     }
-                }
+                    break;
+
+                case "move":
+                case "manualMove":
+                    HandleMoveMessage(message, senderPeerId);
+                    break;
+
+                default:
+                    break;
             }
         }
         catch (Exception ex)
         {
-            Debug.LogWarning($"解析訊息失敗 ({senderPeerId}): {ex.Message} - {message}");
+            Debug.LogWarning($"Failed to process message ({senderPeerId}): {ex.Message} - {message}");
         }
     }
+
+    private void HandleIdentifyMessage(string message, string senderPeerId)
+    {
+        IdentityMessage identity = JsonUtility.FromJson<IdentityMessage>(message);
+        Debug.Log($"Received identify message from {senderPeerId} ({identity.nickname}) is now controlling {identity.characterName}");
+
+        if (peerIdToPlayer.ContainsKey(senderPeerId))
+        {
+            // 更新玩家資料
+            Player oldPlayer = peerIdToPlayer[senderPeerId];
+            oldPlayer.name = identity.nickname;
+            oldPlayer.skin = identity.characterName;
+        }
+        else
+        {
+            // 新增新玩家
+            Player newPlayer = new()
+            {
+                name = identity.nickname,
+                skin = identity.characterName,
+                point = 0
+            };
+            playersInfo.Add(newPlayer);
+            peerIdToPlayer[senderPeerId] = newPlayer;
+        }
+
+        // 若無 Host 則指定
+        if (hostPeerId == null)
+        {
+            hostPeerId = senderPeerId;
+            Debug.Log($"{senderPeerId} ({identity.nickname}) is now the host.");
+            BroadcastHostUpdate();
+        }
+    }
+
+    private void HandleMoveMessage(string message, string senderPeerId)
+    {
+        // 僅傳遞資料到 GameLogicManager，由它控制角色
+        if (peerIdToPlayer.ContainsKey(senderPeerId))
+        {
+            Player movingPlayer = peerIdToPlayer[senderPeerId];
+            MoveMessage msg = JsonUtility.FromJson<MoveMessage>(message);
+            gameManager.OnRemotePlayerMove(movingPlayer.skin, msg.vector.x, msg.vector.y);
+        }
+    }
+
+    // ------------- BroadcastHostUpdate -------------
+
     private void BroadcastHostUpdate()
     {
         if (hostPeerId == null || webRTCConnection == null) return;
-        HostUpdateMessage hostMessage = new HostUpdateMessage {
+        HostUpdateMessage hostMessage = new()
+        {
             type = "host_update",
             hostId = hostPeerId
         };
         string jsonMessage = JsonUtility.ToJson(hostMessage);
         webRTCConnection.SendDataChannelMessage(jsonMessage);
-        Debug.Log("廣播 Host 更新: " + jsonMessage);
+        Debug.Log("Broadcasting Host Update: " + jsonMessage);
+    }
+
+    // ------------- BroadcastNavigateToGame -------------
+
+    private void BroadcastNavigateToGame()
+    {
+        if (webRTCConnection == null) return;
+
+        BaseMessage navigateMessage = new() { type = "navigate_to_game" };
+        string jsonMessage = JsonUtility.ToJson(navigateMessage);
+
+        webRTCConnection.SendDataChannelMessage(jsonMessage);
+        Debug.Log("Broadcasting Navigate to Game: " + jsonMessage);
+    }
+
+    // ------------- BroadcastNavigateToPlaying -------------
+
+    public void BroadcastNavigateToPlaying()
+    {
+        if (webRTCConnection == null) return;
+
+        BaseMessage navigateMessage = new() { type = "navigate_to_playing" };
+        string jsonMessage = JsonUtility.ToJson(navigateMessage);
+
+        webRTCConnection.SendDataChannelMessage(jsonMessage);
+        Debug.Log("Broadcasting Navigate to Playing: " + jsonMessage);
+    }
+
+    // ------------- LoadGameSceneAndStart -------------
+
+    public IEnumerator LoadGameSceneAndStart(string sceneName)
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+    }
+
+
+    // ------------- Dont Destroy On Load -------------
+
+    private static NetworkManager instance;
+
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }

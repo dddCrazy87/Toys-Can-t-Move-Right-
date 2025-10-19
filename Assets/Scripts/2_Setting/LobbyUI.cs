@@ -1,30 +1,30 @@
 using UnityEngine;
-using UnityEngine.UI; 
-using TMPro; 
+using UnityEngine.UI;
+using TMPro;
 using System.Collections.Generic;
 
 public class LobbyUI : MonoBehaviour
 {
     [Header("References")]
-    public GameManager gameManager;
-    
+
     public GameObject playerCardPrefab;
-    
+
     public Transform cardContainer;
-    
-    public GameObject playerScrollViewObject; 
+
+    public GameObject playerScrollViewObject;
 
     [Header("Player Card Sprites")]
     public Sprite redAvatar;
-    
+
     public Sprite blueAvatar;
     public Sprite yellowAvatar;
     public Sprite greenAvatar;
     public Sprite defaultAvatar;
 
     private int currentDisplayedPlayerCount = -1;
-    
+
     private Dictionary<string, Sprite> avatarMap;
+    private NetworkManager networkManager;
 
     private void Awake()
     {
@@ -35,13 +35,14 @@ public class LobbyUI : MonoBehaviour
             { "yellow", yellowAvatar },
             { "green", greenAvatar }
         };
+        networkManager = FindFirstObjectByType<NetworkManager>();
     }
 
     void Update()
     {
-        if (gameManager == null || playerScrollViewObject == null) return;
+        if (networkManager == null || playerScrollViewObject == null) return;
 
-        int playerCount = gameManager.playersInfo.Count;
+        int playerCount = networkManager.playersInfo.Count;
 
         if (playerCount == 0)
         {
@@ -51,30 +52,30 @@ public class LobbyUI : MonoBehaviour
         {
             playerScrollViewObject.SetActive(true);
         }
-        
-        RebuildPlayerList(); 
+
+        RebuildPlayerList();
     }
 
     void RebuildPlayerList()
     {
-        
-        if (cardContainer.childCount != gameManager.playersInfo.Count)
+
+        if (cardContainer.childCount != networkManager.playersInfo.Count)
         {
             ForceRebuild();
         }
         else
         {
-            for (int i = 0; i < gameManager.playersInfo.Count; i++)
+            for (int i = 0; i < networkManager.playersInfo.Count; i++)
             {
-                Player player = gameManager.playersInfo[i];
+                Player player = networkManager.playersInfo[i];
                 Transform card = cardContainer.GetChild(i);
-                
+
                 TextMeshProUGUI nameText = card.GetComponentInChildren<TextMeshProUGUI>();
-                
+
                 if (nameText.text != player.name)
                 {
                     ForceRebuild();
-                    break; 
+                    break;
                 }
             }
         }
@@ -86,13 +87,13 @@ public class LobbyUI : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-        
-        if (gameManager == null) return;
 
-        foreach (Player player in gameManager.playersInfo)
+        if (networkManager == null) return;
+
+        foreach (Player player in networkManager.playersInfo)
         {
             GameObject card = Instantiate(playerCardPrefab, cardContainer);
-            
+
             TextMeshProUGUI nameText = card.GetComponentInChildren<TextMeshProUGUI>();
             if (nameText != null)
             {
@@ -112,7 +113,7 @@ public class LobbyUI : MonoBehaviour
                 }
             }
         }
-        
-        currentDisplayedPlayerCount = gameManager.playersInfo.Count;
+
+        currentDisplayedPlayerCount = networkManager.playersInfo.Count;
     }
 }

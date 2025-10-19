@@ -77,6 +77,7 @@ public class TutorialManager : MonoBehaviour
     public Sprite[] stepDemoImages; // [0]=向前傾斜, [1]=向左傾斜, [2]=向右傾斜
 
     // --- 私有變數 ---
+    private NetworkManager networkManager;
     private GameManager gameManager;
     // 儲存 peerId 和教學進度的綁定
     private Dictionary<string, PlayerTutorialProgress> playerProgressMap = new Dictionary<string, PlayerTutorialProgress>();
@@ -86,10 +87,11 @@ public class TutorialManager : MonoBehaviour
 
     void Start()
     {
+        networkManager = FindFirstObjectByType<NetworkManager>();
         gameManager = FindFirstObjectByType<GameManager>();
-        if (gameManager == null)
+        if (networkManager == null)
         {
-            Debug.LogError("TutorialManager 找不到 GameManager！");
+            Debug.LogError("TutorialManager 找不到 networkManager！");
             return;
         }
 
@@ -125,10 +127,10 @@ public class TutorialManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (Player p in gameManager.playersInfo)
+        foreach (Player p in networkManager.playersInfo)
         {
             // 找到這個 player 對應的 peerId
-            string peerId = gameManager.peerIdToPlayer.FirstOrDefault(x => x.Value == p).Key;
+            string peerId = networkManager.peerIdToPlayer.FirstOrDefault(x => x.Value == p).Key;
             if (peerId != null)
             {
                 // 建立進度追蹤
@@ -309,7 +311,7 @@ public class TutorialManager : MonoBehaviour
         };
 
         string jsonMessage = JsonUtility.ToJson(tutorialMsg);
-        gameManager.webRTCConnection.SendDataChannelMessage(jsonMessage);
+        networkManager.webRTCConnection.SendDataChannelMessage(jsonMessage);
         Debug.Log($"Broadcast tutorial step: {step}");
     }
 
@@ -322,6 +324,10 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
+
+    [Header("SceneFadeInFadeOut")]
+    [SerializeField] private TutorialSceneFadeOut tutorialSceneFadeOut;
+
     void CheckForAllPlayersFinished()
     {
         // 檢查是否「所有」玩家都完成了「所有」步驟
@@ -331,10 +337,9 @@ public class TutorialManager : MonoBehaviour
         {
             Debug.Log("所有玩家都完成了教學！準備進入遊戲...");
 
-            gameManager.BroadcastNavigateToPlaying();
-            // 呼叫 GameManager 載入真正的遊戲場景
-            // (你也可以在這裡加一個延遲，讓玩家看到「全部完成」的訊息)
-            gameManager.StartCoroutine(gameManager.LoadGameSceneAndStart("Toybox"));
+            networkManager.BroadcastNavigateToPlaying();
+            gameManager.UpdatePlayerInfo(networkManager.playersInfo);
+            tutorialSceneFadeOut.LoadNextSceneWithFadeOut();
         }
     }
 
