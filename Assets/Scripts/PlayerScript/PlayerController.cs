@@ -42,6 +42,10 @@ public class PlayerController : MonoBehaviour
         // float vertical = Input.GetAxisRaw("Vertical");
         // movement = new Vector3(horizontal, 0f, vertical).normalized;
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log("Player Point: " + FindFirstObjectByType<GameManager>().GetPlayerPoint(playerIndex));
+        }
         if (!avilibleMovement) return;
         movement = networkMovement;
     }
@@ -64,7 +68,6 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
         }
     }
-
 
 
     [Header("道具設置")]

@@ -43,6 +43,6 @@ public class PlayerPointUiManager : MonoBehaviour
     public void UpdatePlayerPointUi(int playerId)
     {
         int point = gameManager.GetPlayerPoint(playerId);
-        curPointUiType.GetChild(1).GetComponent<TextMeshProUGUI>().text = point.ToString();
+        curPointUiType.GetChild(playerId).GetChild(1).GetComponent<TextMeshProUGUI>().text = point.ToString();
     }
 }
