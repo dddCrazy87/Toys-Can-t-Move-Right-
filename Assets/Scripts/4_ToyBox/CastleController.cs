@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class CastleController : MonoBehaviour
 {
-    public GameManager gameManager;
     void OnTriggerEnter(Collider other)
     {
         GameObject go = other.gameObject;

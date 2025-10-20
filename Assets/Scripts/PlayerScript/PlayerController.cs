@@ -34,8 +34,7 @@ public class PlayerController : MonoBehaviour
 
     public void SetNetworkInput(float x, float y)
     {
-        if (y < 0) networkMovement = new Vector3(x, 0f, -y).normalized;
-        else networkMovement = new Vector3(-x, 0f, -y).normalized;
+        networkMovement = new Vector3(x, 0f, y).normalized;
     }
     void Update()
     {
@@ -154,13 +153,12 @@ public class PlayerController : MonoBehaviour
         return removedItems;
     }
 
-    //移除收集的物件
     public void CompeleItemCollection()
     {
         if (collectedItems.Count <= 0) return;
         FindAnyObjectByType<GameSoundEffect>().PlayGetPointSound();
-        GameManager gameManager = FindFirstObjectByType<GameManager>();
-        gameManager.PlayerIncreasePointByNumber(playerIndex, collectedItems.Count);
+        FindFirstObjectByType<GameManager>().IncreasePlayerPoint(playerIndex, collectedItems.Count);
+        FindFirstObjectByType<PlayerPointUiManager>().UpdatePlayerPointUi(playerIndex);
         ItemManager itemManager = FindFirstObjectByType<ItemManager>();
         foreach (var item in collectedItems)
         {

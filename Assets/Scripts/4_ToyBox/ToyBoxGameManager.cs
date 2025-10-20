@@ -5,6 +5,12 @@ public class ToyBoxGameManager : MonoBehaviour
     public UIFadeScript countDown3, countDown2, countDown1;
     void Start()
     {
+        CountDownAndStartGame();
+    }
+
+    // --------Count Down And Start Game--------
+    void CountDownAndStartGame()
+    {
         countDown3.gameObject.SetActive(true);
         countDown2.gameObject.SetActive(true);
         countDown1.gameObject.SetActive(true);
@@ -49,5 +55,6 @@ public class ToyBoxGameManager : MonoBehaviour
         countDown2.gameObject.SetActive(false);
         countDown1.gameObject.SetActive(false);
         FindFirstObjectByType<GameManager>().StartGame();
+        FindFirstObjectByType<PlayerPointUiManager>().InitialPlayerPointUi();
     }
 }

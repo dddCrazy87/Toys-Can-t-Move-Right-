@@ -164,7 +164,7 @@ namespace SimpleWebRTC
                 receiverDataChannels[peerId].OnMessage = bytes =>
                 {
                     var message = Encoding.UTF8.GetString(bytes);
-                    SimpleWebRTCLogger.LogDataChannel($"{localPeerId} received on {peerId} receiverDataChannel: {message}");
+                    //SimpleWebRTCLogger.LogDataChannel($"{localPeerId} received on {peerId} receiverDataChannel: {message}");
                     OnDataChannelMessageReceived?.Invoke(Encoding.UTF8.GetString(bytes));
                     OnDataMessageReceived_Static?.Invoke(message, peerId);
                 };
@@ -233,11 +233,11 @@ namespace SimpleWebRTC
                         SimpleWebRTCLogger.Log($"NEWPEER: Created new peerconnection {signalingMessage.SenderPeerId} on peer {localPeerId}");
 
                         connectionGameObject.StartCoroutine(CreateOffer(signalingMessage.SenderPeerId));
-                        
+
 
                         // send ACK to all clients to reach convergence
                         SendWebSocketMessage(SignalingMessageType.NEWPEERACK, localPeerId, "ALL", "New peer ACK", peerConnections.Count, isLocalPeerVideoAudioSender);
-                    } 
+                    }
                     else
                     {
                         SimpleWebRTCLogger.Log($"NEWPEER: Received NEWPEER from {signalingMessage.SenderPeerId}, but peer already exists. Ignoring.");
@@ -627,13 +627,13 @@ namespace SimpleWebRTC
 
             foreach (var peerId in allPeerIds)
             {
-                SendViaDataChannel(peerId, message); 
+                SendViaDataChannel(peerId, message);
             }
         }
 
         public void SendViaDataChannel(string targetPeerId, string message)
         {
-             if (senderDataChannels.TryGetValue(targetPeerId, out RTCDataChannel senderDC) && senderDC.ReadyState == RTCDataChannelState.Open)
+            if (senderDataChannels.TryGetValue(targetPeerId, out RTCDataChannel senderDC) && senderDC.ReadyState == RTCDataChannelState.Open)
             {
                 senderDC.Send(message);
             }

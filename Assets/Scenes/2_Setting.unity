@@ -415,7 +415,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98c1f878c421e4412b4076a2e718f191, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  networkManager: {fileID: 694765016}
   playerCardPrefab: {fileID: 8832566082403809920, guid: f06e76f6514f64f9abdfdc647930a576, type: 3}
   cardContainer: {fileID: 1861015927}
   playerScrollViewObject: {fileID: 792966709}
@@ -1535,13 +1534,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1722669608}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.84330803, z: -0.53743064, w: 0}
-  m_LocalPosition: {x: 0, y: 156.6, z: 71.1}
+  m_LocalRotation: {x: 0.5591929, y: 0, z: 0, w: 0.8290376}
+  m_LocalPosition: {x: 0, y: 160, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 65.018, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 68, y: 0, z: 0}
 --- !u!114 &1722669612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2130,7 +2129,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1784298247205542360, guid: 4496c608340668c46ad495d2f0e799c1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1784298247205542360, guid: 4496c608340668c46ad495d2f0e799c1, type: 3}
       propertyPath: m_LocalPosition.y

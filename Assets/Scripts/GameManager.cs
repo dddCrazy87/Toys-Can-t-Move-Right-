@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
 {
     public bool isGameStart = false;
     public Dictionary<string, PlayerController> playerControllers = new();
-
+    ItemManager itemManager;
 
     public void StartGame()
     {
@@ -26,14 +26,13 @@ public class GameManager : MonoBehaviour
         }
         // 設定玩家Id
         AssignPlayerIndex();
-        // 生成分數UI
-        RenderPointUI();
         // 分配出生點
         AssignSpawnPoints();
         // 生成玩家
         SpawnPlayers();
         // 生成道具
         ;
+
         if (itemManager = FindFirstObjectByType<ItemManager>())
         {
             itemManager.StartSpawnItems();
@@ -45,11 +44,33 @@ public class GameManager : MonoBehaviour
         isGameStart = true;
     }
 
-    // ------------- Increase Player Point --------------
-    public void PlayerIncreasePointByNumber(int playerIndex, int number)
+    // ---------Player Movement --------
+
+    public void OnRemotePlayerMove(string skin, float x, float y)
+    {
+        if (!isGameStart) return;
+        if (playerControllers.TryGetValue(skin, out PlayerController pc))
+        {
+            pc.SetNetworkInput(x, y);
+        }
+    }
+
+    // --------- Load Player Data ---------
+
+    public void UpdatePlayerInfo(List<Player> players)
+    {
+        playersInfo = players;
+    }
+
+    // ------------- Manage Player Point --------------
+    public void IncreasePlayerPoint(int playerIndex, int number)
     {
         playersInfo[playerIndex].point += number;
-        playerPointUI[playerIndex].GetChild(1).GetComponent<TextMeshProUGUI>().text = playersInfo[playerIndex].point.ToString();
+    }
+
+    public int GetPlayerPoint(int playerIndex)
+    {
+        return playersInfo[playerIndex].point;
     }
 
     // ------- Assign Player Index -------
@@ -67,8 +88,7 @@ public class GameManager : MonoBehaviour
 
     // --------- Spawn Players -----------
 
-    [Header("Player Spawn Setting")]
-    public List<Transform> playerSpawnPoints = new();
+    List<Transform> playerSpawnPoints = new();
     private void AssignSpawnPoints()
     {
         playerSpawnPoints.Clear();
@@ -119,73 +139,6 @@ public class GameManager : MonoBehaviour
             playerControllers[player.skin] = pc;
         }
     }
-
-    // ------------- Point UI Setting -------------
-
-    [Header("UI Setting")]
-    public List<Transform> pointUiTypes = new();
-    public List<Sprite> pointUiSkins = new();
-    List<Transform> playerPointUI = new();
-    private void RenderPointUI()
-    {
-        if (playersInfo == null || playersInfo.Count < 2)
-        {
-            Debug.LogWarning($"Player ({playersInfo?.Count}) is less than 2 players.");
-            foreach (var item in pointUiTypes) item.gameObject.SetActive(false);
-            return;
-        }
-
-        int uiIndex = playersInfo.Count - 2;
-        if (uiIndex < 0 || uiIndex >= pointUiTypes.Count)
-        {
-            Debug.LogError($"Can't find {playersInfo.Count} players' UI (index {uiIndex})");
-            return;
-        }
-
-        pointUiTypes[uiIndex].gameObject.SetActive(true);
-        for (int i = 0; i < playersInfo.Count; i++)
-        {
-            playerPointUI.Add(pointUiTypes[uiIndex].GetChild(i));
-        }
-
-        for (int i = 0; i < playersInfo.Count; i++)
-        {
-            string skin = playersInfo[i].skin;
-            Image icon = playerPointUI[i].GetChild(0).GetComponent<Image>();
-            icon.sprite = skin switch
-            {
-                "blue" => pointUiSkins[0],
-                "yellow" => pointUiSkins[1],
-                "green" => pointUiSkins[2],
-                "red" => pointUiSkins[3],
-                _ => icon.sprite
-            };
-            playerPointUI[i].GetChild(1).GetComponent<TextMeshProUGUI>().text = playersInfo[i].point.ToString();
-        }
-    }
-
-    // ---------Player Movement --------
-
-    public void OnRemotePlayerMove(string skin, float x, float y)
-    {
-        if (!isGameStart) return;
-        if (playerControllers.TryGetValue(skin, out PlayerController pc))
-        {
-            pc.SetNetworkInput(x, y);
-        }
-    }
-
-    // --------- Load Player Data ---------
-
-    public void UpdatePlayerInfo(List<Player> players)
-    {
-        playersInfo = players;
-    }
-
-    // ----------- Item Script -----------
-
-    [Header("Item Script")]
-    public ItemManager itemManager;
 
     // ------------- Dont Destroy On Load -------------
 
