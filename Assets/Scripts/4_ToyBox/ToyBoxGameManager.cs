@@ -5,6 +5,7 @@ public class ToyBoxGameManager : MonoBehaviour
     public UIFadeScript countDown3, countDown2, countDown1;
     void Start()
     {
+        FindFirstObjectByType<BgmPlayer>().ChangeBgm("Toybox");
         CountDownAndStartGame();
     }
 

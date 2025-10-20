@@ -8,9 +8,6 @@ using SimpleWebRTC;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
-
-
-
 public class GameManager : MonoBehaviour
 {
     public bool isGameStart = false;
