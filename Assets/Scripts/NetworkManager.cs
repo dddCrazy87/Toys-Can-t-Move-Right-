@@ -194,19 +194,6 @@ public class NetworkManager : MonoBehaviour
         Debug.Log("Broadcasting Navigate to Playing: " + jsonMessage);
     }
 
-    // ------------- LoadGameSceneAndStart -------------
-
-    public IEnumerator LoadGameSceneAndStart(string sceneName)
-    {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-
-        while (!asyncLoad.isDone)
-        {
-            yield return null;
-        }
-    }
-
-
     // ------------- Dont Destroy On Load -------------
 
     private static NetworkManager instance;
