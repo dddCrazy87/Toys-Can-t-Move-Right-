@@ -1,6 +1,15 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections.Generic; 
+using System.Linq; 
+
+[System.Serializable]
+public class SkinAvatarMapping
+{
+    public string skinName;
+    public Sprite avatarSprite;
+}
 
 public class PlayerCardUI : MonoBehaviour
 {
@@ -8,42 +17,49 @@ public class PlayerCardUI : MonoBehaviour
     public TextMeshProUGUI playerNameText;
     public Image playerAvatarImage;
 
+    [Header("Avatar Mapping")]
+    public List<SkinAvatarMapping> skinAvatarMap;
+
     [Header("Step Icons")]
-    public GameObject[] stepIncompleteIcons; // Array: [0]=Step 1, [1]=Step 2, [2]=Step 3, [3]=Step 4
-    public GameObject[] stepCompleteIcons;   // Array: Corresponding complete icons
+    public GameObject incompleteIcon;
 
-    // This function will be called by TutorialManager
-    public void UpdateProgress(PlayerTutorialProgress progress)
+    public GameObject completeIcon;
+    public void SetupCard(PlayerTutorialProgress progress)
     {
-        // Player Name
         playerNameText.text = progress.playerInfo.name;
+        string playerSkin = progress.playerInfo.skin;
+        Sprite avatarToShow = null;
 
-        // 步驟 1 (向前)
-        if (stepIncompleteIcons.Length > 0 && stepCompleteIcons.Length > 0)
+        if (skinAvatarMap != null)
         {
-            stepIncompleteIcons[0].SetActive(!progress.completedForward);
-            stepCompleteIcons[0].SetActive(progress.completedForward);
+            SkinAvatarMapping mapping = skinAvatarMap.FirstOrDefault(m => m.skinName == playerSkin);
+            if (mapping != null)
+            {
+                avatarToShow = mapping.avatarSprite;
+            }
         }
 
-        // 步驟 2 (向左)
-        if (stepIncompleteIcons.Length > 1 && stepCompleteIcons.Length > 1)
+        if (avatarToShow != null)
         {
-            stepIncompleteIcons[1].SetActive(!progress.completedLeft);
-            stepCompleteIcons[1].SetActive(progress.completedLeft);
+            playerAvatarImage.sprite = avatarToShow;
+            playerAvatarImage.gameObject.SetActive(true);
         }
-
-        // 步驟 3 (向右)
-        if (stepIncompleteIcons.Length > 2 && stepCompleteIcons.Length > 2)
+        else
         {
-            stepIncompleteIcons[2].SetActive(!progress.completedRight);
-            stepCompleteIcons[2].SetActive(progress.completedRight);
+            Debug.LogWarning($"PlayerCardUI: 找不到 skin '{playerSkin}' 對應的頭像。");
+            // playerAvatarImage.gameObject.SetActive(false); 
         }
-
-        // 步驟 4 (向後)
-        if (stepIncompleteIcons.Length > 3 && stepCompleteIcons.Length > 3)
+    }
+    
+    public void SetStepStatus(bool isComplete)
+    {
+        if (incompleteIcon != null)
         {
-            stepIncompleteIcons[3].SetActive(!progress.completedBackward);
-            stepCompleteIcons[3].SetActive(progress.completedBackward);
+            incompleteIcon.SetActive(!isComplete);
+        }
+        if (completeIcon != null)
+        {
+            completeIcon.SetActive(isComplete);
         }
     }
 }

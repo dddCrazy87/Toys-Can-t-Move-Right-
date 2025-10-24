@@ -5,6 +5,15 @@ using SimpleWebRTC;
 using System.Linq;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using System.Collections;
+
+[System.Serializable]
+public class StepAudioMapping
+{
+    public string stepName; // forward, left, right, backward, complete
+    public AudioClip soundEffect;
+}
+
 public enum TutorialStep { Calibrate, TiltLeft, TiltRight, MiniGame, Finished }
 
 [System.Serializable]
@@ -76,6 +85,17 @@ public class TutorialManager : MonoBehaviour
     [Tooltip("每個步驟的示意圖")]
     public Sprite[] stepDemoImages; // [0]=向前傾斜, [1]=向左傾斜, [2]=向右傾斜
 
+    [Header("Audio")]
+    [Tooltip("在更換步驟提示時播放的音效")]
+    public List<StepAudioMapping> stepAudioMap;
+
+    [Tooltip("播放音效用的 AudioSource")]
+    public AudioSource audioSource;
+
+    [Header("SceneFadeInFadeOut")]
+    [SerializeField] private TutorialSceneFadeOut tutorialSceneFadeOut;
+
+
     // --- 私有變數 ---
     private NetworkManager networkManager;
     private GameManager gameManager;
@@ -84,6 +104,11 @@ public class TutorialManager : MonoBehaviour
     // 儲存 peerId 和 UI 卡片的綁定
     private Dictionary<string, PlayerCardUI> playerCardUIMap = new Dictionary<string, PlayerCardUI>();
 
+    [Tooltip("追蹤目前的教學階段")]
+    private string currentTutorialPhase = "calibrate";
+
+    [Tooltip("用來防止重複觸發延遲協程")]
+    private bool isAdvancing = false;
 
     void Start()
     {
@@ -93,6 +118,16 @@ public class TutorialManager : MonoBehaviour
         {
             Debug.LogError("TutorialManager 找不到 networkManager！");
             return;
+        }
+
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                Debug.LogWarning("TutorialManager 找不到 AudioSource，將自動添加一個。");
+                audioSource = gameObject.AddComponent<AudioSource>();
+            }
         }
 
         WebRTCManager.OnDataMessageReceived_Static += OnDataReceived;
@@ -145,7 +180,8 @@ public class TutorialManager : MonoBehaviour
                 playerCardUIMap[peerId] = cardUI;
 
                 // 第一次更新 UI
-                cardUI.UpdateProgress(progress);
+                cardUI.SetupCard(progress);
+                cardUI.SetStepStatus(false);
             }
         }
 
@@ -158,94 +194,106 @@ public class TutorialManager : MonoBehaviour
         // 檢查這個訊息是否來自我們正在追蹤的玩家
         if (!playerProgressMap.ContainsKey(senderPeerId)) return;
 
+        if (isAdvancing) return;
+
         try
         {
             BaseMessage data = JsonUtility.FromJson<BaseMessage>(message);
+            PlayerTutorialProgress progress = playerProgressMap[senderPeerId];
+            bool progressMade = false;
 
             if (data.type == "move")
             {
                 MoveMessage msg = JsonUtility.FromJson<MoveMessage>(message);
 
-                // 取得這個玩家的進度
-                PlayerTutorialProgress progress = playerProgressMap[senderPeerId];
-
                 // 如果已經完成，就不再檢查
                 if (progress.IsAllStepsCompleted()) return;
-                // 如果還沒校正，先標記為已校正
-                if (!progress.completedCalibration)
+
+                if (currentTutorialPhase == "calibrate" && !progress.completedCalibration)
                 {
                     progress.completedCalibration = true;
                     Debug.Log($"{progress.playerInfo.name} 已完成校正！");
-                    playerCardUIMap[senderPeerId].UpdateProgress(progress); // 更新該玩家的卡片
-                    UpdateInstructionText(); // 更新主要提示文字\
+                    playerCardUIMap[senderPeerId].SetStepStatus(true);
+                    progressMade = true;
                 }
-                // 檢查是否完成「向前傾斜」
-                else if (!progress.completedForward && msg.vector.y < -tiltThreshold)
+                else if (currentTutorialPhase == "forward" && !progress.completedForward && msg.vector.y < -tiltThreshold)
                 {
                     progress.completedForward = true;
                     Debug.Log($"{progress.playerInfo.name} 完成了向前傾斜！");
-                    playerCardUIMap[senderPeerId].UpdateProgress(progress); // 更新該玩家的卡片
-                    UpdateInstructionText(); // 更新主要提示文字
-                    CheckForAllPlayersFinished(); // 檢查是否全部完成
+                    playerCardUIMap[senderPeerId].SetStepStatus(true);
+                    progressMade = true;
                 }
-
-                // 檢查是否完成「向左傾斜」 (必須先完成上一步)
-                else if (progress.completedForward && !progress.completedLeft && msg.vector.x < -tiltThreshold)
+                else if (currentTutorialPhase == "left" && !progress.completedLeft && msg.vector.x < -tiltThreshold)
                 {
                     progress.completedLeft = true;
                     Debug.Log($"{progress.playerInfo.name} 完成了向左傾斜！");
-                    playerCardUIMap[senderPeerId].UpdateProgress(progress);
-                    UpdateInstructionText();
-                    CheckForAllPlayersFinished();
+                    playerCardUIMap[senderPeerId].SetStepStatus(true);
+                    progressMade = true;
                 }
-
-                // 檢查是否完成「向右傾斜」 (必須先完成上一步)
-                else if (progress.completedLeft && !progress.completedRight && msg.vector.x > tiltThreshold)
+                else if (currentTutorialPhase == "right" && !progress.completedRight && msg.vector.x > tiltThreshold)
                 {
                     progress.completedRight = true;
                     Debug.Log($"{progress.playerInfo.name} 完成了向右傾斜！");
-                    playerCardUIMap[senderPeerId].UpdateProgress(progress);
-                    UpdateInstructionText();
-                    CheckForAllPlayersFinished();
+                    playerCardUIMap[senderPeerId].SetStepStatus(true);
+                    progressMade = true;
                 }
-                else if (progress.completedRight && !progress.completedBackward && msg.vector.y > tiltThreshold)
+                else if (currentTutorialPhase == "backward" && !progress.completedBackward && msg.vector.y > tiltThreshold)
                 {
                     progress.completedBackward = true;
                     Debug.Log($"{progress.playerInfo.name} 完成了向後傾斜！");
-                    playerCardUIMap[senderPeerId].UpdateProgress(progress);
-                    UpdateInstructionText();
-                    CheckForAllPlayersFinished();
+                    playerCardUIMap[senderPeerId].SetStepStatus(true);
+                    progressMade = true;
+                }
+
+                if (progressMade)
+                {
+                    CheckForStepAdvancement();
                 }
             }
             else if (data.type == "tutorial_step_complete")
             {
                 // 手機端明確告知完成某步驟
                 TutorialStepMessage msg = JsonUtility.FromJson<TutorialStepMessage>(message);
-                PlayerTutorialProgress progress = playerProgressMap[senderPeerId];
 
-                if (msg.step == "forward" && !progress.completedForward)
+                if (msg.step == "calibrate" && currentTutorialPhase == "calibrate" && !progress.completedCalibration)
+                {
+                    progress.completedCalibration = true;
+                    Debug.Log($"{progress.playerInfo.name} 完成了 (手機訊號) 校正！");
+                    playerCardUIMap[senderPeerId].SetStepStatus(true);
+                    progressMade = true;
+                }
+                else if (msg.step == "forward" && currentTutorialPhase == "forward" && !progress.completedForward)
                 {
                     progress.completedForward = true;
-                    Debug.Log($"{progress.playerInfo.name} 完成了向前傾斜！");
-                    playerCardUIMap[senderPeerId].UpdateProgress(progress);
-                    UpdateInstructionText();
-                    CheckForAllPlayersFinished();
+                    Debug.Log($"{progress.playerInfo.name} 完成了 (手機訊號) 向前傾斜！");
+                    playerCardUIMap[senderPeerId].SetStepStatus(true);
+                    progressMade = true;
                 }
-                else if (msg.step == "left" && progress.completedForward && !progress.completedLeft)
+                else if (msg.step == "left" && currentTutorialPhase == "left" && !progress.completedLeft)
                 {
                     progress.completedLeft = true;
-                    Debug.Log($"{progress.playerInfo.name} 完成了向左傾斜！");
-                    playerCardUIMap[senderPeerId].UpdateProgress(progress);
-                    UpdateInstructionText();
-                    CheckForAllPlayersFinished();
+                    Debug.Log($"{progress.playerInfo.name} 完成了 (手機訊號) 向左傾斜！");
+                    playerCardUIMap[senderPeerId].SetStepStatus(true);
+                    progressMade = true;
                 }
-                else if (msg.step == "right" && progress.completedLeft && !progress.completedRight)
+                else if (msg.step == "right" && currentTutorialPhase == "right" && !progress.completedRight)
                 {
                     progress.completedRight = true;
-                    Debug.Log($"{progress.playerInfo.name} 完成了向右傾斜！");
-                    playerCardUIMap[senderPeerId].UpdateProgress(progress);
-                    UpdateInstructionText();
-                    CheckForAllPlayersFinished();
+                    Debug.Log($"{progress.playerInfo.name} 完成了 (手機訊號) 向右傾斜！");
+                    playerCardUIMap[senderPeerId].SetStepStatus(true);
+                    progressMade = true;
+                }
+                else if (msg.step == "backward" && currentTutorialPhase == "backward" && !progress.completedBackward)
+                {
+                    // (你原本的 code 裡沒有 backward，我猜也需要，所以加上了)
+                    progress.completedBackward = true;
+                    Debug.Log($"{progress.playerInfo.name} 完成了 (手機訊號) 向後傾斜！");
+                    playerCardUIMap[senderPeerId].SetStepStatus(true);
+                    progressMade = true;
+                }
+                if (progressMade)
+                {
+                    CheckForStepAdvancement();
                 }
             }
         }
@@ -255,50 +303,58 @@ public class TutorialManager : MonoBehaviour
     // 更新主要的教學提示文字
     void UpdateInstructionText()
     {
-        string step = "";
-        if (playerProgressMap.Values.All(p => p.completedBackward))
+        string step = currentTutorialPhase; // 直接使用目前的階段狀態
+        string text = "";
+        int animatorIndex = -1;
+
+        switch (step)
         {
-            instructionText.text = "太棒了！所有人都完成了訓練！";
-            step = "complete";
-            if (demoAnimator != null) demoAnimator.SetInteger("StepIndex", -1);
-        }
-        else if (playerProgressMap.Values.All(p => p.completedRight))
-        {
-            instructionText.text = "最後一步！向後傾斜手機";
-            step = "backward";
-            if (demoAnimator != null) demoAnimator.SetInteger("StepIndex", 3);
-            PlayStepVideo(step);
-        }
-        else if (playerProgressMap.Values.All(p => p.completedLeft))
-        {
-            instructionText.text = "做得好！向右傾斜手機";
-            step = "right";
-            if (demoAnimator != null) demoAnimator.SetInteger("StepIndex", 2);
-            PlayStepVideo(step);
-        }
-        else if (playerProgressMap.Values.All(p => p.completedForward))
-        {
-            instructionText.text = "很好！向左傾斜手機";
-            step = "left";
-            if (demoAnimator != null) demoAnimator.SetInteger("StepIndex", 1);
-            PlayStepVideo(step);
-        }
-        else if (playerProgressMap.Values.All(p => p.completedCalibration))
-        {
-            instructionText.text = "很棒！向前傾斜手機";
-            step = "forward";
-            if (demoAnimator != null) demoAnimator.SetInteger("StepIndex", 0);
-            PlayStepVideo(step);
-        }
-        else
-        {
-            instructionText.text = "請將手機置於平面，按下校正按鈕！";
-            step = "calibrate";
-            if (demoAnimator != null) demoAnimator.SetInteger("StepIndex", -1);
-            PlayStepVideo(step);
+            case "calibrate":
+                text = "請將手機置於平面，按下校正按鈕！";
+                animatorIndex = -1;
+                break;
+            case "forward":
+                text = "很棒！向前傾斜手機";
+                animatorIndex = 0;
+                break;
+            case "left":
+                text = "很好！向左傾斜手機";
+                animatorIndex = 1;
+                break;
+            case "right":
+                text = "做得好！向右傾斜手機";
+                animatorIndex = 2;
+                break;
+            case "backward":
+                text = "最後一步！向後傾斜手機";
+                animatorIndex = 3;
+                break;
+            case "complete":
+                text = "太棒了！所有人都完成了訓練！";
+                animatorIndex = -1;
+                break;
         }
 
-        BroadcastTutorialStep(step, instructionText.text);
+        instructionText.text = text;
+        
+        if (demoImage != null && stepDemoImages != null && animatorIndex >= 0 && animatorIndex < stepDemoImages.Length)
+        {
+            demoImage.sprite = stepDemoImages[animatorIndex];
+            demoImage.gameObject.SetActive(true);
+        }
+        else if (demoImage != null)
+        {
+            // demoImage.gameObject.SetActive(false); // 或者隱藏
+        }
+
+        // 更新 Animator
+        if (demoAnimator != null)
+        {
+            demoAnimator.SetInteger("StepIndex", animatorIndex);
+        }
+
+        PlayStepVideo(step); // 播放對應影片
+        BroadcastTutorialStep(step, text); // 廣播給手機
     }
 
     void BroadcastTutorialStep(string step, string message)
@@ -314,35 +370,6 @@ public class TutorialManager : MonoBehaviour
         networkManager.webRTCConnection.SendDataChannelMessage(jsonMessage);
         Debug.Log($"Broadcast tutorial step: {step}");
     }
-
-    void UpdateDemoImage(int stepIndex)
-    {
-        if (demoImage != null && stepDemoImages != null && stepIndex < stepDemoImages.Length)
-        {
-            demoImage.sprite = stepDemoImages[stepIndex];
-            demoImage.gameObject.SetActive(true);
-        }
-    }
-
-
-    [Header("SceneFadeInFadeOut")]
-    [SerializeField] private TutorialSceneFadeOut tutorialSceneFadeOut;
-
-    void CheckForAllPlayersFinished()
-    {
-        // 檢查是否「所有」玩家都完成了「所有」步驟
-        bool allFinished = playerProgressMap.Values.All(p => p.IsAllStepsCompleted());
-
-        if (allFinished)
-        {
-            Debug.Log("所有玩家都完成了教學！準備進入遊戲...");
-
-            networkManager.BroadcastNavigateToPlaying();
-            gameManager.UpdatePlayerInfo(networkManager.playersInfo);
-            tutorialSceneFadeOut.LoadNextSceneWithFadeOut();
-        }
-    }
-
     // Video
     void PlayStepVideo(string step)
     {
@@ -394,6 +421,75 @@ public class TutorialManager : MonoBehaviour
     void OnVideoFinished(VideoPlayer vp)
     {
         Debug.Log("影片播放完畢");
-        // 這裡之後可以加入「縮小 DemoArea」的邏輯
+    }
+    
+    void CheckForStepAdvancement()
+    {
+        if (isAdvancing) return; 
+
+        if (currentTutorialPhase == "calibrate" && playerProgressMap.Values.All(p => p.completedCalibration))
+        {
+            StartCoroutine(AdvanceToNextStep("forward"));
+        }
+        else if (currentTutorialPhase == "forward" && playerProgressMap.Values.All(p => p.completedForward))
+        {
+            StartCoroutine(AdvanceToNextStep("left"));
+        }
+        else if (currentTutorialPhase == "left" && playerProgressMap.Values.All(p => p.completedLeft))
+        {
+            StartCoroutine(AdvanceToNextStep("right"));
+        }
+        else if (currentTutorialPhase == "right" && playerProgressMap.Values.All(p => p.completedRight))
+        {
+            StartCoroutine(AdvanceToNextStep("backward"));
+        }
+        else if (currentTutorialPhase == "backward" && playerProgressMap.Values.All(p => p.completedBackward))
+        {
+            StartCoroutine(AdvanceToNextStep("complete"));
+        }
+    }
+
+    System.Collections.IEnumerator AdvanceToNextStep(string nextPhase)
+    {
+        isAdvancing = true;
+
+        AudioClip soundToPlay = null;
+        if (stepAudioMap != null && audioSource != null)
+        {
+            StepAudioMapping mapping = stepAudioMap.FirstOrDefault(m => m.stepName == nextPhase);
+            if (mapping != null)
+            {
+                soundToPlay = mapping.soundEffect;
+            }
+        }
+
+        if (soundToPlay != null)
+        {
+            audioSource.PlayOneShot(soundToPlay);
+        }
+
+        yield return new WaitForSeconds(1.0f);
+
+        currentTutorialPhase = nextPhase;
+
+        UpdateInstructionText();
+
+        if (nextPhase == "complete")
+        {
+            Debug.Log("所有玩家都完成了教學！準備進入遊戲...");
+            networkManager.BroadcastNavigateToPlaying();
+            gameManager.UpdatePlayerInfo(networkManager.playersInfo);
+            tutorialSceneFadeOut.LoadNextSceneWithFadeOut();
+        }
+        else
+        {
+            
+            foreach (PlayerCardUI card in playerCardUIMap.Values)
+            {
+                card.SetStepStatus(false);
+            }
+        }
+
+        isAdvancing = false;
     }
 }
