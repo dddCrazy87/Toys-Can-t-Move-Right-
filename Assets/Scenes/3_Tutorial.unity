@@ -875,9 +875,9 @@ MonoBehaviour:
   videoRawImage: {fileID: 1708173374}
   calibrateVideo: {fileID: 32900000, guid: 352b42f7ed3574f428dec2eda778cc0e, type: 3}
   forwardVideo: {fileID: 32900000, guid: fa67def3ded3e431f97e4c2bde443049, type: 3}
-  leftVideo: {fileID: 0}
+  leftVideo: {fileID: 32900000, guid: 3c695d4d6931242de93bb74f37e942e7, type: 3}
   rightVideo: {fileID: 32900000, guid: 22d9cbafa7d8a46a49fc726073070549, type: 3}
-  backwardVideo: {fileID: 0}
+  backwardVideo: {fileID: 32900000, guid: 57359ada0b06b4d2fb051b81440952e6, type: 3}
   tiltThreshold: 0.7
   stepDemoImages: []
   stepAudioMap:
