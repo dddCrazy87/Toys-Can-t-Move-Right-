@@ -2,11 +2,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Linq;
 
 public class PlayerPointUiManager : MonoBehaviour
 {
     [SerializeField] private GameObject pointUi_4Player, pointUi_3Player, pointUi_2Player;
-    [SerializeField] private List<Sprite> pointUi_Covers = new();
+
+    [Header("Player Prefab")]
+    public List<SkinColorMapping> skinColorsMapping = new();
     GameManager gameManager;
     Transform curPointUiType;
     void Start()
@@ -27,16 +30,12 @@ public class PlayerPointUiManager : MonoBehaviour
         List<Player> players = gameManager.playersInfo;
         for (int i = 0; i < players.Count; i++)
         {
-            string skin = players[i].skin;
+            List<ColorAvatarMapping> avatarMappingList = skinColorsMapping.FirstOrDefault(x => x.skin == players[i].skin).avatarMapping;
+            if (avatarMappingList == null) continue;
+            ColorAvatarMapping mapping = avatarMappingList.FirstOrDefault(x => x.color == players[i].color);
+            if (mapping == null) continue;
             Image icon = curPointUiType.GetChild(i).GetChild(0).GetComponent<Image>();
-            icon.sprite = skin switch
-            {
-                "blue" => pointUi_Covers[0],
-                "yellow" => pointUi_Covers[1],
-                "green" => pointUi_Covers[2],
-                "red" => pointUi_Covers[3],
-                _ => icon.sprite
-            };
+            icon.sprite = mapping.avatarSprite;
             UpdatePlayerPointUi(i);
         }
     }

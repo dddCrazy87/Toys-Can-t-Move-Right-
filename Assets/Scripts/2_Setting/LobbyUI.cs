@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using System.Linq;
 
 public class LobbyUI : MonoBehaviour
 {
@@ -13,46 +14,39 @@ public class LobbyUI : MonoBehaviour
 
     public GameObject playerScrollViewObject;
 
-    [Header("Player Card Sprites")]
-    public Sprite redAvatar;
-
-    public Sprite blueAvatar;
-    public Sprite yellowAvatar;
-    public Sprite greenAvatar;
-    public Sprite defaultAvatar;
+    [Header("Player Prefab")]
+    public List<SkinColorMapping> skinColorsMapping = new();
 
     private int currentDisplayedPlayerCount = -1;
-
-    private Dictionary<string, Sprite> avatarMap;
     private NetworkManager networkManager;
 
     private void Awake()
     {
-        avatarMap = new Dictionary<string, Sprite>
-        {
-            { "red", redAvatar },
-            { "blue", blueAvatar },
-            { "yellow", yellowAvatar },
-            { "green", greenAvatar }
-        };
         networkManager = FindFirstObjectByType<NetworkManager>();
     }
 
-    void Update()
+    // void Update()
+    // {
+    //     if (networkManager == null || playerScrollViewObject == null) return;
+
+    //     int playerCount = networkManager.playersInfo.Count;
+
+    //     if (playerCount == 0)
+    //     {
+    //         playerScrollViewObject.SetActive(false);
+    //     }
+    //     else
+    //     {
+    //         playerScrollViewObject.SetActive(true);
+    //     }
+
+    //     RebuildPlayerList();
+    // }
+
+    public void UpdateLobbyUI()
     {
         if (networkManager == null || playerScrollViewObject == null) return;
-
-        int playerCount = networkManager.playersInfo.Count;
-
-        if (playerCount == 0)
-        {
-            playerScrollViewObject.SetActive(false);
-        }
-        else
-        {
-            playerScrollViewObject.SetActive(true);
-        }
-
+        playerScrollViewObject.SetActive(true);
         RebuildPlayerList();
     }
 
@@ -103,14 +97,11 @@ public class LobbyUI : MonoBehaviour
             Image avatarImage = card.GetComponentInChildren<Image>();
             if (avatarImage != null)
             {
-                if (avatarMap.TryGetValue(player.skin.ToLower(), out Sprite avatarSprite))
-                {
-                    avatarImage.sprite = avatarSprite;
-                }
-                else
-                {
-                    avatarImage.sprite = defaultAvatar;
-                }
+                List<ColorAvatarMapping> avatarMappingList = skinColorsMapping.FirstOrDefault(x => x.skin == player.skin).avatarMapping;
+                if (avatarMappingList == null) continue;
+                ColorAvatarMapping mapping = avatarMappingList.FirstOrDefault(x => x.color == player.color);
+                if (mapping == null) continue;
+                avatarImage.sprite = mapping.avatarSprite;
             }
         }
 

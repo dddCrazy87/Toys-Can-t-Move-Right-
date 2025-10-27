@@ -2261,25 +2261,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isGameStart: 0
   playersInfo: []
-  yellowPlayersPrefab: {fileID: 1235793664548246363, guid: 3f2aaf3859e0ffc4cbe06fc0e96a9ace, type: 3}
-  bluePlayersPrefab: {fileID: 128605762035554809, guid: c201f7068247aec4eb028dafdc2b07bd, type: 3}
-  greenPlayersPrefab: {fileID: 31227099504369450, guid: 5a0cdac96870a1344be3cb63a1b21aa4, type: 3}
-  redPlayersPrefab: {fileID: 4713605435729027315, guid: 94806a15b804e0941a73aba603aecaae, type: 3}
-  itemManager: {fileID: 0}
-  spawnPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  pointUiTypes:
-  - {fileID: 6322754646119311277}
-  - {fileID: 3055065448578124125}
-  - {fileID: 6596566901962068006}
-  pointUiSkins:
-  - {fileID: 21300000, guid: 04566210bf4782f4c8a2406d13d7bbff, type: 3}
-  - {fileID: 21300000, guid: 2bb340e4daf2d944d947f0f18452837a, type: 3}
-  - {fileID: 21300000, guid: af4823d44d72bd146b34edee27059ec5, type: 3}
-  - {fileID: 21300000, guid: 82701331d4548b54fb114bbde1c570b2, type: 3}
+  windUpPlayerPrefab:
+  - {fileID: 31227099504369450, guid: 5a0cdac96870a1344be3cb63a1b21aa4, type: 3}
+  - {fileID: 1235793664548246363, guid: 3f2aaf3859e0ffc4cbe06fc0e96a9ace, type: 3}
+  - {fileID: 128605762035554809, guid: c201f7068247aec4eb028dafdc2b07bd, type: 3}
+  - {fileID: 4713605435729027315, guid: 94806a15b804e0941a73aba603aecaae, type: 3}
 --- !u!1 &8123629178620349171
 GameObject:
   m_ObjectHideFlags: 0

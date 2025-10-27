@@ -1,15 +1,8 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using System.Collections.Generic; 
-using System.Linq; 
-
-[System.Serializable]
-public class SkinAvatarMapping
-{
-    public string skinName;
-    public Sprite avatarSprite;
-}
+using System.Collections.Generic;
+using System.Linq;
 
 public class PlayerCardUI : MonoBehaviour
 {
@@ -17,8 +10,8 @@ public class PlayerCardUI : MonoBehaviour
     public TextMeshProUGUI playerNameText;
     public Image playerAvatarImage;
 
-    [Header("Avatar Mapping")]
-    public List<SkinAvatarMapping> skinAvatarMap;
+    [Header("Player Prefab")]
+    public List<SkinColorMapping> skinColorsMapping = new();
 
     [Header("Step Icons")]
     public GameObject incompleteIcon;
@@ -28,16 +21,14 @@ public class PlayerCardUI : MonoBehaviour
     {
         playerNameText.text = progress.playerInfo.name;
         string playerSkin = progress.playerInfo.skin;
+        string playerColor = progress.playerInfo.color;
         Sprite avatarToShow = null;
 
-        if (skinAvatarMap != null)
-        {
-            SkinAvatarMapping mapping = skinAvatarMap.FirstOrDefault(m => m.skinName == playerSkin);
-            if (mapping != null)
-            {
-                avatarToShow = mapping.avatarSprite;
-            }
-        }
+        List<ColorAvatarMapping> avatarMappingList = skinColorsMapping.FirstOrDefault(x => x.skin == playerSkin).avatarMapping;
+        if (avatarMappingList == null) return;
+        ColorAvatarMapping mapping = avatarMappingList.FirstOrDefault(x => x.color == playerColor);
+        if (mapping == null) return;
+        avatarToShow = mapping.avatarSprite;
 
         if (avatarToShow != null)
         {
@@ -50,7 +41,7 @@ public class PlayerCardUI : MonoBehaviour
             // playerAvatarImage.gameObject.SetActive(false); 
         }
     }
-    
+
     public void SetStepStatus(bool isComplete)
     {
         if (incompleteIcon != null)

@@ -1,12 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using SimpleWebRTC;
 using UnityEngine.SceneManagement;
-using Random = UnityEngine.Random;
 
 #region MessageTypeClasses
 [System.Serializable]
@@ -19,6 +15,8 @@ public class Vector2Data { public float x; public float y; }
 public class MoveMessage : BaseMessage { public Vector2Data vector; }
 [System.Serializable]
 public class HostUpdateMessage { public string type; public string hostId; }
+[System.Serializable]
+public class InitialMessage { public string type; public string color; }
 #endregion
 
 public class NetworkManager : MonoBehaviour
@@ -30,6 +28,7 @@ public class NetworkManager : MonoBehaviour
     [Header("Player Info")]
     public List<Player> playersInfo = new();
     public Dictionary<string, Player> peerIdToPlayer = new();
+    private List<string> selectedSkinColor = new();
 
     private static string hostPeerId = null;
     void Start()
@@ -37,6 +36,7 @@ public class NetworkManager : MonoBehaviour
         WebRTCManager.OnDataMessageReceived_Static += OnDataReceived;
         WebRTCManager.OnPeerDisconnected_Static += OnPeerDisconnected;
         gameManager = FindFirstObjectByType<GameManager>();
+        selectedSkinColor = new List<string> { "green", "yellow", "blue", "red" };
     }
     void OnDestroy()
     {
@@ -122,15 +122,22 @@ public class NetworkManager : MonoBehaviour
         }
         else
         {
+            int randomIndex = UnityEngine.Random.Range(0, selectedSkinColor.Count);
+            string chosenColor = selectedSkinColor[randomIndex];
+
             // 新增新玩家
             Player newPlayer = new()
             {
                 name = identity.nickname,
                 skin = identity.characterName,
+                color = chosenColor,
                 point = 0
             };
             playersInfo.Add(newPlayer);
+            FindFirstObjectByType<LobbyUI>().UpdateLobbyUI();
             peerIdToPlayer[senderPeerId] = newPlayer;
+            selectedSkinColor.RemoveAt(randomIndex);
+            BroadcastInitialToPeer(senderPeerId, chosenColor);
         }
 
         // 若無 Host 則指定
@@ -151,6 +158,21 @@ public class NetworkManager : MonoBehaviour
             MoveMessage msg = JsonUtility.FromJson<MoveMessage>(message);
             gameManager.OnRemotePlayerMove(movingPlayer.skin, msg.vector.x, msg.vector.y);
         }
+    }
+
+    // ------------- BroadcastInitialToPeer -------------
+
+    private void BroadcastInitialToPeer(string peerId, string color)
+    {
+        if (webRTCConnection == null) return;
+
+        InitialMessage initialMessage = new()
+        {
+            type = "initial",
+            color = color
+        };
+        string jsonMessage = JsonUtility.ToJson(initialMessage);
+        webRTCConnection.SendDataChannelMessageToPeer(peerId, jsonMessage);
     }
 
     // ------------- BroadcastHostUpdate -------------

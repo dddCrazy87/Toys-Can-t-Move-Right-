@@ -169,15 +169,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerNameText: {fileID: 7435548459440036294}
   playerAvatarImage: {fileID: 237850942875624712}
-  skinAvatarMap:
-  - skinName: red
-    avatarSprite: {fileID: 21300000, guid: b7bd447775b194bae9e74f24fe92cbc4, type: 3}
-  - skinName: yellow
-    avatarSprite: {fileID: 21300000, guid: 2959b0edf1fe54190819eafcdeb09b5d, type: 3}
-  - skinName: green
-    avatarSprite: {fileID: 21300000, guid: 990b4d2b0ab7f4b2290e2f2c525b4938, type: 3}
-  - skinName: blue
-    avatarSprite: {fileID: 21300000, guid: 565766ed6419f4be8bb7d830540d6e6b, type: 3}
+  skinColorsMapping:
+  - skin: wind-up
+    prefabMapping: []
+    avatarMapping:
+    - color: green
+      avatarSprite: {fileID: 21300000, guid: 990b4d2b0ab7f4b2290e2f2c525b4938, type: 3}
+    - color: red
+      avatarSprite: {fileID: 21300000, guid: b7bd447775b194bae9e74f24fe92cbc4, type: 3}
+    - color: blue
+      avatarSprite: {fileID: 21300000, guid: 565766ed6419f4be8bb7d830540d6e6b, type: 3}
+    - color: yellow
+      avatarSprite: {fileID: 21300000, guid: 2959b0edf1fe54190819eafcdeb09b5d, type: 3}
   incompleteIcon: {fileID: 7495888753689088056}
   completeIcon: {fileID: 1986972048102617279}
 --- !u!1 &1177342859813815660

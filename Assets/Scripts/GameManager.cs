@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using SimpleWebRTC;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -74,7 +75,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Player Data")]
     public List<Player> playersInfo = new();
-    public GameObject yellowPlayersPrefab, bluePlayersPrefab, greenPlayersPrefab, redPlayersPrefab;
+    [Header("Player Prefab")]
+    public List<SkinColorMapping> skinColorsMapping = new();
     void AssignPlayerIndex()
     {
         for (int i = 0; i < playersInfo.Count; i++)
@@ -119,18 +121,11 @@ public class GameManager : MonoBehaviour
     {
         foreach (var player in playersInfo)
         {
-            GameObject prefab = player.skin switch
-            {
-                "yellow" => yellowPlayersPrefab,
-                "blue" => bluePlayersPrefab,
-                "green" => greenPlayersPrefab,
-                "red" => redPlayersPrefab,
-                _ => null
-            };
-
-            if (prefab == null) continue;
-
-            GameObject go = Instantiate(prefab, player.spawnPoint, Quaternion.identity);
+            List<ColorPrefabMapping> prefabMappingList = skinColorsMapping.FirstOrDefault(x => x.skin == player.skin).prefabMapping;
+            if (prefabMappingList == null) continue;
+            ColorPrefabMapping mapping = prefabMappingList.FirstOrDefault(x => x.color == player.color);
+            if (mapping == null) continue;
+            GameObject go = Instantiate(mapping.prefab, player.spawnPoint, Quaternion.identity);
             PlayerController pc = go.GetComponent<PlayerController>();
             pc.Initialize(player.name, player.index);
             playerControllers[player.skin] = pc;
