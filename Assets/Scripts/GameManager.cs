@@ -12,7 +12,7 @@ using System.Linq;
 public class GameManager : MonoBehaviour
 {
     public bool isGameStart = false;
-    public Dictionary<string, PlayerController> playerControllers = new();
+    public Dictionary<int, PlayerController> playerControllers = new();
     ItemManager itemManager;
 
     public void StartGame()
@@ -44,10 +44,10 @@ public class GameManager : MonoBehaviour
 
     // ---------Player Movement --------
 
-    public void OnRemotePlayerMove(string skin, float x, float y)
+    public void OnRemotePlayerMove(int index, float x, float y)
     {
         if (!isGameStart) return;
-        if (playerControllers.TryGetValue(skin, out PlayerController pc))
+        if (playerControllers.TryGetValue(index, out PlayerController pc))
         {
             pc.SetNetworkInput(x, y);
         }
@@ -128,7 +128,7 @@ public class GameManager : MonoBehaviour
             GameObject go = Instantiate(mapping.prefab, player.spawnPoint, Quaternion.identity);
             PlayerController pc = go.GetComponent<PlayerController>();
             pc.Initialize(player.name, player.index);
-            playerControllers[player.skin] = pc;
+            playerControllers[player.index] = pc;
         }
     }
 

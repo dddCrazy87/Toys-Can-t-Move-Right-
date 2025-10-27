@@ -151,12 +151,11 @@ public class NetworkManager : MonoBehaviour
 
     private void HandleMoveMessage(string message, string senderPeerId)
     {
-        // 僅傳遞資料到 GameLogicManager，由它控制角色
         if (peerIdToPlayer.ContainsKey(senderPeerId))
         {
             Player movingPlayer = peerIdToPlayer[senderPeerId];
             MoveMessage msg = JsonUtility.FromJson<MoveMessage>(message);
-            gameManager.OnRemotePlayerMove(movingPlayer.skin, msg.vector.x, msg.vector.y);
+            gameManager.OnRemotePlayerMove(movingPlayer.index, msg.vector.x, msg.vector.y);
         }
     }
 
