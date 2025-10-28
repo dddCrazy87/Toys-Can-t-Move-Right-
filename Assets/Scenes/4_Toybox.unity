@@ -1473,6 +1473,7 @@ GameObject:
   - component: {fileID: 670185677}
   - component: {fileID: 670185676}
   - component: {fileID: 670185675}
+  - component: {fileID: 670185678}
   m_Layer: 5
   m_Name: Coubt Down Canvas
   m_TagString: Untagged
@@ -1565,6 +1566,21 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &670185678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670185673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: defc4795212e37645ad5f22c300fa327, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  countDown3: {fileID: 511697942}
+  countDown2: {fileID: 2117698657}
+  countDown1: {fileID: 1891065079}
 --- !u!1 &721383024
 GameObject:
   m_ObjectHideFlags: 0
@@ -3883,9 +3899,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 863ea6c4395d90a4b801cd4d5bee2b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  countDown3: {fileID: 511697942}
-  countDown2: {fileID: 2117698657}
-  countDown1: {fileID: 1891065079}
 --- !u!4 &1709939694
 Transform:
   m_ObjectHideFlags: 0
@@ -7057,12 +7070,12 @@ SceneRoots:
   - {fileID: 830707259}
   - {fileID: 264193807}
   - {fileID: 1949228463}
+  - {fileID: 1709939694}
   - {fileID: 216824497}
   - {fileID: 832440800}
   - {fileID: 1012842496}
   - {fileID: 1272352550}
   - {fileID: 261170992}
   - {fileID: 670185674}
-  - {fileID: 1709939694}
-  - {fileID: 2348609112128633181}
   - {fileID: 1016711492}
+  - {fileID: 2348609112128633181}
