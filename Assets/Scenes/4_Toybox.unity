@@ -181,7 +181,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 345159}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -461,7 +461,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 207057914}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -1663,14 +1663,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Toybox
       objectReference: {fileID: 0}
-    - target: {fileID: 3112961201081635703, guid: d449d8335488e0d49a61f16897035cbc, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3274275704482549643, guid: d449d8335488e0d49a61f16897035cbc, type: 3}
-      propertyPath: bounceForce
-      value: 500
-      objectReference: {fileID: 0}
     - target: {fileID: 3557654773797457167, guid: d449d8335488e0d49a61f16897035cbc, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1710,10 +1702,6 @@ PrefabInstance:
     - target: {fileID: 3557654773797457167, guid: d449d8335488e0d49a61f16897035cbc, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6935564463315265407, guid: d449d8335488e0d49a61f16897035cbc, type: 3}
-      propertyPath: bounceForce
-      value: 500
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2144,7 +2132,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 870478110}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -4333,7 +4321,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1979180158}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1

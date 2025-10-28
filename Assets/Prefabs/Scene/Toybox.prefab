@@ -393,7 +393,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1907315497880670407}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -638,7 +638,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2343040845218115071}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -1673,7 +1673,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sound: {fileID: 6723168590668775110}
   rotationSpeed: 100
-  bounceForce: 0
+  bounceForce: 80
   bounceDuration: 0.1
 --- !u!82 &6723168590668775110
 AudioSource:
@@ -2193,7 +2193,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sound: {fileID: 5840492824082821422}
   rotationSpeed: 100
-  bounceForce: 200
+  bounceForce: 80
   bounceDuration: 0.1
 --- !u!82 &5840492824082821422
 AudioSource:
