@@ -94,7 +94,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 93334104113431124}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 5de5df0535c6852448ae9e4988b18cb3, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -393,7 +393,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1907315497880670407}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -438,7 +438,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1907315497880670407}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 5de5df0535c6852448ae9e4988b18cb3, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -617,8 +617,8 @@ Transform:
   m_GameObject: {fileID: 2343040845218115071}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.0528, y: 0.8728, z: 0.87}
-  m_LocalScale: {x: 3.0591738, y: 2.1994982, z: 2.0304568}
+  m_LocalPosition: {x: -0.05, y: 1.05, z: 1.15}
+  m_LocalScale: {x: 3, y: 2, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5394023359161309573}
@@ -638,7 +638,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2343040845218115071}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -1673,7 +1673,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sound: {fileID: 6723168590668775110}
   rotationSpeed: 100
-  bounceForce: 500
+  bounceForce: 0
+  bounceDuration: 0.1
 --- !u!82 &6723168590668775110
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2192,7 +2193,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sound: {fileID: 5840492824082821422}
   rotationSpeed: 100
-  bounceForce: 500
+  bounceForce: 200
+  bounceDuration: 0.1
 --- !u!82 &5840492824082821422
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2674,7 +2676,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8622838459445074820}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 5de5df0535c6852448ae9e4988b18cb3, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

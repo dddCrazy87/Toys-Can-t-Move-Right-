@@ -17,31 +17,41 @@ public class FingerToyController : MonoBehaviour
     [Header("彈力設定")]
     [Tooltip("彈力")]
     public float bounceForce = 10f;
+    public float bounceDuration = 0.1f;
+
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        Rigidbody otherRb = collision.rigidbody;
+        if (otherRb != null && otherRb.CompareTag("Player"))
         {
-            Rigidbody playerRb = collision.rigidbody;
-            PlayerController player = collision.gameObject.GetComponent<PlayerController>();
-            if (playerRb != null)
+            PlayerController player = otherRb.gameObject.GetComponent<PlayerController>();
+            if (player != null)
             {
                 player.avilibleMovement = false;
-                Vector3 bounceDir = -collision.contacts[0].normal;
-                StartCoroutine(ApplyBounce(player, playerRb, bounceDir, bounceForce, 0.3f));
+
+                // 以接觸點法線反向為彈跳方向，但略微往上調整避免貼地穿牆
+                Vector3 bounceDir = (-collision.contacts[0].normal + Vector3.up * 0.1f).normalized;
+
+                StartCoroutine(ApplyBounce(player, otherRb, bounceDir));
                 sound.Play();
             }
         }
     }
 
-    IEnumerator ApplyBounce(PlayerController player, Rigidbody playerRb, Vector3 direction, float totalForce, float duration)
+    IEnumerator ApplyBounce(PlayerController player, Rigidbody playerRb, Vector3 direction)
     {
-        float timer = 0f;
-        while (timer < duration)
-        {
-            playerRb.AddForce(direction * (totalForce / duration) * Time.fixedDeltaTime, ForceMode.VelocityChange);
-            timer += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
-        }
+        // 先清空速度，避免疊加造成彈飛
+        playerRb.linearVelocity = Vector3.zero;
+
+        // 立即施加一次性彈跳（以Impulse方式）
+        playerRb.AddForce(direction * bounceForce, ForceMode.Impulse);
+
+        // 等待彈跳結束
+        yield return new WaitForSeconds(bounceDuration);
+
+        // 等待剛體穩定（確保不再穿牆）
+        yield return new WaitForFixedUpdate();
+
         player.avilibleMovement = true;
     }
 }

@@ -36,37 +36,25 @@ public class PlayerController : MonoBehaviour
     {
         networkMovement = new Vector3(x, 0f, y).normalized;
     }
+
     void Update()
     {
-        // float horizontal = Input.GetAxisRaw("Horizontal");
-        // float vertical = Input.GetAxisRaw("Vertical");
-        // movement = new Vector3(horizontal, 0f, vertical).normalized;
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("Player Point: " + FindFirstObjectByType<GameManager>().GetPlayerPoint(playerIndex));
-        }
         if (!avilibleMovement) return;
         movement = networkMovement;
     }
 
     void FixedUpdate()
     {
-        if (movement != Vector3.zero)
-        {
-            // 計算目標移動位置
-            Vector3 targetVelocity = networkMovement * moveSpeed;
-            // 使用物理系統移動玩家
-            rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
-            // 平滑旋轉玩家面向移動方向
-            Quaternion targetRotation = Quaternion.LookRotation(networkMovement);
-            rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotateSpeed * Time.fixedDeltaTime);
-        }
-        else
-        {
-            // 停止水平移動
-            rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
-        }
+        if (movement == Vector3.zero) return;
+
+        // 使用 MovePosition 進行物理安全移動
+        Vector3 targetPos = rb.position + movement * moveSpeed * Time.fixedDeltaTime;
+        rb.MovePosition(targetPos);
+
+        // 使用 MoveRotation 進行物理安全旋轉
+        Quaternion targetRot = Quaternion.LookRotation(movement);
+        Quaternion smoothRot = Quaternion.Slerp(rb.rotation, targetRot, rotateSpeed * Time.fixedDeltaTime);
+        rb.MoveRotation(smoothRot);
     }
 
 

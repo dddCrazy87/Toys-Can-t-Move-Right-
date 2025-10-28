@@ -4,8 +4,13 @@ public class CastleController : MonoBehaviour
 {
     void OnTriggerEnter(Collider other)
     {
-        GameObject go = other.gameObject;
-        if (!go.CompareTag("Player")) return;
-        go.GetComponent<PlayerController>().CompeleItemCollection();
+        GameObject root = other.attachedRigidbody ? other.attachedRigidbody.gameObject : other.gameObject;
+        if (!root.CompareTag("Player")) return;
+
+        var player = root.GetComponent<PlayerController>();
+        if (player != null)
+        {
+            player.CompeleItemCollection();
+        }
     }
 }

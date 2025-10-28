@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 2317757418562138353}
   - component: {fileID: 6292949623519740632}
   - component: {fileID: 2426013350220020021}
+  - component: {fileID: 7844180928000998266}
   m_Layer: 0
   m_Name: Plane.002
   m_TagString: Untagged
@@ -121,6 +122,29 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!136 &7844180928000998266
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 376413282644039650}
+  m_Material: {fileID: 13400000, guid: 0d71d2f94a2e32c46a1ed5cfc7436614, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.8880897
+  m_Height: 0.5200356
+  m_Direction: 1
+  m_Center: {x: -0.48932666, y: 0.010563135, z: -6.9411592}
 --- !u!1 &471149642064649864
 GameObject:
   m_ObjectHideFlags: 0
@@ -132,6 +156,7 @@ GameObject:
   - component: {fileID: 7806150024311028229}
   - component: {fileID: 6221244448322317313}
   - component: {fileID: 9200478834001838114}
+  - component: {fileID: 7893119594926894029}
   m_Layer: 0
   m_Name: body
   m_TagString: Untagged
@@ -207,6 +232,29 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!136 &7893119594926894029
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 471149642064649864}
+  m_Material: {fileID: 13400000, guid: 0d71d2f94a2e32c46a1ed5cfc7436614, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 3.4783459
+  m_Height: 5.0306587
+  m_Direction: 1
+  m_Center: {x: -0.4893285, y: 0.24343395, z: -3.03893}
 --- !u!1 &2877978084675658677
 GameObject:
   m_ObjectHideFlags: 0
@@ -436,7 +484,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4488613043533248705}
   - component: {fileID: 1781566843091596102}
-  - component: {fileID: 2466406124401833531}
   - component: {fileID: 2816887829087687593}
   m_Layer: 0
   m_Name: redPlayer
@@ -490,27 +537,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 116
   m_CollisionDetection: 2
---- !u!65 &2466406124401833531
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4713605435729027315}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 3.3942916, y: 2.2861185, z: 4.803914}
-  m_Center: {x: -0.2621398, y: 0.10459852, z: -2.0480623}
 --- !u!114 &2816887829087687593
 MonoBehaviour:
   m_ObjectHideFlags: 0
