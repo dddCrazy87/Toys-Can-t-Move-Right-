@@ -7,39 +7,35 @@ public class ItemFollow : MonoBehaviour
     public Transform follow = null;
 
     private Rigidbody rb;
-    private void Awake() {
+
+    private void Awake()
+    {
         rb = GetComponent<Rigidbody>();
     }
 
-    void Update() {
+    void FixedUpdate()
+    {
         if (follow == null) return;
-        // change this object position only if the distance is greater than maxDistance
+
         float actualDistance = Vector3.Distance(transform.position, follow.position);
         if (actualDistance > maxDistance)
         {
-            var followToCurrent = (transform.position - follow.position).normalized;
-            followToCurrent.Scale(new Vector3(maxDistance, maxDistance, maxDistance));
-
-            // set the new position
+            var followToCurrent = (transform.position - follow.position).normalized * maxDistance;
             Vector3 newPos = follow.position + followToCurrent;
-            rb.MovePosition(newPos);    
+
+            // 使用 MovePosition，確保不穿牆、平滑移動
+            rb.MovePosition(newPos);
         }
 
-        // Rotate..
+        // 平滑朝向跟隨方向
         Vector3 targetDirection = follow.position - transform.position;
-
-        // 把 Y 分量歸零，這樣只在水平面轉動
         targetDirection.y = 0f;
         targetDirection.Normalize();
 
-        float singleStep = followSpeed * Time.deltaTime;
+        float singleStep = followSpeed * Time.fixedDeltaTime;
         Vector3 newDirection = Vector3.RotateTowards(transform.forward, targetDirection, singleStep, 0.0f);
 
-        // 只計算水平方向旋轉
         Quaternion targetRotation = Quaternion.LookRotation(newDirection);
-
-        // 限制 rotation 只改變 Y 軸（其實因為 targetDirection.y = 0，結果也只會轉 Y 軸）
         rb.MoveRotation(targetRotation);
-
     }
 }

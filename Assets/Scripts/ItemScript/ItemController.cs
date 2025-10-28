@@ -4,25 +4,19 @@ public class ItemController : MonoBehaviour
 {
     public Material blue, red, green, yellow;
     private new Renderer renderer;
-    void Start() {
+    void Start()
+    {
         renderer = GetComponent<Renderer>();
     }
-    public void ChangeMaterial(string color) {
-        switch (color) {
-            case "blue":
-                renderer.material = blue;
-                break;
-            case "red":
-                renderer.material = red;
-                break;
-            case "yellow":
-                renderer.material = yellow;
-                break;
-            case "green":
-                renderer.material = green;
-                break;
-            default:
-                break;
-        }
+    public void ChangeMaterial(string color)
+    {
+        renderer.material = color switch
+        {
+            "blue" => blue,
+            "red" => red,
+            "yellow" => yellow,
+            "green" => green,
+            _ => renderer.material
+        };
     }
 }
