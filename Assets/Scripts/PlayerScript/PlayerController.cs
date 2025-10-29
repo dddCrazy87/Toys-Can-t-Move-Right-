@@ -28,9 +28,10 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    public bool avilibleMovement = true;
+    [HideInInspector] public bool avilibleMovement = true;
     private Vector3 movement;
     private Vector3 networkMovement;
+    private Vector3 smoothedMovement;
 
     public void SetNetworkInput(float x, float y)
     {
@@ -45,16 +46,28 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (movement == Vector3.zero) return;
+        if (!avilibleMovement || movement == Vector3.zero) return;
+        if (rb.IsSleeping()) rb.WakeUp();
 
-        // 使用 MovePosition 進行物理安全移動
-        Vector3 targetPos = rb.position + movement * moveSpeed * Time.fixedDeltaTime;
-        rb.MovePosition(targetPos);
+        smoothedMovement = Vector3.Lerp(smoothedMovement, movement, 0.3f);
 
-        // 使用 MoveRotation 進行物理安全旋轉
-        Quaternion targetRot = Quaternion.LookRotation(movement);
-        Quaternion smoothRot = Quaternion.Slerp(rb.rotation, targetRot, rotateSpeed * Time.fixedDeltaTime);
-        rb.MoveRotation(smoothRot);
+        if (smoothedMovement.sqrMagnitude > 0.001f)
+        {
+            Vector3 targetPos = rb.position + smoothedMovement * moveSpeed * Time.fixedDeltaTime;
+            rb.MovePosition(targetPos);
+
+            Quaternion targetRot = Quaternion.LookRotation(smoothedMovement);
+            rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, rotateSpeed * Time.fixedDeltaTime));
+        }
+    }
+
+    public void ForceStopMotion()
+    {
+        // 清空速度與角速度，確保之後能穩定移動
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.Sleep();
+        rb.WakeUp();
     }
 
 

@@ -24,34 +24,30 @@ public class FingerToyController : MonoBehaviour
         Rigidbody otherRb = collision.rigidbody;
         if (otherRb != null && otherRb.CompareTag("Player"))
         {
-            PlayerController player = otherRb.gameObject.GetComponent<PlayerController>();
+            PlayerController player = otherRb.GetComponent<PlayerController>();
             if (player != null)
             {
                 player.avilibleMovement = false;
+                player.ForceStopMotion(); // 清空狀態避免卡死
 
-                // 以接觸點法線反向為彈跳方向，但略微往上調整避免貼地穿牆
+                // 計算彈跳方向（稍微往上）
                 Vector3 bounceDir = (-collision.contacts[0].normal + Vector3.up * 0.1f).normalized;
 
                 StartCoroutine(ApplyBounce(player, otherRb, bounceDir));
-                sound.Play();
+                if (sound) sound.Play();
             }
         }
     }
 
     IEnumerator ApplyBounce(PlayerController player, Rigidbody playerRb, Vector3 direction)
     {
-        // 先清空速度，避免疊加造成彈飛
-        playerRb.linearVelocity = Vector3.zero;
-
-        // 立即施加一次性彈跳（以Impulse方式）
         playerRb.AddForce(direction * bounceForce, ForceMode.Impulse);
 
-        // 等待彈跳結束
+        // 等待彈跳穩定
         yield return new WaitForSeconds(bounceDuration);
 
-        // 等待剛體穩定（確保不再穿牆）
-        yield return new WaitForFixedUpdate();
-
+        // 強制清理速度確保移動恢復正常
+        player.ForceStopMotion();
         player.avilibleMovement = true;
     }
 }

@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bgm: {fileID: 1652820354960105657}
   toyboxBgm: {fileID: 8300000, guid: f3af29349bc71014cb2ca07ec69715ec, type: 3}
+  gameStartBgm: {fileID: 8300000, guid: 81060ca1e0e48a645908bfb71d1c76c5, type: 3}
 --- !u!82 &1652820354960105657
 AudioSource:
   m_ObjectHideFlags: 0

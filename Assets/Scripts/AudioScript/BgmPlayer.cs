@@ -1,11 +1,14 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BgmPlayer : MonoBehaviour
 {
     private static BgmPlayer instance;
 
-    void Awake() {
-        if (instance != null && instance != this) {
+    void Awake()
+    {
+        if (instance != null && instance != this)
+        {
             Destroy(gameObject);
             return;
         }
@@ -16,22 +19,37 @@ public class BgmPlayer : MonoBehaviour
 
     public AudioSource bgm;
     public AudioClip toyboxBgm;
+    public AudioClip gameStartBgm;
 
-    public void PauseBGM() {
+    public void PauseBGM()
+    {
         bgm.Pause();
     }
-    public void PlayBGM() {
+    public void PlayBGM()
+    {
         bgm.Play();
     }
-    public void ChangeBgm(string bgmName) {
-        switch (bgmName) {
-            case "Toybox":
-                PauseBGM();
-                bgm.resource = toyboxBgm;
-                Invoke(nameof(PlayBGM), 0.5f);
-                break;
-            default:
-                break;
-        }
+    public void ChangeBgm()
+    {
+        PauseBGM();
+        string sceneName = SceneManager.GetActiveScene().name;
+        bgm.resource = sceneName switch
+        {
+            "1_GameStart" => gameStartBgm,
+            "4_Toybox" => toyboxBgm,
+            "5_GameRestart" => gameStartBgm,
+            _ => toyboxBgm
+        };
+        Invoke(nameof(PlayBGM), 0.5f);
+
+        // switch (bgmName) {
+        //     case "":
+        //         PauseBGM();
+        //         bgm.resource = toyboxBgm;
+        //         Invoke(nameof(PlayBGM), 0.5f);
+        //         break;
+        //     default:
+        //         break;
+        // }
     }
 }
