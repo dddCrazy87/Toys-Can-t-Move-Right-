@@ -4,24 +4,19 @@ using UnityEngine;
 
 public class ItemManager : MonoBehaviour
 {
-    public static ItemManager Instance { get; private set; }
+    public static ItemManager Instance;
 
-    [Header("每個道具後方跟隨點和本體的距離")]
-    public float itemAnchorDistance = 1.2f;
+    [Header("每顆 Item 後方 anchor 的距離")]
+    public float anchorDistance = 1.2f;
 
-    private readonly Dictionary<Transform, List<Transform>> chains = new();
+    private Dictionary<Transform, List<Transform>> chains = new();
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
         Instance = this;
     }
 
-    // 取得某個玩家的道具串
+    // 取得玩家的道具串
     public List<Transform> GetChain(Transform player)
     {
         if (!chains.TryGetValue(player, out var list))
@@ -32,17 +27,11 @@ public class ItemManager : MonoBehaviour
         return list;
     }
 
-    // 玩家要求撿/搶一顆道具
+    // 玩家要求撿
     public void RequestCollect(Transform player, Transform item)
     {
         ItemData data = item.GetComponent<ItemData>();
-        if (data == null)
-        {
-            Debug.LogWarning("嘗試撿取的物件沒有 ItemData", item);
-            return;
-        }
-
-        if (data.isBusy) return;
+        if (data == null || data.isBusy) return;
 
         data.isBusy = true;
         StartCoroutine(CollectRoutine(player, item, data));
@@ -50,106 +39,82 @@ public class ItemManager : MonoBehaviour
 
     private IEnumerator CollectRoutine(Transform player, Transform item, ItemData data)
     {
-        yield return null; // 避免同幀多玩家同時撞到
+        yield return null; // 避免同一幀觸發兩次
 
         if (data.owner == null)
-        {
-            CollectFreeItem(player, item, data);
-        }
+            CollectFree(player, item, data);
         else
-        {
             TrySteal(player, item, data);
-        }
 
         data.isBusy = false;
     }
 
-    // 取得某顆 item 的後方 anchor（不存在就建立一個）
-    private Transform GetItemFollowAnchor(Transform item)
+    // 取得後方 FollowAnchor（不存在就建立）
+    private Transform GetAnchor(Transform item)
     {
         Transform anchor = item.Find("FollowAnchor");
+
         if (anchor == null)
         {
             GameObject go = new GameObject("FollowAnchor");
             anchor = go.transform;
             anchor.SetParent(item);
-            anchor.localPosition = new Vector3(0f, 0f, -itemAnchorDistance);
+            anchor.localPosition = new Vector3(0, 0, -anchorDistance);
             anchor.localRotation = Quaternion.identity;
         }
+
         return anchor;
     }
 
-    // 自由道具 → 撿起來
-    private void CollectFreeItem(Transform player, Transform item, ItemData data)
+    // 撿取自由道具
+    private void CollectFree(Transform player, Transform item, ItemData data)
     {
         List<Transform> chain = GetChain(player);
+        PlayerController pc = player.GetComponent<PlayerController>();
 
         data.owner = player;
         data.index = chain.Count;
 
-        ItemFollow follow = item.GetComponent<ItemFollow>();
-        if (follow == null)
-            follow = item.gameObject.AddComponent<ItemFollow>();
+        var follow = item.GetComponent<ItemFollow>();
+        if (!follow) follow = item.gameObject.AddComponent<ItemFollow>();
 
-        PlayerController pc = player.GetComponent<PlayerController>();
-        Transform followTarget;
-
-        if (chain.Count == 0)
-        {
-            // 第一顆 item 跟玩家的 followPoint
-            followTarget = pc.followPoint;
-        }
-        else
-        {
-            // 之後的 item 跟前一顆 item 的 FollowAnchor
-            Transform previousItem = chain[^1];
-            followTarget = GetItemFollowAnchor(previousItem);
-        }
-
-        follow.follow = followTarget;
+        // 決定要跟誰
+        follow.follow = chain.Count == 0
+            ? pc.followPoint
+            : GetAnchor(chain[^1]);
 
         chain.Add(item);
 
+        // 上色
+        ItemController ic = item.GetComponent<ItemController>();
+        if (ic) ic.ChangeColor(pc.playerColor);
+
         FindFirstObjectByType<GameSoundEffect>()?.PlayGetItemSound();
-        item.GetComponent<ItemController>()?.ChangeColor(pc.playerColor);
     }
 
     // 搶奪
-    private void TrySteal(Transform stealer, Transform hitItem, ItemData hitItemData)
+    private void TrySteal(Transform stealer, Transform hitItem, ItemData hitData)
     {
-        // 已經是自己了就不用處理
-        if (hitItemData.owner == stealer) return;
+        if (hitData.owner == stealer) return;
 
-        PlayerController victimPc = hitItemData.owner.GetComponent<PlayerController>();
-        if (victimPc == null) return;
+        PlayerController victimPC = hitData.owner.GetComponent<PlayerController>();
+        if (victimPC.isImmuneStolen) return;
 
-        // 被搶方免疫中 → 搶不到
-        if (victimPc.isImmuneStolen) return;
+        victimPC.ActivateImmunityStolen();
 
-        // 啟動免疫
-        victimPc.ActivateImmunityStolen();
-
-        List<Transform> victimChain = GetChain(hitItemData.owner);
+        List<Transform> victimChain = GetChain(hitData.owner);
         List<Transform> stealerChain = GetChain(stealer);
-        PlayerController stealerPc = stealer.GetComponent<PlayerController>();
+        PlayerController stealerPC = stealer.GetComponent<PlayerController>();
 
-        if (victimChain.Count == 0)
-            return;
-
-        // 以實際的 item 在 victimChain 中的位置為準，比 data.index 靠譜
         int startIndex = victimChain.IndexOf(hitItem);
-        if (startIndex < 0 || startIndex >= victimChain.Count)
-            return;
+        if (startIndex < 0) return;
 
         int count = victimChain.Count - startIndex;
-        if (count <= 0)
-            return;
 
-        // 切出被搶走的那一段
         List<Transform> stolen = victimChain.GetRange(startIndex, count);
         victimChain.RemoveRange(startIndex, count);
 
-        // 更新被搶那串的 owner / index / follow
+        // 更新 stolen 每顆 item
         for (int i = 0; i < stolen.Count; i++)
         {
             Transform t = stolen[i];
@@ -159,42 +124,24 @@ public class ItemManager : MonoBehaviour
             d.index = stealerChain.Count + i;
 
             ItemFollow f = t.GetComponent<ItemFollow>();
-            if (f == null) f = t.gameObject.AddComponent<ItemFollow>();
+            if (!f) f = t.gameObject.AddComponent<ItemFollow>();
 
-            // 決定這顆 item 要跟誰
-            Transform followTarget;
+            // follow 接法
+            Transform preceding = (i == 0 && stealerChain.Count > 0)
+                ? stealerChain[^1]
+                : (i > 0 ? stolen[i - 1] : null);
 
-            if (stealerChain.Count == 0 && i == 0)
-            {
-                // 搶之前 stealer 沒道具，這是第一顆 → 跟玩家 followPoint
-                followTarget = stealerPc.followPoint;
-            }
+            if (preceding != null)
+                f.follow = GetAnchor(preceding);
             else
-            {
-                // 有「前面那顆 item」存在：
-                // i == 0 → 前面是 stealer 原本的最後一顆
-                // i > 0 → 前面是 stolen[i-1]
-                Transform precedingItem;
+                f.follow = stealerPC.followPoint;
 
-                if (i == 0)
-                {
-                    precedingItem = stealerChain[^1];
-                }
-                else
-                {
-                    precedingItem = stolen[i - 1];
-                }
-
-                followTarget = GetItemFollowAnchor(precedingItem);
-            }
-
-            f.follow = followTarget;
-            t.GetComponent<ItemController>().ChangeColor(stealerPc.playerColor);
+            // 上色
+            ItemController ic = t.GetComponent<ItemController>();
+            if (ic) ic.ChangeColor(stealerPC.playerColor);
         }
 
         stealerChain.AddRange(stolen);
-
-        // 這裡可以放搶奪音效
         FindAnyObjectByType<GameSoundEffect>()?.PlayStealItemSound();
     }
 

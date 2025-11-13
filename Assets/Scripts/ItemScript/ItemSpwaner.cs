@@ -1,135 +1,112 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemSpawner : MonoBehaviour
 {
-    [Header("道具設定")]
-    public GameObject[] itemPrefabs;   // 可用的道具預製體
-    public int maxItems = 5;           // 場上最多幾顆
-    public Transform[] spawnPoints;    // 固定生成點
+    public GameObject[] itemPrefabs;
+    public Transform[] spawnPoints;
+    public int maxItems = 5;
 
-    // 每個點位目前生成的道具
-    private readonly Dictionary<int, GameObject> spawnedItems = new();
-
-    private void Awake()
-    {
-        if (spawnPoints == null || spawnPoints.Length == 0)
-            Debug.LogError("沒有設置生成點");
-
-        if (itemPrefabs == null || itemPrefabs.Length == 0)
-            Debug.LogError("沒有設置道具預製體");
-    }
+    private Dictionary<int, GameObject> spawnedItems = new();
 
     public void StartSpawnItems()
     {
         ClearAllItems();
 
-        int spawnCount = Mathf.Min(maxItems, spawnPoints.Length);
+        int count = Mathf.Min(maxItems, spawnPoints.Length);
 
-        List<int> availableIndices = new();
+        List<int> indices = new();
         for (int i = 0; i < spawnPoints.Length; i++)
-            availableIndices.Add(i);
+            indices.Add(i);
 
-        for (int i = 0; i < spawnCount; i++)
+        for (int i = 0; i < count; i++)
         {
-            if (availableIndices.Count == 0) break;
+            int r = Random.Range(0, indices.Count);
+            int point = indices[r];
+            indices.RemoveAt(r);
 
-            int randomIndex = Random.Range(0, availableIndices.Count);
-            int pointIndex = availableIndices[randomIndex];
-            availableIndices.RemoveAt(randomIndex);
-
-            SpawnItemAtPoint(pointIndex);
+            SpawnItem(point);
         }
     }
 
-    private void SpawnItemAtPoint(int pointIndex)
+    private void SpawnItem(int pointIndex)
     {
-        if (pointIndex < 0 || pointIndex >= spawnPoints.Length) return;
-
-        // 如果該點已經有舊道具 → 先移除
         if (spawnedItems.ContainsKey(pointIndex))
         {
-            if (spawnedItems[pointIndex] != null)
-                Destroy(spawnedItems[pointIndex]);
-
+            Destroy(spawnedItems[pointIndex]);
             spawnedItems.Remove(pointIndex);
         }
 
         GameObject prefab = itemPrefabs[Random.Range(0, itemPrefabs.Length)];
-        GameObject item = Instantiate(prefab);
 
-        // ⭕ 正確做法：指定位置，而不是 +=
-        item.transform.position = spawnPoints[pointIndex].position;
-        item.transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-
-        // 確保有 ItemFollow & ItemData
-        if (!item.TryGetComponent<ItemFollow>(out _))
-            item.AddComponent<ItemFollow>();
+        GameObject item = Instantiate(
+            prefab,
+            spawnPoints[pointIndex].position,
+            Quaternion.identity
+        );
 
         ItemData data = item.GetComponent<ItemData>();
-        if (data == null) data = item.AddComponent<ItemData>();
+        if (!data) data = item.AddComponent<ItemData>();
 
+        data.spawnPointIndex = pointIndex;
         data.owner = null;
         data.index = -1;
-        data.isBusy = false;
-        data.spawnPointIndex = pointIndex;
+        data.isBusy = true; // 保護期（0.2s不被撿）
+
+        // 確保 Follow 不為 null（避免吸到中心）
+        ItemFollow f = item.GetComponent<ItemFollow>();
+        if (!f) f = item.AddComponent<ItemFollow>();
+        f.follow = item.transform;
+
+        // 顏色預設（中立）
+        ItemController ic = item.GetComponent<ItemController>();
+        if (ic) ic.SetRandomColor();
 
         spawnedItems[pointIndex] = item;
 
-        item.GetComponent<ItemController>().SetRandomColor();
+        StartCoroutine(SpawnProtection(data));
+    }
+
+    private IEnumerator SpawnProtection(ItemData data)
+    {
+        yield return new WaitForSeconds(0.2f);
+        data.isBusy = false;
     }
 
     public void ItemCollected(GameObject item)
     {
         ItemData data = item.GetComponent<ItemData>();
-        if (data == null)
-        {
-            Debug.LogWarning("ItemCollected 收到沒有 ItemData 的物件", item);
-            return;
-        }
+        if (spawnedItems.ContainsKey(data.spawnPointIndex))
+            spawnedItems.Remove(data.spawnPointIndex);
 
-        int pointIndex = data.spawnPointIndex;
+        Destroy(item);
 
-        if (spawnedItems.ContainsKey(pointIndex))
-        {
-            spawnedItems.Remove(pointIndex);
-        }
-
-        // 過一段時間在空點再生一顆
-        Invoke(nameof(SpawnItemAtRandomPoint), 1.5f);
+        Invoke(nameof(SpawnRandomPoint), 1.5f);
     }
 
-    private void SpawnItemAtRandomPoint()
+    private void SpawnRandomPoint()
     {
-        List<int> unusedIndices = new();
+        List<int> unused = new();
         for (int i = 0; i < spawnPoints.Length; i++)
         {
             if (!spawnedItems.ContainsKey(i))
-                unusedIndices.Add(i);
+                unused.Add(i);
         }
 
-        if (unusedIndices.Count > 0)
+        if (unused.Count > 0)
         {
-            int randomIndex = Random.Range(0, unusedIndices.Count);
-            SpawnItemAtPoint(unusedIndices[randomIndex]);
-        }
-        else
-        {
-            Debug.Log("所有點位都已使用");
+            int idx = unused[Random.Range(0, unused.Count)];
+            SpawnItem(idx);
         }
     }
 
     public void ClearAllItems()
     {
-        foreach (GameObject item in spawnedItems.Values)
+        foreach (var kv in spawnedItems)
         {
-            if (item != null) Destroy(item);
+            if (kv.Value) Destroy(kv.Value);
         }
         spawnedItems.Clear();
-    }
-
-    private void OnDestroy()
-    {
-        ClearAllItems();
     }
 }

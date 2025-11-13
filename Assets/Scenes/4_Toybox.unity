@@ -1672,7 +1672,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ed7b2450fcab743b2aaceed21f099d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemAnchorDistance: 1.2
+  anchorDistance: 1.2
 --- !u!4 &832440800
 Transform:
   m_ObjectHideFlags: 0
@@ -4649,7 +4649,6 @@ MonoBehaviour:
   - {fileID: 2224711133505318189, guid: b520caa451efa4245a6d4a1764663036, type: 3}
   - {fileID: 6596523836363721049, guid: fad0e758d19be804e894cd92cdcabca0, type: 3}
   - {fileID: 2951415384353321943, guid: f405b2aa96309b74696dbc3822760231, type: 3}
-  maxItems: 12
   spawnPoints:
   - {fileID: 1464955142}
   - {fileID: 861012856}
@@ -4674,6 +4673,7 @@ MonoBehaviour:
   - {fileID: 210324572}
   - {fileID: 1284968142}
   - {fileID: 860103396}
+  maxItems: 12
 --- !u!4 &2030419504
 Transform:
   m_ObjectHideFlags: 0
