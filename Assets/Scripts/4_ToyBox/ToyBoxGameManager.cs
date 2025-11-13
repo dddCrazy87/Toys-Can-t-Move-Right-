@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,6 +30,7 @@ public class ToyBoxGameManager : MonoBehaviour
 
     void LoadNextSceneWithFadeOut()
     {
+        FindFirstObjectByType<NetworkManager>().BroadcastTerminate();
         sceneFadeInFadeOut.LoadNextSceneWithFadeOut();
     }
 }

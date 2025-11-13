@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SimpleWebRTC;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 #region MessageTypeClasses
 [System.Serializable]
@@ -17,6 +18,10 @@ public class MoveMessage : BaseMessage { public Vector2Data vector; }
 public class HostUpdateMessage { public string type; public string hostId; }
 [System.Serializable]
 public class InitialMessage { public string type; public string color; }
+[System.Serializable]
+public class FinalPlayerData { public int rank; public int point; public string color; public string skin; }
+[System.Serializable]
+public class TerminateMessage { public string type; public List<FinalPlayerData> finalPlayerDatas; }
 #endregion
 
 public class NetworkManager : MonoBehaviour
@@ -213,6 +218,34 @@ public class NetworkManager : MonoBehaviour
 
         webRTCConnection.SendDataChannelMessage(jsonMessage);
         Debug.Log("Broadcasting Navigate to Playing: " + jsonMessage);
+    }
+
+    // ------------- BroadcastTerminate -------------
+
+    public void BroadcastTerminate()
+    {
+        if (webRTCConnection == null) return;
+
+        var finalPlayerDatas = playersInfo
+                .OrderByDescending(p => p.point)
+                .Select((p, index) => new FinalPlayerData
+                {
+                    rank = index + 1,
+                    point = p.point,
+                    color = p.color,
+                    skin = p.skin
+                })
+                .ToList();
+
+        TerminateMessage terminateMessage = new()
+        {
+            type = "terminate",
+            finalPlayerDatas = finalPlayerDatas
+        };
+        string jsonMessage = JsonUtility.ToJson(terminateMessage);
+
+        webRTCConnection.SendDataChannelMessage(jsonMessage);
+        Debug.Log("Broadcasting Terminate: " + jsonMessage);
     }
 
     // ------------- Dont Destroy On Load -------------
