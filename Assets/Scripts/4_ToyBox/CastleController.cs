@@ -10,7 +10,7 @@ public class CastleController : MonoBehaviour
         var player = root.GetComponent<PlayerController>();
         if (player != null)
         {
-            player.CompeleItemCollection();
+            player.CompleteItemCollection();
         }
     }
 }

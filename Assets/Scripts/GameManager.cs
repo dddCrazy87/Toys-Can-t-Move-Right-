@@ -12,15 +12,30 @@ using System.Linq;
 public class GameManager : MonoBehaviour
 {
     public bool isGameStart = false;
+    [Header("Is testing game")]
+    [SerializeField] bool isTesting = false;
     public Dictionary<int, PlayerController> playerControllers = new();
-    ItemManager itemManager;
+    ItemSpawner itemSpawner;
+
+    [Header("Player Data")]
+    public List<Player> playersInfo = new();
+    [Header("Player Prefab")]
+    public List<SkinColorMapping> skinColorsMapping = new();
 
     public void StartGame()
     {
         if (playersInfo.Count <= 0)
         {
-            print("No player registered");
-            return;
+            if (isTesting)
+            {
+                playersInfo.Add(new Player { name = "p1", skin = "mouse", color = "blue" });
+                playersInfo.Add(new Player { name = "p2", skin = "deer", color = "yellow" });
+            }
+            else
+            {
+                Debug.Log("No player");
+                return;
+            }
         }
         // 設定玩家Id
         AssignPlayerIndex();
@@ -31,9 +46,9 @@ public class GameManager : MonoBehaviour
         // 生成道具
         ;
 
-        if (itemManager = FindFirstObjectByType<ItemManager>())
+        if (itemSpawner = FindFirstObjectByType<ItemSpawner>())
         {
-            itemManager.StartSpawnItems();
+            itemSpawner.StartSpawnItems();
         }
         else
         {
@@ -72,11 +87,6 @@ public class GameManager : MonoBehaviour
     }
 
     // ------- Assign Player Index -------
-
-    [Header("Player Data")]
-    public List<Player> playersInfo = new();
-    [Header("Player Prefab")]
-    public List<SkinColorMapping> skinColorsMapping = new();
     void AssignPlayerIndex()
     {
         for (int i = 0; i < playersInfo.Count; i++)
@@ -127,8 +137,14 @@ public class GameManager : MonoBehaviour
             if (mapping == null) continue;
             GameObject go = Instantiate(mapping.prefab, player.spawnPoint, Quaternion.identity);
             PlayerController pc = go.GetComponent<PlayerController>();
-            pc.Initialize(player.name, player.index);
+            pc.Initialize(player.name, player.index, player.color);
             playerControllers[player.index] = pc;
+
+            if (isTesting)
+            {
+                PlayerGamingTest pgt = go.AddComponent<PlayerGamingTest>();
+                pgt.playerId = player.index;
+            }
         }
     }
 

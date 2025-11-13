@@ -10,7 +10,8 @@ public class ToyBoxGameManager : MonoBehaviour
     [SerializeField] private AudioSource gameOverAudio;
     void Start()
     {
-        FindFirstObjectByType<BgmPlayer>().ChangeBgm();
+        BgmPlayer bgmPlayer = FindFirstObjectByType<BgmPlayer>();
+        if (bgmPlayer) bgmPlayer.ChangeBgm();
         FindFirstObjectByType<GameStartCountDown>().CountDownAndStartGame(OnCountDownFinished);
     }
 

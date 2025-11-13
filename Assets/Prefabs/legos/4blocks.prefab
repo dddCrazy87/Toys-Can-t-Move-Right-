@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 1394383927787457293}
   - component: {fileID: 3984049670340620021}
   - component: {fileID: 5037331963662911592}
-  - component: {fileID: 2271444111963189436}
   - component: {fileID: -8596258937710398339}
   m_Layer: 0
   m_Name: 4blocks
@@ -68,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -6478536213147159724, guid: e32b2ecf62b8d7c409508fcc5fbd6ee0, type: 3}
+  - {fileID: 2100000, guid: 43951157328f07c4195e642da26d9692, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -138,22 +137,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
---- !u!114 &2271444111963189436
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2951415384353321943}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 906d7afee5faa6b469002d684353c002, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spawnPointIndex: 0
-  collectedItemIndex: 0
-  owner: {fileID: 0}
-  ownerPlayerIndex: 0
 --- !u!114 &-8596258937710398339
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2f5daf45df73e249a8cf6972f2a86ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blue: {fileID: 2100000, guid: 43951157328f07c4195e642da26d9692, type: 2}
-  red: {fileID: 2100000, guid: 162a0d7cdbcd6d741b05a5e3540bcc62, type: 2}
-  green: {fileID: 2100000, guid: d645129c1b9795f4686589b086542a3f, type: 2}
-  yellow: {fileID: 2100000, guid: 04d8315e1bc2c034aaa8aba5668a7191, type: 2}
+  redColor: {r: 0.7647059, g: 0.35686275, b: 0.34117648, a: 0}
+  greenColor: {r: 0.4745098, g: 0.5803922, b: 0.45882353, a: 0}
+  blueColor: {r: 0.34901962, g: 0.4745098, b: 0.7529412, a: 0}
+  yellowColor: {r: 0.8392157, g: 0.67058825, b: 0, a: 0}

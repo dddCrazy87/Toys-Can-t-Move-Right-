@@ -1,41 +1,55 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class ItemFollow : MonoBehaviour
 {
-    public float maxDistance = 2;
-    public float followSpeed = 1.0f;
-    public Transform follow = null;
+    [Tooltip("要跟隨的目標（玩家 followPoint 或前一顆道具的 FollowAnchor）")]
+    public Transform follow;
+
+    [Tooltip("最大可拉伸距離（你的 maxDistance）")]
+    public float maxDistance = 1.2f;
+
+    [Tooltip("旋轉速度（你的 followSpeed）")]
+    public float followSpeed = 15f;
 
     private Rigidbody rb;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (follow == null) return;
 
-        float actualDistance = Vector3.Distance(transform.position, follow.position);
-        if (actualDistance > maxDistance)
-        {
-            var followToCurrent = (transform.position - follow.position).normalized * maxDistance;
-            Vector3 newPos = follow.position + followToCurrent;
+        float currentDistance = Vector3.Distance(transform.position, follow.position);
 
-            // 使用 MovePosition，確保不穿牆、平滑移動
-            rb.MovePosition(newPos);
+        // 超過距離 → 拉回到 maxDistance 範圍
+        if (currentDistance > maxDistance)
+        {
+            Vector3 dir = (transform.position - follow.position).normalized;
+            Vector3 targetPos = follow.position + dir * maxDistance;
+
+            rb.MovePosition(targetPos);
         }
 
-        // 平滑朝向跟隨方向
-        Vector3 targetDirection = follow.position - transform.position;
-        targetDirection.y = 0f;
-        targetDirection.Normalize();
+        // ---- 平滑旋轉朝向 follow ----
+        Vector3 targetDir = follow.position - transform.position;
+        targetDir.y = 0f;
+        targetDir.Normalize();
 
-        float singleStep = followSpeed * Time.fixedDeltaTime;
-        Vector3 newDirection = Vector3.RotateTowards(transform.forward, targetDirection, singleStep, 0.0f);
+        float step = followSpeed * Time.fixedDeltaTime;
 
-        Quaternion targetRotation = Quaternion.LookRotation(newDirection);
-        rb.MoveRotation(targetRotation);
+        Vector3 newDir = Vector3.RotateTowards(
+            transform.forward,
+            targetDir,
+            step,
+            0f
+        );
+
+        Quaternion newRot = Quaternion.LookRotation(newDir);
+        rb.MoveRotation(newRot);
     }
 }
