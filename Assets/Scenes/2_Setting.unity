@@ -419,17 +419,61 @@ MonoBehaviour:
   cardContainer: {fileID: 1861015927}
   playerScrollViewObject: {fileID: 792966709}
   skinColorsMapping:
+  - skin: deer
+    prefabMapping: []
+    avatarMapping:
+    - color: blue
+      avatarSprite: {fileID: 21300000, guid: e8be82f861fa74300a646e9e95a6e67c, type: 3}
+    - color: green
+      avatarSprite: {fileID: 21300000, guid: 3fe8b6003125745d383fd1d4c27d48c7, type: 3}
+    - color: red
+      avatarSprite: {fileID: 21300000, guid: 39094b62f4dcc43b3af5f0ec2e75f4f0, type: 3}
+    - color: yellow
+      avatarSprite: {fileID: 21300000, guid: 9d485eb2b8fb143eb8f162c5ea0b6f61, type: 3}
+  - skin: dog
+    prefabMapping: []
+    avatarMapping:
+    - color: blue
+      avatarSprite: {fileID: 21300000, guid: f2a417d190de34eb78692f77b31cdae4, type: 3}
+    - color: green
+      avatarSprite: {fileID: 21300000, guid: 9012169d1d56b4f1fb143b927b7ae8f3, type: 3}
+    - color: red
+      avatarSprite: {fileID: 21300000, guid: b9ce59be41b654fbdbc49814c1bafba6, type: 3}
+    - color: yellow
+      avatarSprite: {fileID: 21300000, guid: 946eee6c1a9f3483191e4a0bf6fedd99, type: 3}
+  - skin: hat
+    prefabMapping: []
+    avatarMapping:
+    - color: blue
+      avatarSprite: {fileID: 21300000, guid: 07bbfe3548c8d4ed2be11a6202bbe090, type: 3}
+    - color: green
+      avatarSprite: {fileID: 21300000, guid: 00e58e7a2491e49899f9563c30bab023, type: 3}
+    - color: red
+      avatarSprite: {fileID: 21300000, guid: eebd2e7e09668454481d478845b42186, type: 3}
+    - color: yellow
+      avatarSprite: {fileID: 21300000, guid: 4c350bb33190d4998a808deea10927b2, type: 3}
+  - skin: mouse
+    prefabMapping: []
+    avatarMapping:
+    - color: blue
+      avatarSprite: {fileID: 21300000, guid: 54453ac3ca3d44a21be7600a4fca2044, type: 3}
+    - color: green
+      avatarSprite: {fileID: 21300000, guid: 407aca6a29f7540148a64369cf269a4e, type: 3}
+    - color: red
+      avatarSprite: {fileID: 21300000, guid: e7bf3f9453a084d3d879c7fbbc309957, type: 3}
+    - color: yellow
+      avatarSprite: {fileID: 21300000, guid: 61ecddc8188cb46bd8ac5ebc0e437774, type: 3}
   - skin: wind-up
     prefabMapping: []
     avatarMapping:
-    - color: green
-      avatarSprite: {fileID: 21300000, guid: c7edc717efa2e42489d64d78f1328f3e, type: 3}
-    - color: yellow
-      avatarSprite: {fileID: 21300000, guid: 10d0add1ce5944f0f98ecf1bf6a0449a, type: 3}
     - color: blue
       avatarSprite: {fileID: 21300000, guid: 9781f19595d0443b3b91d8c45184182a, type: 3}
+    - color: green
+      avatarSprite: {fileID: 21300000, guid: c7edc717efa2e42489d64d78f1328f3e, type: 3}
     - color: red
       avatarSprite: {fileID: 21300000, guid: d03ed535cd88b4a1b9eb0cefa4813a6b, type: 3}
+    - color: yellow
+      avatarSprite: {fileID: 21300000, guid: 10d0add1ce5944f0f98ecf1bf6a0449a, type: 3}
 --- !u!1 &792966709
 GameObject:
   m_ObjectHideFlags: 0
@@ -2840,14 +2884,58 @@ MonoBehaviour:
   skinColorsMapping:
   - skin: wind-up
     prefabMapping:
-    - color: green
-      prefab: {fileID: 31227099504369450, guid: 5a0cdac96870a1344be3cb63a1b21aa4, type: 3}
     - color: blue
       prefab: {fileID: 128605762035554809, guid: c201f7068247aec4eb028dafdc2b07bd, type: 3}
-    - color: yellow
-      prefab: {fileID: 1235793664548246363, guid: 3f2aaf3859e0ffc4cbe06fc0e96a9ace, type: 3}
+    - color: green
+      prefab: {fileID: 31227099504369450, guid: 5a0cdac96870a1344be3cb63a1b21aa4, type: 3}
     - color: red
       prefab: {fileID: 4713605435729027315, guid: 94806a15b804e0941a73aba603aecaae, type: 3}
+    - color: yellow
+      prefab: {fileID: 1235793664548246363, guid: 3f2aaf3859e0ffc4cbe06fc0e96a9ace, type: 3}
+    avatarMapping: []
+  - skin: deer
+    prefabMapping:
+    - color: blue
+      prefab: {fileID: 517811916871031485, guid: e33975730361c30459be7ea55844985c, type: 3}
+    - color: green
+      prefab: {fileID: 6513410314262743567, guid: a6648c382590a3848a5cfa3ec807025e, type: 3}
+    - color: red
+      prefab: {fileID: 2013942466388528723, guid: 31b88585eeb0bc440a8407affb5e14c3, type: 3}
+    - color: yellow
+      prefab: {fileID: 4499236587456666778, guid: 6ae29a92ed976bb46ba3dca29df5e2a1, type: 3}
+    avatarMapping: []
+  - skin: dog
+    prefabMapping:
+    - color: blue
+      prefab: {fileID: 6715796240307221313, guid: 40f4150a73c2a4f19b5dfc479c841f4e, type: 3}
+    - color: green
+      prefab: {fileID: 1447221908653993580, guid: 6e67d63220b04410da129d43842a3562, type: 3}
+    - color: red
+      prefab: {fileID: 8021938551048423520, guid: 41d41d712bf5446198e46f24c93bd790, type: 3}
+    - color: yellow
+      prefab: {fileID: 1981678484672091597, guid: f520a6cd01cf9410b90bb5cbbf83ac63, type: 3}
+    avatarMapping: []
+  - skin: hat
+    prefabMapping:
+    - color: blue
+      prefab: {fileID: 5350829286195187109, guid: fe1747acb39b44980aaf5fb85f5d3ffd, type: 3}
+    - color: green
+      prefab: {fileID: 6994143279674823909, guid: 01ea3fdfbdaea4d2facc7cc0b805d84d, type: 3}
+    - color: red
+      prefab: {fileID: 3929602685209928272, guid: ed1766b7137c2f04ab4cad6ba28437b8, type: 3}
+    - color: yellow
+      prefab: {fileID: 6496799499925902479, guid: 47c19df4aee544043881f4c6899e9ab2, type: 3}
+    avatarMapping: []
+  - skin: mouse
+    prefabMapping:
+    - color: blue
+      prefab: {fileID: 5350829286195187109, guid: fe1747acb39b44980aaf5fb85f5d3ffd, type: 3}
+    - color: green
+      prefab: {fileID: 6994143279674823909, guid: 01ea3fdfbdaea4d2facc7cc0b805d84d, type: 3}
+    - color: red
+      prefab: {fileID: 3929602685209928272, guid: ed1766b7137c2f04ab4cad6ba28437b8, type: 3}
+    - color: yellow
+      prefab: {fileID: 6496799499925902479, guid: 47c19df4aee544043881f4c6899e9ab2, type: 3}
     avatarMapping: []
 --- !u!114 &4504933780801168362
 MonoBehaviour:

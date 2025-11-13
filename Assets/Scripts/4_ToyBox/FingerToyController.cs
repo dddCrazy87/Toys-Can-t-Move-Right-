@@ -31,7 +31,7 @@ public class FingerToyController : MonoBehaviour
                 player.ForceStopMotion(); // 清空狀態避免卡死
 
                 // 計算彈跳方向（稍微往上）
-                Vector3 bounceDir = (-collision.contacts[0].normal + Vector3.up * 0.1f).normalized;
+                Vector3 bounceDir = (-collision.contacts[0].normal).normalized;
 
                 StartCoroutine(ApplyBounce(player, otherRb, bounceDir));
                 if (sound) sound.Play();
