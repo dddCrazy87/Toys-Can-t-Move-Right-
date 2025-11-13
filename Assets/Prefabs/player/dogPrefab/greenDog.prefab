@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1447221908653993580
+--- !u!1 &4738458465427309876
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,129 +8,47 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6701179557630815261}
-  - component: {fileID: 2024923233317186962}
-  - component: {fileID: 7344605187964001893}
+  - component: {fileID: 6291347511721781517}
+  - component: {fileID: 5201864377659905344}
+  - component: {fileID: 7896570414435218122}
+  - component: {fileID: 997809899540135295}
   m_Layer: 0
-  m_Name: greenDog
-  m_TagString: Player
+  m_Name: 1greenDog
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6701179557630815261
+--- !u!4 &6291347511721781517
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1447221908653993580}
+  m_GameObject: {fileID: 4738458465427309876}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 7.25, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2365584729816709710}
-  - {fileID: 5900693613057247090}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &2024923233317186962
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1447221908653993580}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 1
-  m_Constraints: 84
-  m_CollisionDetection: 2
---- !u!114 &7344605187964001893
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1447221908653993580}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b3232b55381d874fa527af29be4d93e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerIDUI: {fileID: 0}
-  playerIndex: 0
-  color: green
-  moveSpeed: 10
-  rotateSpeed: 15
-  avilibleMovement: 1
-  itemFollowSpace: 2.25
-  followPoint: {fileID: 5900693613057247090}
---- !u!1 &2276685561509623272
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2365584729816709710}
-  - component: {fileID: 2224541448945036143}
-  - component: {fileID: 7323771355393034126}
-  - component: {fileID: 4728754919759362500}
-  m_Layer: 0
-  m_Name: greenDog
-  m_TagString: Player
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2365584729816709710
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2276685561509623272}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.24000001, y: 0.24000001, z: 0.24000001}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalScale: {x: 0.235, y: 0.235, z: 0.235}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 6701179557630815261}
+  m_Father: {fileID: 3864832423744528976}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &2224541448945036143
+--- !u!33 &5201864377659905344
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2276685561509623272}
-  m_Mesh: {fileID: 4358137581313901594, guid: 9291db16dca5e4a0fbc2ae2bcb4c71b5, type: 3}
---- !u!23 &7323771355393034126
+  m_GameObject: {fileID: 4738458465427309876}
+  m_Mesh: {fileID: 3574709535254678125, guid: 1c50979d606234ba2931be7c5986049e, type: 3}
+--- !u!23 &7896570414435218122
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2276685561509623272}
+  m_GameObject: {fileID: 4738458465427309876}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -148,9 +66,9 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 74826e76b458b8342b8f4f98aa5774e1, type: 2}
-  - {fileID: -905690159841262435, guid: 9291db16dca5e4a0fbc2ae2bcb4c71b5, type: 3}
-  - {fileID: 8039567086963658369, guid: 9291db16dca5e4a0fbc2ae2bcb4c71b5, type: 3}
-  - {fileID: -7924812788475666260, guid: 9291db16dca5e4a0fbc2ae2bcb4c71b5, type: 3}
+  - {fileID: -905690159841262435, guid: 1c50979d606234ba2931be7c5986049e, type: 3}
+  - {fileID: 8039567086963658369, guid: 1c50979d606234ba2931be7c5986049e, type: 3}
+  - {fileID: -7924812788475666260, guid: 1c50979d606234ba2931be7c5986049e, type: 3}
   - {fileID: 2100000, guid: 214017e2f953b4b49a50f17c5891818b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -173,13 +91,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &4728754919759362500
+--- !u!136 &997809899540135295
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2276685561509623272}
+  m_GameObject: {fileID: 4738458465427309876}
   m_Material: {fileID: 13400000, guid: 0d71d2f94a2e32c46a1ed5cfc7436614, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
@@ -192,11 +110,11 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 5
-  m_Height: 11.8
+  m_Radius: 5.5
+  m_Height: 16.5
   m_Direction: 2
-  m_Center: {x: 0.25, y: 3.5, z: -4.8}
---- !u!1 &6477905303891220040
+  m_Center: {x: 0.2, y: 0.5, z: -6.5}
+--- !u!1 &7228988475968306897
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -204,7 +122,89 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5900693613057247090}
+  - component: {fileID: 3864832423744528976}
+  - component: {fileID: 2676019364945239596}
+  - component: {fileID: 794420792679341138}
+  m_Layer: 0
+  m_Name: greenDog
+  m_TagString: Player
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3864832423744528976
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7228988475968306897}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 7.9, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6291347511721781517}
+  - {fileID: 6621765544434822251}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &2676019364945239596
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7228988475968306897}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 84
+  m_CollisionDetection: 2
+--- !u!114 &794420792679341138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7228988475968306897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b3232b55381d874fa527af29be4d93e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerIDUI: {fileID: 0}
+  playerIndex: 0
+  color: green
+  moveSpeed: 10
+  rotateSpeed: 15
+  avilibleMovement: 1
+  itemFollowSpace: 2.25
+  followPoint: {fileID: 6621765544434822251}
+--- !u!1 &8663598046686340650
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6621765544434822251}
   m_Layer: 0
   m_Name: follow point
   m_TagString: Untagged
@@ -212,18 +212,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5900693613057247090
+--- !u!4 &6621765544434822251
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6477905303891220040}
+  m_GameObject: {fileID: 8663598046686340650}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.13, y: 0.69, z: -3.75}
+  m_LocalPosition: {x: 0, y: 0, z: -3.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6701179557630815261}
+  m_Father: {fileID: 3864832423744528976}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
