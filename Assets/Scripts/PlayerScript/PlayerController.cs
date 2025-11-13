@@ -117,6 +117,7 @@ public class PlayerController : MonoBehaviour
         var items = ItemManager.Instance.TakeAllItemsFromPlayer(transform);
 
         int score = items.Count;
+        if (score <= 0) return;
         FindFirstObjectByType<GameManager>().IncreasePlayerPoint(playerIndex, score);
         FindFirstObjectByType<PlayerPointUiManager>().UpdatePlayerPointUi(playerIndex);
         FindFirstObjectByType<GameSoundEffect>().PlayGetPointSound();
