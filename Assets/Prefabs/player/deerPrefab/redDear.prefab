@@ -156,6 +156,7 @@ GameObject:
   - component: {fileID: 1093119223379922092}
   - component: {fileID: 2374803230021627960}
   - component: {fileID: 5425275877878908163}
+  - component: {fileID: 8855400171632067188}
   m_Layer: 0
   m_Name: redDear
   m_TagString: Player
@@ -173,8 +174,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 7.9, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.85, y: 0.85, z: 0.85}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4601406111455637343}
   - {fileID: 5489425233601111319}
@@ -188,7 +189,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5392670551590722871}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 7.5
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -220,10 +221,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIDUI: {fileID: 0}
+  playerName: 
   playerIndex: 0
-  color: red
-  moveSpeed: 10
+  playerColor: 
+  moveSpeed: 15
+  bounceForce: 35
+  bounceDuration: 0.3
+  knockbackSpinSpeed: 750
+  stealSkill: 3
+  defenceWeakness: 4
   rotateSpeed: 15
-  avilibleMovement: 1
-  itemFollowSpace: 2.25
+  isKnockback: 0
   followPoint: {fileID: 5489425233601111319}
+  immunityStolenDuration: 0.3
+  isImmuneStolen: 0
+--- !u!114 &8855400171632067188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5392670551590722871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f648e08e57769fe409e09737d494caf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  polygonPoints: []

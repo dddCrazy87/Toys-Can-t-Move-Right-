@@ -12,8 +12,6 @@ using System.Linq;
 public class GameManager : MonoBehaviour
 {
     public bool isGameStart = false;
-    [Header("Is testing game")]
-    [SerializeField] bool isTesting = false;
     public Dictionary<int, PlayerController> playerControllers = new();
     ItemSpawner itemSpawner;
 
@@ -21,6 +19,9 @@ public class GameManager : MonoBehaviour
     public List<Player> playersInfo = new();
     [Header("Player Prefab")]
     public List<SkinColorMapping> skinColorsMapping = new();
+    [Header("Is testing game")]
+    [SerializeField] bool isTesting = false;
+    [SerializeField] string p1Skin, p2Skin;
 
     public void StartGame()
     {
@@ -28,14 +29,18 @@ public class GameManager : MonoBehaviour
         {
             if (isTesting)
             {
-                playersInfo.Add(new Player { name = "p1", skin = "mouse", color = "blue" });
-                playersInfo.Add(new Player { name = "p2", skin = "deer", color = "yellow" });
+                playersInfo.Add(new Player { name = "p1", skin = p1Skin, color = "blue" });
+                playersInfo.Add(new Player { name = "p2", skin = p2Skin, color = "yellow" });
             }
             else
             {
                 Debug.Log("No player");
                 return;
             }
+        }
+        if (playersInfo.Count == 1)
+        {
+            playersInfo[0].skin = playersInfo[0].name;
         }
         // 設定玩家Id
         AssignPlayerIndex();

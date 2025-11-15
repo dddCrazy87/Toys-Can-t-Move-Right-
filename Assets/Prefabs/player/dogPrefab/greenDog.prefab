@@ -125,6 +125,7 @@ GameObject:
   - component: {fileID: 3864832423744528976}
   - component: {fileID: 2676019364945239596}
   - component: {fileID: 794420792679341138}
+  - component: {fileID: -5740396025773374769}
   m_Layer: 0
   m_Name: greenDog
   m_TagString: Player
@@ -142,8 +143,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 7.9, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6291347511721781517}
   - {fileID: 6621765544434822251}
@@ -157,7 +158,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7228988475968306897}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 3
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -189,13 +190,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIDUI: {fileID: 0}
+  playerName: 
   playerIndex: 0
-  color: green
-  moveSpeed: 10
+  playerColor: 
+  moveSpeed: 12.5
+  bounceForce: 50
+  bounceDuration: 0.5
+  knockbackSpinSpeed: 1000
+  stealSkill: 4
+  defenceWeakness: 3
   rotateSpeed: 15
-  avilibleMovement: 1
-  itemFollowSpace: 2.25
+  isKnockback: 0
   followPoint: {fileID: 6621765544434822251}
+  immunityStolenDuration: 0.3
+  isImmuneStolen: 0
+--- !u!114 &-5740396025773374769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7228988475968306897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f648e08e57769fe409e09737d494caf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  polygonPoints: []
 --- !u!1 &8663598046686340650
 GameObject:
   m_ObjectHideFlags: 0

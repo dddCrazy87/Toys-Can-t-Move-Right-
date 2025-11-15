@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8970697802588314362}
   - component: {fileID: 1241101474581799349}
   - component: {fileID: 2575547064376842083}
+  - component: {fileID: -3711139264871055745}
   m_Layer: 0
   m_Name: greenPlayer
   m_TagString: Player
@@ -28,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 8, z: 0}
-  m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3099614803176231281}
@@ -44,7 +45,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 31227099504369450}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 10
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -76,13 +77,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIDUI: {fileID: 5072144090880224591}
+  playerName: 
   playerIndex: 0
-  color: green
-  moveSpeed: 10
+  playerColor: 
+  moveSpeed: 8
+  bounceForce: 25
+  bounceDuration: 0.25
+  knockbackSpinSpeed: 500
+  stealSkill: 7
+  defenceWeakness: 2
   rotateSpeed: 15
-  avilibleMovement: 1
-  itemFollowSpace: 2.25
+  isKnockback: 0
   followPoint: {fileID: 2065717355406083022}
+  immunityStolenDuration: 0.3
+  isImmuneStolen: 0
+--- !u!114 &-3711139264871055745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31227099504369450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f648e08e57769fe409e09737d494caf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  polygonPoints: []
 --- !u!1 &1019335261086532261
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,8 +239,8 @@ Transform:
   m_GameObject: {fileID: 1690484270012071791}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalPosition: {x: 0.23, y: 0, z: 0}
+  m_LocalScale: {x: 0.37, y: 0.37, z: 0.37}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3577686602002671963}
@@ -551,9 +572,9 @@ Transform:
   m_GameObject: {fileID: 5290844059950622817}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.25, y: 0, z: -5}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0.025, y: 0, z: -3.75}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 8970697802588314362}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

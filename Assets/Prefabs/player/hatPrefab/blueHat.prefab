@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 3896167798388813907}
   - component: {fileID: 1663413043801977443}
   - component: {fileID: 2235755185571119525}
+  - component: {fileID: 514656851232769278}
   m_Layer: 0
   m_Name: blueHat
   m_TagString: Player
@@ -60,7 +61,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 7.9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6335356716646428527}
   - {fileID: 3788577497308796228}
@@ -74,7 +75,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4963931987448435884}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 5
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -106,13 +107,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIDUI: {fileID: 0}
+  playerName: 
   playerIndex: 0
-  color: blue
-  moveSpeed: 10
+  playerColor: 
+  moveSpeed: 20
+  bounceForce: 100
+  bounceDuration: 1.5
+  knockbackSpinSpeed: 1500
+  stealSkill: 1
+  defenceWeakness: 10
   rotateSpeed: 15
-  avilibleMovement: 1
-  itemFollowSpace: 2.25
+  isKnockback: 0
   followPoint: {fileID: 3788577497308796228}
+  immunityStolenDuration: 0.3
+  isImmuneStolen: 0
+--- !u!114 &514656851232769278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4963931987448435884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f648e08e57769fe409e09737d494caf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  polygonPoints: []
 --- !u!1 &5949583329152882904
 GameObject:
   m_ObjectHideFlags: 0

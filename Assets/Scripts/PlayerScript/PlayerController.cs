@@ -4,71 +4,124 @@ using UnityEngine;
 using TMPro;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(PlayerBoundsLimiter))]
 public class PlayerController : MonoBehaviour
 {
     public TextMeshProUGUI playerIDUI;
-    public string playerName;
-    public int playerIndex;
-    public string playerColor;
+    [HideInInspector] public string playerName;
+    [HideInInspector] public int playerIndex;
+    [HideInInspector] public string playerColor;
+
     public void Initialize(string name, int id, string color)
     {
-        // if (playerIDUI != null) playerIDUI.text = name;
         playerName = name;
         playerIndex = id;
         playerColor = color;
     }
 
-    [Header("移動設置")]
-    [Tooltip("玩家移動速度")]
-    public float moveSpeed = 5f;
+    [Header("基礎玩家數值")]
+    public float moveSpeed = 10f;
+    public float bounceForce = 100f;
+    public float bounceDuration = 0.5f;
+    public float knockbackSpinSpeed = 1.5f;
+    [Tooltip("1~10")]
+    public int stealSkill = 5;
+    [Tooltip("1~10")]
+    public int defenceWeakness = 5;
+    [HideInInspector] public float rotateSpeed = 15f;
 
-    [Tooltip("玩家旋轉速度")]
-    public float rotateSpeed = 15f;
 
     private Rigidbody rb;
+    private PlayerBoundsLimiter boundsLimiter;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        boundsLimiter = GetComponent<PlayerBoundsLimiter>();
     }
 
-    [HideInInspector] public bool avilibleMovement = true;
-    private Vector3 movement;
-    private Vector3 networkMovement;
-    private Vector3 smoothedMovement;
+    [HideInInspector] public bool isKnockback = false;
+    [HideInInspector] public Coroutine knockbackCoroutine;
 
+    private Vector3 networkMovement;
+    private Vector3 movement;
+
+    // 由手機 WebRTC 傳入
     public void SetNetworkInput(float x, float y)
     {
-        networkMovement = new Vector3(x, 0f, y).normalized;
+        if (isKnockback) return;
+
+        Vector3 raw = new(x, 0f, y);
+
+        if (raw.sqrMagnitude < 0.01f)
+            networkMovement = Vector3.zero;
+        else
+            networkMovement = raw.normalized;
     }
 
     void Update()
     {
-        if (!avilibleMovement) return;
+        if (isKnockback) return;
         movement = networkMovement;
     }
 
     void FixedUpdate()
     {
-        if (!avilibleMovement || movement == Vector3.zero) return;
-        if (rb.IsSleeping()) rb.WakeUp();
+        if (isKnockback) return;
 
-        smoothedMovement = Vector3.Lerp(smoothedMovement, movement, 0.3f);
-
-        if (smoothedMovement.sqrMagnitude > 0.001f)
+        if (movement.sqrMagnitude > 0.001f)
         {
-            Vector3 targetPos = rb.position + smoothedMovement * moveSpeed * Time.fixedDeltaTime;
-            rb.MovePosition(targetPos);
+            Vector3 newPos = rb.position + movement * moveSpeed * Time.fixedDeltaTime;
+            rb.MovePosition(newPos);
 
-            Quaternion targetRot = Quaternion.LookRotation(smoothedMovement);
-            rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, rotateSpeed * Time.fixedDeltaTime));
+            Quaternion targetRot = Quaternion.LookRotation(movement);
+            rb.MoveRotation(
+                Quaternion.Slerp(rb.rotation, targetRot, rotateSpeed * Time.fixedDeltaTime)
+            );
         }
     }
 
+    public void StartKnockback(Vector3 direction)
+    {
+        if (knockbackCoroutine != null) StopCoroutine(knockbackCoroutine);
+        knockbackCoroutine = StartCoroutine(KnockbackRoutine(direction));
+    }
+
+    private IEnumerator KnockbackRoutine(Vector3 direction)
+    {
+        isKnockback = true;
+
+        Vector3 knockbackVelocity = direction.normalized * bounceForce;
+        rb.linearVelocity = knockbackVelocity;
+
+        float timer = 0f;
+
+        while (timer < bounceDuration)
+        {
+            timer += Time.deltaTime;
+
+            rb.linearVelocity = knockbackVelocity;
+
+            Quaternion spin = Quaternion.Euler(0f, knockbackSpinSpeed * Time.deltaTime, 0f);
+            rb.MoveRotation(rb.rotation * spin);
+            boundsLimiter.ClampPositionImmediately();
+
+            yield return null;
+        }
+
+        ForceStopMotion();
+        isKnockback = false;
+        knockbackCoroutine = null;
+    }
+
+
+
+    // 停止所有動量
     public void ForceStopMotion()
     {
-        // 清空速度與角速度，確保之後能穩定移動
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
+
         rb.Sleep();
         rb.WakeUp();
     }
@@ -88,7 +141,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Collectable"))
         {
-            ItemManager.Instance.RequestCollect(transform, other.transform);
+            ItemManager.Instance.RequestCollect(transform, other.transform, stealSkill);
         }
     }
 

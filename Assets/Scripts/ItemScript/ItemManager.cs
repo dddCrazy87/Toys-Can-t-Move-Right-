@@ -9,6 +9,8 @@ public class ItemManager : MonoBehaviour
     [Header("每顆 Item 後方 anchor 的距離")]
     public float anchorDistance = 1.2f;
 
+    [Header("偷取成功或失敗的提示字")]
+    public GameObject missCanvas, stealCanvas;
     private Dictionary<Transform, List<Transform>> chains = new();
 
     private void Awake()
@@ -28,26 +30,55 @@ public class ItemManager : MonoBehaviour
     }
 
     // 玩家要求撿
-    public void RequestCollect(Transform player, Transform item)
+    public void RequestCollect(Transform player, Transform item, float stealSkill)
     {
         ItemData data = item.GetComponent<ItemData>();
         if (data == null || data.isBusy) return;
 
         data.isBusy = true;
-        StartCoroutine(CollectRoutine(player, item, data));
+        StartCoroutine(CollectRoutine(player, item, data, stealSkill));
     }
 
-    private IEnumerator CollectRoutine(Transform player, Transform item, ItemData data)
+    private IEnumerator CollectRoutine(Transform player, Transform item, ItemData data, float stealSkill)
     {
         yield return null; // 避免同一幀觸發兩次
 
         if (data.owner == null)
+        {
             CollectFree(player, item, data);
-        else
-            TrySteal(player, item, data);
+        }
+        else if (data.owner != player)
+        {
+            float dw = data.owner.GetComponent<PlayerController>().defenceWeakness;
+            if (Random.value < GetStealProbability(stealSkill, dw))
+            {
+                TrySteal(player, item, data);
+                Instantiate(stealCanvas, item.position + new Vector3(0f, 2f, 0f), Quaternion.Euler(90, 0, 0));
+            }
+            else
+            {
+                Instantiate(missCanvas, item.position + new Vector3(0f, 2f, 0f), Quaternion.Euler(90, 0, 0));
+            }
+        }
 
         data.isBusy = false;
     }
+
+    float GetStealProbability(float stealSkill, float defenceWeakness)
+    {
+        stealSkill = Mathf.Clamp(stealSkill, 1f, 10f);
+        defenceWeakness = Mathf.Clamp(defenceWeakness, 1f, 10f);
+        float sum = stealSkill + defenceWeakness;
+        float t = (sum - 11f) / 9f;
+        float k = 3f;
+        float pRaw = 1f / (1f + Mathf.Exp(-k * t));
+        float p = 0.15f + 0.7f * pRaw;
+        p = Mathf.Clamp(p, 0.15f, 0.85f);
+        print(stealSkill + " " + defenceWeakness + " " + p);
+        return p;
+    }
+
+
 
     // 取得後方 FollowAnchor（不存在就建立）
     private Transform GetAnchor(Transform item)

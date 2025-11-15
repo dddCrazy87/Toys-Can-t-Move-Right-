@@ -3,9 +3,10 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class ItemFollow : MonoBehaviour
 {
-    public Transform follow;          // 跟隨的目標
-    public float maxDistance = 1.2f;  // 繩子最大距離
-    public float followSpeed = 15f;   // 旋轉速度
+    public Transform follow;
+    public float maxDistance = 1.2f;
+    public float moveSpeed = 15f;
+    public float rotateSpeed = 20f;
 
     private Rigidbody rb;
 
@@ -17,33 +18,43 @@ public class ItemFollow : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // ---------------------------
-        // follow 為 null → 不動 → 不吸到 (0,0,0)
-        // ---------------------------
         if (follow == null)
-            return;
-
-        float currentDistance = Vector3.Distance(transform.position, follow.position);
-
-        // 被繩子拉住 → 不會穿牆
-        if (currentDistance > maxDistance)
         {
-            Vector3 dir = (transform.position - follow.position).normalized;
-            Vector3 targetPos = follow.position + dir * maxDistance;
-
-            rb.MovePosition(targetPos);
+            rb.linearVelocity = Vector3.zero;
+            return;
         }
 
-        // 平滑旋轉
-        Vector3 targetDir = follow.position - transform.position;
-        targetDir.y = 0f;
-        targetDir.Normalize();
+        Vector3 pos = transform.position;
+        Vector3 target = follow.position;
 
-        float step = followSpeed * Time.fixedDeltaTime;
-        Quaternion newRot = Quaternion.LookRotation(
-            Vector3.RotateTowards(transform.forward, targetDir, step, 0f)
-        );
+        Vector3 offset = pos - target;
+        float dist = offset.magnitude;
 
-        rb.MoveRotation(newRot);
+        Vector3 movement = Vector3.zero;
+
+        if (dist > maxDistance)
+        {
+            Vector3 pullDir = offset.normalized;
+
+            Vector3 desiredPosition = target + pullDir * maxDistance;
+
+            Vector3 moveDir = (desiredPosition - pos);
+            movement = moveDir.normalized;
+            rb.linearVelocity = movement * moveSpeed;
+        }
+        else
+        {
+            rb.linearVelocity = Vector3.zero;
+        }
+
+        Vector3 dir = (target - pos);
+        dir.y = 0;
+        if (dir.sqrMagnitude > 0.01f)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(dir.normalized);
+            rb.MoveRotation(
+                Quaternion.Slerp(rb.rotation, targetRot, rotateSpeed * Time.fixedDeltaTime)
+            );
+        }
     }
 }

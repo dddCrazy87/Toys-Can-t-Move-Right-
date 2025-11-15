@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5679590542491201992}
   - component: {fileID: 2633457308242319784}
   - component: {fileID: 6722777251948143962}
+  - component: {fileID: 6876958365032982332}
   m_Layer: 0
   m_Name: blueMouse
   m_TagString: Player
@@ -28,8 +29,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 7.9, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.55, y: 0.55, z: 0.55}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7520988987224251142}
   - {fileID: 6929931985447053379}
@@ -75,13 +76,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIDUI: {fileID: 0}
+  playerName: 
   playerIndex: 0
-  color: blue
+  playerColor: 
   moveSpeed: 10
+  bounceForce: 50
+  bounceDuration: 0.5
+  knockbackSpinSpeed: 0
+  stealSkill: 10
+  defenceWeakness: 7
   rotateSpeed: 15
-  avilibleMovement: 1
-  itemFollowSpace: 2.25
+  isKnockback: 0
   followPoint: {fileID: 6929931985447053379}
+  immunityStolenDuration: 0.3
+  isImmuneStolen: 0
+--- !u!114 &6876958365032982332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2220559258756879732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f648e08e57769fe409e09737d494caf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  polygonPoints: []
 --- !u!1 &3971265413945910536
 GameObject:
   m_ObjectHideFlags: 0
