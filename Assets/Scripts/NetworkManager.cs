@@ -19,7 +19,7 @@ public class HostUpdateMessage { public string type; public string hostId; }
 [System.Serializable]
 public class InitialMessage { public string type; public string color; }
 [System.Serializable]
-public class FinalPlayerData { public int rank; public int point; public string color; public string skin; }
+public class FinalPlayerData { public int rank; public string name; public int point; public string color; public string skin; }
 [System.Serializable]
 public class TerminateMessage { public string type; public List<FinalPlayerData> finalPlayerDatas; }
 #endregion
@@ -231,6 +231,7 @@ public class NetworkManager : MonoBehaviour
                 .Select((p, index) => new FinalPlayerData
                 {
                     rank = index + 1,
+                    name = p.name,
                     point = p.point,
                     color = p.color,
                     skin = p.skin
