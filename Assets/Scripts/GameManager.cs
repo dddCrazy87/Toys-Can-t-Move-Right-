@@ -38,10 +38,10 @@ public class GameManager : MonoBehaviour
                 return;
             }
         }
-        if (playersInfo.Count == 1)
-        {
-            playersInfo[0].skin = playersInfo[0].name;
-        }
+        // if (playersInfo.Count == 1)
+        // {
+        //     playersInfo[0].skin = playersInfo[0].name;
+        // }
         // 設定玩家Id
         AssignPlayerIndex();
         // 分配出生點
