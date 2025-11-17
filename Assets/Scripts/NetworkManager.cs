@@ -249,6 +249,18 @@ public class NetworkManager : MonoBehaviour
         Debug.Log("Broadcasting Terminate: " + jsonMessage);
     }
 
+    // -------------------- Reset ---------------------
+
+    public void ResetNetworkData()
+    {
+        Debug.Log("ResetNetworkData()");
+
+        playersInfo.Clear();
+        peerIdToPlayer.Clear();
+        selectedSkinColor = new List<string>() { "green", "yellow", "blue", "red" };
+        hostPeerId = null;
+    }
+
     // ------------- Dont Destroy On Load -------------
 
     private static NetworkManager instance;

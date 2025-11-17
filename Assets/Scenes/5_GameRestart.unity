@@ -204,7 +204,6 @@ MonoBehaviour:
       avatarSprite: {fileID: 21300000, guid: d03ed535cd88b4a1b9eb0cefa4813a6b, type: 3}
     - color: yellow
       avatarSprite: {fileID: 21300000, guid: 10d0add1ce5944f0f98ecf1bf6a0449a, type: 3}
-  gameManager: {fileID: 0}
   winnerName: {fileID: 1315938118}
   winnerCover: {fileID: 1856522629}
 --- !u!4 &17873959
@@ -447,6 +446,53 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1 &811038011
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 811038012}
+  - component: {fileID: 811038013}
+  m_Layer: 0
+  m_Name: JsonScoreManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &811038012
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 811038011}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &811038013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 811038011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21c103c37b0df37438c917b98a288b9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pathMode: 0
+  folderPath: C:/Users/Accelerator/Desktop/test
+  fileName: leaderboard.json
 --- !u!1 &1030842068
 GameObject:
   m_ObjectHideFlags: 0
@@ -1543,3 +1589,4 @@ SceneRoots:
   - {fileID: 1243538309}
   - {fileID: 1873429595}
   - {fileID: 17873959}
+  - {fileID: 811038012}

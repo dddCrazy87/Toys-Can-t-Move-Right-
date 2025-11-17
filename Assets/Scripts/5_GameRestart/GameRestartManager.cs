@@ -7,13 +7,21 @@ using System.Linq;
 public class GameRestartManager : MonoBehaviour
 {
     public List<SkinColorMapping> skinColorMapping = new();
-    public GameManager gameManager;
+    GameManager gameManager;
+    NetworkManager networkManager;
+    JsonScoreManager jsonScoreManager;
+    BgmPlayer bgmPlayer;
     [SerializeField] private TextMeshProUGUI winnerName;
     [SerializeField] private Image winnerCover;
     void Start()
     {
         gameManager = FindFirstObjectByType<GameManager>();
-        FindFirstObjectByType<BgmPlayer>().ChangeBgm();
+        networkManager = FindFirstObjectByType<NetworkManager>();
+        jsonScoreManager = FindFirstObjectByType<JsonScoreManager>();
+        bgmPlayer = FindFirstObjectByType<BgmPlayer>();
+
+        if (bgmPlayer) bgmPlayer.ChangeBgm();
+
         Player winner = new();
         foreach (var item in gameManager.playersInfo)
         {
@@ -25,6 +33,18 @@ public class GameRestartManager : MonoBehaviour
         if (mapping == null) return;
         winnerCover.sprite = mapping.avatarSprite;
         winnerName.text = winner.name;
+
+        jsonScoreManager.OnLoadFinished += OnScoreDataLoaded;
+        foreach (var item in gameManager.playersInfo)
+        {
+            jsonScoreManager.AddPlayerRecord(item.name, item.point, item.skin, item.color);
+        }
+    }
+
+    private void OnScoreDataLoaded()
+    {
+        gameManager.ResetGameData();
+        if (networkManager) networkManager.ResetNetworkData();
     }
 
 }

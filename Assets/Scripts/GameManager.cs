@@ -91,6 +91,16 @@ public class GameManager : MonoBehaviour
         return playersInfo[playerIndex].point;
     }
 
+    // ------------- Reset -------------
+
+    public void ResetGameData()
+    {
+        Debug.Log("ResetGameData()");
+
+        isGameStart = false;
+        playersInfo.Clear();
+    }
+
     // ------- Assign Player Index -------
     void AssignPlayerIndex()
     {
