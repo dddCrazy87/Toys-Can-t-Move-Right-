@@ -61,16 +61,18 @@ public class NetworkManager : MonoBehaviour
         Debug.Log($"Peer {senderPeerId} is disconnected.");
         if (peerIdToPlayer.ContainsKey(senderPeerId))
         {
-            Player leavingPlayer = peerIdToPlayer[senderPeerId];
-            playersInfo.Remove(leavingPlayer);
+            Player p = peerIdToPlayer[senderPeerId];
+            Debug.Log($"Player {p.name} ({senderPeerId}) went offline. Waiting for reconnect...");
+            // Player leavingPlayer = peerIdToPlayer[senderPeerId];
+            // playersInfo.Remove(leavingPlayer);
 
-            peerIdToPlayer.Remove(senderPeerId);
+            // peerIdToPlayer.Remove(senderPeerId);
 
-            if (hostPeerId == senderPeerId)
-            {
-                Debug.LogWarning("Host has disconnected. Clearing host.");
-                hostPeerId = null;
-            }
+            // if (hostPeerId == senderPeerId)
+            // {
+            //     Debug.LogWarning("Host has disconnected. Clearing host.");
+            //     hostPeerId = null;
+            // }
         }
     }
 
@@ -124,6 +126,8 @@ public class NetworkManager : MonoBehaviour
             Player oldPlayer = peerIdToPlayer[senderPeerId];
             oldPlayer.name = identity.nickname;
             oldPlayer.skin = identity.characterName;
+            Debug.Log($"Player {oldPlayer.name} reconnected!");
+            BroadcastInitialToPeer(senderPeerId, oldPlayer.color);
         }
         else
         {
