@@ -45,7 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGameStart: 0
-  isTesting: 0
   playersInfo: []
   skinColorsMapping:
   - skin: deer
@@ -55,7 +54,7 @@ MonoBehaviour:
     - color: green
       prefab: {fileID: 5250014480276182256, guid: a6648c382590a3848a5cfa3ec807025e, type: 3}
     - color: red
-      prefab: {fileID: 6537347635827782100, guid: 6ae29a92ed976bb46ba3dca29df5e2a1, type: 3}
+      prefab: {fileID: 5392670551590722871, guid: 31b88585eeb0bc440a8407affb5e14c3, type: 3}
     - color: yellow
       prefab: {fileID: 6537347635827782100, guid: 6ae29a92ed976bb46ba3dca29df5e2a1, type: 3}
     avatarMapping: []
@@ -103,3 +102,6 @@ MonoBehaviour:
     - color: yellow
       prefab: {fileID: 1235793664548246363, guid: 3f2aaf3859e0ffc4cbe06fc0e96a9ace, type: 3}
     avatarMapping: []
+  isTesting: 0
+  p1Skin: 
+  p2Skin: 
