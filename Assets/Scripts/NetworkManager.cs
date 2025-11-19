@@ -59,20 +59,25 @@ public class NetworkManager : MonoBehaviour
     private void OnPeerDisconnected(string senderPeerId)
     {
         Debug.Log($"Peer {senderPeerId} is disconnected.");
-        if (peerIdToPlayer.ContainsKey(senderPeerId))
+        if (SceneManager.GetActiveScene().name == "2_Setting")
+        {
+            Player leavingPlayer = peerIdToPlayer[senderPeerId];
+            playersInfo.Remove(leavingPlayer);
+
+            peerIdToPlayer.Remove(senderPeerId);
+
+            if (hostPeerId == senderPeerId)
+            {
+                // Debug.LogWarning("Host has disconnected. Clearing host.");
+                // hostPeerId = null;
+                hostPeerId = peerIdToPlayer.First().Key;
+                BroadcastHostUpdate();
+            }
+        }
+        else if (peerIdToPlayer.ContainsKey(senderPeerId))
         {
             Player p = peerIdToPlayer[senderPeerId];
             Debug.Log($"Player {p.name} ({senderPeerId}) went offline. Waiting for reconnect...");
-            // Player leavingPlayer = peerIdToPlayer[senderPeerId];
-            // playersInfo.Remove(leavingPlayer);
-
-            // peerIdToPlayer.Remove(senderPeerId);
-
-            // if (hostPeerId == senderPeerId)
-            // {
-            //     Debug.LogWarning("Host has disconnected. Clearing host.");
-            //     hostPeerId = null;
-            // }
         }
     }
 
