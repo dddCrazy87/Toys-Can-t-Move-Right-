@@ -63,7 +63,6 @@ public class NetworkManager : MonoBehaviour
         {
             Player leavingPlayer = peerIdToPlayer[senderPeerId];
             playersInfo.Remove(leavingPlayer);
-
             peerIdToPlayer.Remove(senderPeerId);
 
             if (hostPeerId == senderPeerId)
