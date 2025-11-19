@@ -42,6 +42,7 @@ public class NetworkManager : MonoBehaviour
         WebRTCManager.OnPeerDisconnected_Static += OnPeerDisconnected;
         gameManager = FindFirstObjectByType<GameManager>();
         selectedSkinColor = new List<string> { "green", "yellow", "blue", "red" };
+        hostPeerId = null;
     }
     void OnDestroy()
     {
@@ -69,9 +70,12 @@ public class NetworkManager : MonoBehaviour
             {
                 // Debug.LogWarning("Host has disconnected. Clearing host.");
                 // hostPeerId = null;
-                hostPeerId = peerIdToPlayer.First().Key;
+                if (peerIdToPlayer.Count > 0)
+                    hostPeerId = peerIdToPlayer.First().Key;
+                else hostPeerId = null;
                 BroadcastHostUpdate();
             }
+            FindFirstObjectByType<LobbyUI>().UpdateLobbyUI();
         }
         else if (peerIdToPlayer.ContainsKey(senderPeerId))
         {
@@ -154,7 +158,7 @@ public class NetworkManager : MonoBehaviour
         }
 
         // 若無 Host 則指定
-        if (hostPeerId == null)
+        if (hostPeerId == null || senderPeerId == hostPeerId)
         {
             hostPeerId = senderPeerId;
             Debug.Log($"{senderPeerId} ({identity.nickname}) is now the host.");
