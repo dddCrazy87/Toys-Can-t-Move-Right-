@@ -221,6 +221,27 @@ namespace SimpleWebRTC
             {
                 case SignalingMessageType.NEWPEER:
 
+                    if (peerConnections.ContainsKey(signalingMessage.SenderPeerId))
+                    {
+                        SimpleWebRTCLogger.Log($"⚠️ NEWPEER Reconnect: Force cleaning up old connection for {signalingMessage.SenderPeerId}");
+                        
+                        // reconnecting peer, need to clean up old connection first
+                        var oldPeerId = signalingMessage.SenderPeerId;
+                        
+                        // Clenup old resources
+                        peerConnections[oldPeerId].Close();
+                        peerConnections.Remove(oldPeerId);
+
+                        // Cleanup DataChannels
+                        if (senderDataChannels.ContainsKey(oldPeerId)) senderDataChannels.Remove(oldPeerId);
+                        if (receiverDataChannels.ContainsKey(oldPeerId)) receiverDataChannels.Remove(oldPeerId);
+                        
+                        // Cleanup Media
+                        if (videoTrackSenders.ContainsKey(oldPeerId)) videoTrackSenders.Remove(oldPeerId);
+                        if (audioTrackSenders.ContainsKey(oldPeerId)) audioTrackSenders.Remove(oldPeerId);
+                        
+                    }
+
                     if (!peerConnections.ContainsKey(signalingMessage.SenderPeerId))
                     {
                         // only create receiving resources for remote peers which are going to send multimedia data and receiving local peer
@@ -238,10 +259,10 @@ namespace SimpleWebRTC
                         // send ACK to all clients to reach convergence
                         SendWebSocketMessage(SignalingMessageType.NEWPEERACK, localPeerId, "ALL", "New peer ACK", peerConnections.Count, isLocalPeerVideoAudioSender);
                     }
-                    else
-                    {
-                        SimpleWebRTCLogger.Log($"NEWPEER: Received NEWPEER from {signalingMessage.SenderPeerId}, but peer already exists. Ignoring.");
-                    }
+                    // else
+                    // {
+                    //     SimpleWebRTCLogger.Log($"NEWPEER: Received NEWPEER from {signalingMessage.SenderPeerId}, but peer already exists. Ignoring.");
+                    // }
                     break;
                 case SignalingMessageType.NEWPEERACK:
                     if (!peerConnections.ContainsKey(signalingMessage.SenderPeerId))
