@@ -73,6 +73,7 @@ public class PlayerController : MonoBehaviour
         {
             Vector3 newPos = rb.position + moveSpeed * Time.fixedDeltaTime * movement;
             rb.MovePosition(newPos);
+            boundsLimiter.ClampPositionImmediately();
 
             Quaternion targetRot = Quaternion.LookRotation(movement);
             rb.MoveRotation(
