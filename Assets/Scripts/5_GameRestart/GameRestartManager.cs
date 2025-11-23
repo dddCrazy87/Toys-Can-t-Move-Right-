@@ -6,45 +6,111 @@ using System.Linq;
 
 public class GameRestartManager : MonoBehaviour
 {
+    [SerializeField] GameObject rankingColumPrefab;
+    [SerializeField] Transform rankingTable;
+    [SerializeField] List<GameObject> podiumPrefabs = new();
+    [SerializeField] List<Transform> podiumPrefabsPos = new();
     public List<SkinColorMapping> skinColorMapping = new();
     GameManager gameManager;
     NetworkManager networkManager;
     JsonScoreManager jsonScoreManager;
     BgmPlayer bgmPlayer;
-    [SerializeField] private TextMeshProUGUI winnerName;
-    [SerializeField] private Image winnerCover;
     void Start()
     {
         gameManager = FindFirstObjectByType<GameManager>();
         networkManager = FindFirstObjectByType<NetworkManager>();
         jsonScoreManager = FindFirstObjectByType<JsonScoreManager>();
         bgmPlayer = FindFirstObjectByType<BgmPlayer>();
+        jsonScoreManager.OnLoadFinished += OnScoreDataLoaded;
 
         if (bgmPlayer) bgmPlayer.ChangeBgm();
 
-        Player winner = new();
-        foreach (var item in gameManager.playersInfo)
-        {
-            if (item.point > winner.point) winner = item;
-        }
-        List<ColorAvatarMapping> avatarMappingList = skinColorMapping.FirstOrDefault(x => x.skin == winner.skin).avatarMapping;
-        if (avatarMappingList == null) return;
-        ColorAvatarMapping mapping = avatarMappingList.FirstOrDefault(x => x.color == winner.color);
-        if (mapping == null) return;
-        winnerCover.sprite = mapping.avatarSprite;
-        winnerName.text = winner.name;
+        List<Player> sortedPlayers = new();
 
-        jsonScoreManager.OnLoadFinished += OnScoreDataLoaded;
-        foreach (var item in gameManager.playersInfo)
+        if (gameManager)
         {
-            jsonScoreManager.AddPlayerRecord(item.name, item.point, item.skin, item.color);
+            sortedPlayers = gameManager.playersInfo.OrderByDescending(p => p.point).ToList();
         }
+        else
+        {
+            sortedPlayers = new List<Player>{
+                new() {
+                    name = "p1",
+                    point = 100,
+                    skin = "deer",
+                    color = "blue"
+                },
+                new() {
+                    name = "p2",
+                    point = 50,
+                    skin = "wind-up",
+                    color = "yellow"
+                },
+                new() {
+                    name = "p3",
+                    point = 50,
+                    skin = "mouse",
+                    color = "green"
+                },
+                // new() {
+                //     name = "p4",
+                //     point = 50,
+                //     skin = "hat",
+                //     color = "red"
+                // }
+            };
+        }
+
+
+        int prePoint = sortedPlayers[0].point, ppIndex = 0;
+        for (int i = 0; i < sortedPlayers.Count; i++)
+        {
+            var item = sortedPlayers[i];
+
+            // update leaderboard ranking panel
+            Transform tr = Instantiate(rankingColumPrefab, rankingTable).transform;
+            tr.GetChild(2).GetComponent<TextMeshProUGUI>().text = item.name;
+            tr.GetChild(3).GetComponent<TextMeshProUGUI>().text = item.point.ToString();
+            tr = null;
+
+            // update leaderboard
+            List<ColorAvatarMapping> avatarMappingList = skinColorMapping.FirstOrDefault(x => x.skin == item.skin).avatarMapping;
+            if (avatarMappingList == null) return;
+            ColorAvatarMapping mapping = avatarMappingList.FirstOrDefault(x => x.color == item.color);
+            if (mapping == null) return;
+
+            if (item.point != prePoint)
+            {
+                prePoint = item.point;
+                ppIndex++;
+            }
+
+            tr = Instantiate(podiumPrefabs[ppIndex], podiumPrefabsPos[i]).transform;
+            Image img = tr.GetChild(2).GetChild(0).GetComponent<Image>();
+            TextMeshProUGUI txt = tr.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>(); ;
+
+            img.sprite = mapping.avatarSprite;
+            txt.text = item.name;
+
+            // update ranker
+            if (gameManager) jsonScoreManager.AddPlayerRecord(item.name, item.point, item.skin, item.color);
+        }
+
     }
 
     private void OnScoreDataLoaded()
     {
-        gameManager.ResetGameData();
+        if (gameManager) gameManager.ResetGameData();
         if (networkManager) networkManager.ResetNetworkData();
+    }
+
+
+    [SerializeField] SceneFadeInFadeOut sceneFadeInFadeOut;
+    public void RestartGame()
+    {
+        if (gameManager) gameManager.ResetGameData();
+        if (networkManager) networkManager.ResetNetworkData();
+        sceneFadeInFadeOut.LoadNextSceneWithFadeOut();
     }
 
 }

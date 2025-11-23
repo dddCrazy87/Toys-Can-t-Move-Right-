@@ -71,7 +71,7 @@ public class PlayerController : MonoBehaviour
 
         if (movement.sqrMagnitude > 0.001f)
         {
-            Vector3 newPos = rb.position + movement * moveSpeed * Time.fixedDeltaTime;
+            Vector3 newPos = rb.position + moveSpeed * Time.fixedDeltaTime * movement;
             rb.MovePosition(newPos);
 
             Quaternion targetRot = Quaternion.LookRotation(movement);

@@ -20,21 +20,21 @@ public class PlayerBoundsLimiter : MonoBehaviour
             polygonPoints[i] = mb.GetChild(i);
     }
 
-    private void FixedUpdate()
-    {
-        Vector3 pos = transform.position;
+    // private void FixedUpdate()
+    // {
+    //     Vector3 pos = transform.position;
 
-        // 如果在外面 → 投影到最近邊界
-        if (IsOutsidePolygon(pos))
-        {
-            Vector3 clamped = GetClosestPointOnPolygon(pos);
+    //     // 如果在外面 → 投影到最近邊界
+    //     if (IsOutsidePolygon(pos))
+    //     {
+    //         Vector3 clamped = GetClosestPointOnPolygon(pos);
 
-            // 強制造成"黏著牆壁"效果（永遠不可能穿出去）
-            transform.position = clamped;
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
-    }
+    //         // 強制造成"黏著牆壁"效果（永遠不可能穿出去）
+    //         transform.position = clamped;
+    //         rb.linearVelocity = Vector3.zero;
+    //         rb.angularVelocity = Vector3.zero;
+    //     }
+    // }
 
     // ======================
     // 判斷是否在多邊形外

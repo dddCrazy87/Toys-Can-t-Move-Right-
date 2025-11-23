@@ -16,12 +16,14 @@ public class SceneFadeInFadeOut : MonoBehaviour
 
     void Start()
     {
+        fadeScript.gameObject.SetActive(true);
         fadeScript.HideUI(fadeOutSpeed);
     }
 
     public string nextSceneName = "";
     public void LoadNextSceneWithFadeOut()
     {
+        fadeScript.gameObject.SetActive(true);
         fadeScript.ShowUI(fadeInSpeed);
         Invoke(nameof(LoadNextScene), 1 / fadeInSpeed);
     }
