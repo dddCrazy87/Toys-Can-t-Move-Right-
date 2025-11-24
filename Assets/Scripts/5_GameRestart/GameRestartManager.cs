@@ -100,8 +100,8 @@ public class GameRestartManager : MonoBehaviour
     [SerializeField] SceneFadeInFadeOut sceneFadeInFadeOut;
     public void RestartGame()
     {
-        if (gameManager) gameManager.ResetGameData();
-        if (networkManager) networkManager.ResetNetworkData();
+        if (gameManager) Destroy(gameManager.gameObject);
+        if (networkManager) Destroy(networkManager.gameObject);
         sceneFadeInFadeOut.LoadNextSceneWithFadeOut();
     }
 

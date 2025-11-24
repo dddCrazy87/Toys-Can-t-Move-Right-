@@ -4042,7 +4042,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   countdownUI: {fileID: 1409068719}
   sceneFadeInFadeOut: {fileID: 1476519531}
-  gameTimeLimit: 90
+  gameTimeLimit: 5
   gameOverAudio: {fileID: 1709939695}
 --- !u!4 &1709939694
 Transform:
