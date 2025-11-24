@@ -26,7 +26,6 @@ public class TerminateMessage { public string type; public List<FinalPlayerData>
 
 public class NetworkManager : MonoBehaviour
 {
-    [Header("WebRTCConnection")]
     public WebRTCConnection webRTCConnection;
     [Header("GameManager")]
     public GameManager gameManager;
@@ -238,28 +237,48 @@ public class NetworkManager : MonoBehaviour
     {
         if (webRTCConnection == null) return;
 
-        var finalPlayerDatas = playersInfo
+        var sortedPlayers = playersInfo
                 .OrderByDescending(p => p.point)
-                .Select((p, index) => new FinalPlayerData
-                {
-                    rank = index + 1,
-                    name = p.name,
-                    point = p.point,
-                    color = p.color,
-                    skin = p.skin
-                })
                 .ToList();
+
+        List<FinalPlayerData> finalPlayerDatas = new List<FinalPlayerData>();
+
+        int currentRank = 1;
+        int previousPoint = -1;
+        int playersProcessed = 0;
+
+        foreach (var p in sortedPlayers)
+        {
+            playersProcessed++;
+
+            if (p.point != previousPoint)
+            {
+                currentRank = playersProcessed;
+                previousPoint = p.point;
+            }
+
+            finalPlayerDatas.Add(new FinalPlayerData
+            {
+                rank = currentRank,
+                name = p.name,
+                point = p.point,
+                color = p.color,
+                skin = p.skin
+            });
+        }
 
         TerminateMessage terminateMessage = new()
         {
             type = "terminate",
             finalPlayerDatas = finalPlayerDatas
         };
-        string jsonMessage = JsonUtility.ToJson(terminateMessage);
 
+        string jsonMessage = JsonUtility.ToJson(terminateMessage);
         webRTCConnection.SendDataChannelMessage(jsonMessage);
+
         Debug.Log("Broadcasting Terminate: " + jsonMessage);
     }
+
 
     // -------------------- Reset ---------------------
 

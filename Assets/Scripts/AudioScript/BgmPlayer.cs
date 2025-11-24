@@ -20,6 +20,7 @@ public class BgmPlayer : MonoBehaviour
     public AudioSource bgm;
     public AudioClip toyboxBgm;
     public AudioClip gameStartBgm;
+    public AudioClip leaderboardBgm;
 
     public void PauseBGM()
     {
@@ -37,7 +38,7 @@ public class BgmPlayer : MonoBehaviour
         {
             "1_GameStart" => gameStartBgm,
             "4_Toybox" => toyboxBgm,
-            "5_GameRestart" => gameStartBgm,
+            "5_GameRestart" => leaderboardBgm,
             _ => toyboxBgm
         };
         Invoke(nameof(PlayBGM), 0.5f);

@@ -21,7 +21,6 @@ public class GameRestartManager : MonoBehaviour
         networkManager = FindFirstObjectByType<NetworkManager>();
         jsonScoreManager = FindFirstObjectByType<JsonScoreManager>();
         bgmPlayer = FindFirstObjectByType<BgmPlayer>();
-        jsonScoreManager.OnLoadFinished += OnScoreDataLoaded;
 
         if (bgmPlayer) bgmPlayer.ChangeBgm();
 
@@ -97,13 +96,6 @@ public class GameRestartManager : MonoBehaviour
         }
 
     }
-
-    private void OnScoreDataLoaded()
-    {
-        if (gameManager) gameManager.ResetGameData();
-        if (networkManager) networkManager.ResetNetworkData();
-    }
-
 
     [SerializeField] SceneFadeInFadeOut sceneFadeInFadeOut;
     public void RestartGame()
