@@ -419,7 +419,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeInSpeed: 0.5
   fadeOutSpeed: 0
-  nextSceneName: 4_Toybox
+  nextSceneName: 4_ColorPaper
 --- !u!1001 &1135512104
 PrefabInstance:
   m_ObjectHideFlags: 0

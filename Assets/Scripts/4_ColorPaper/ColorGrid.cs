@@ -100,8 +100,12 @@ public class ColorGrid : MonoBehaviour
                 Renderer renderer = cell.GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    // 創建獨立材質實例
-                    Material mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                    // 關閉陰影
+                    renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    renderer.receiveShadows = false;
+
+                    // 創建獨立材質實例（使用 Unlit 避免光照影響）
+                    Material mat = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
                     mat.color = new Color(1f, 1f, 1f, 0f);  // 初始透明
                     renderer.material = mat;
                     cellMaterials[x, z] = mat;

@@ -13,11 +13,27 @@ public class PlayerBoundsLimiter : MonoBehaviour
 
     private void Start()
     {
-        // 自動抓取 MapBound 的五個點
-        Transform mb = GameObject.Find("MapBound").transform;
-        polygonPoints = new Transform[mb.childCount];
-        for (int i = 0; i < mb.childCount; i++)
-            polygonPoints[i] = mb.GetChild(i);
+        // 自動抓取 MapBound 的點
+        GameObject mbObj = GameObject.Find("MapBound");
+        if (mbObj != null)
+        {
+            Transform mb = mbObj.transform;
+            polygonPoints = new Transform[mb.childCount];
+            for (int i = 0; i < mb.childCount; i++)
+                polygonPoints[i] = mb.GetChild(i);
+
+            Debug.Log($"[PlayerBoundsLimiter] 找到 MapBound，共 {polygonPoints.Length} 個邊界點");
+            for (int i = 0; i < polygonPoints.Length; i++)
+            {
+                Debug.Log($"  Point {i}: {polygonPoints[i].position}");
+            }
+        }
+        else
+        {
+            // 如果沒有 MapBound，使用空陣列（依賴牆壁 Collider 來限制邊界）
+            polygonPoints = new Transform[0];
+            Debug.LogWarning("[PlayerBoundsLimiter] 找不到 MapBound！邊界限制將不會生效。");
+        }
     }
 
     // private void FixedUpdate()
@@ -42,6 +58,10 @@ public class PlayerBoundsLimiter : MonoBehaviour
     private bool IsOutsidePolygon(Vector3 pos)
     {
         int count = polygonPoints.Length;
+
+        // 如果沒有邊界點，永遠返回 false（不限制）
+        if (count < 3) return false;
+
         int crossings = 0;
 
         Vector2 p = new Vector2(pos.x, pos.z);
