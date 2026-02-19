@@ -10,6 +10,10 @@ public class ColorPaperGameManager : MonoBehaviour
     [Header("填色系統")]
     [SerializeField] private ColorGrid colorGrid;
 
+    [Header("Render Texture 畫布")]
+    [SerializeField] private PaintCanvas paintCanvas;
+    [SerializeField] private float brushSize = 0.03f;  // 筆刷大小（UV 空間）
+
     BgmPlayer bgmPlayer;
     NetworkManager networkManager;
     GameManager gameManager;
@@ -56,6 +60,9 @@ public class ColorPaperGameManager : MonoBehaviour
         // 啟動填色系統
         if (colorGrid) colorGrid.EnableColoring();
 
+        // 初始化並啟動玩家筆刷（Render Texture）
+        InitializePlayerBrushes();
+
         isGameRunning = true;
 
         if (countdownUI != null)
@@ -94,6 +101,9 @@ public class ColorPaperGameManager : MonoBehaviour
         // 停止填色
         if (colorGrid) colorGrid.DisableColoring();
 
+        // 停止畫圖
+        StopPlayerBrushes();
+
         // 最終更新一次分數 UI
         UpdateScoreUI();
 
@@ -106,5 +116,41 @@ public class ColorPaperGameManager : MonoBehaviour
     {
         if (networkManager) networkManager.BroadcastTerminate();
         sceneFadeInFadeOut.LoadNextSceneWithFadeOut();
+    }
+
+    void InitializePlayerBrushes()
+    {
+        if (gameManager == null || paintCanvas == null) return;
+
+        // 設定筆刷大小
+        paintCanvas.SetBrushSize(brushSize);
+
+        foreach (var kvp in gameManager.playerControllers)
+        {
+            PlayerController player = kvp.Value;
+            if (player == null) continue;
+
+            // 添加 PaintBrush 組件
+            PaintBrush brush = player.gameObject.AddComponent<PaintBrush>();
+            brush.Initialize(paintCanvas, player.playerColor);
+            brush.StartPainting();
+        }
+    }
+
+    void StopPlayerBrushes()
+    {
+        if (gameManager == null) return;
+
+        foreach (var kvp in gameManager.playerControllers)
+        {
+            PlayerController player = kvp.Value;
+            if (player == null) continue;
+
+            PaintBrush brush = player.GetComponent<PaintBrush>();
+            if (brush != null)
+            {
+                brush.StopPainting();
+            }
+        }
     }
 }

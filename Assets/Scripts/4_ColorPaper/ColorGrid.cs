@@ -18,6 +18,7 @@ public class ColorGrid : MonoBehaviour
     [Header("視覺設定")]
     [SerializeField] private GameObject cellPrefab;  // 可選：自訂格子預製體
     [SerializeField] private float cellHeightOffset = 0.01f;  // 格子高度偏移，避免 Z-fighting
+    [SerializeField] private bool hideGridVisuals = true;  // 隱藏格子視覺（使用 Trail 時開啟）
 
     private int gridWidth;
     private int gridDepth;
@@ -68,6 +69,9 @@ public class ColorGrid : MonoBehaviour
 
     void CreateGridCells()
     {
+        // 如果隱藏格子視覺，就不創建格子物件（只保留計分邏輯）
+        if (hideGridVisuals) return;
+
         // 創建一個父物件來整理格子
         GameObject gridParent = new GameObject("ColorGridCells");
         gridParent.transform.SetParent(transform);
@@ -177,8 +181,8 @@ public class ColorGrid : MonoBehaviour
         // 填色！
         gridOwnership[gridX, gridZ] = playerIndex;
 
-        // 更新視覺
-        if (cellObjects[gridX, gridZ] != null)
+        // 更新視覺（如果沒有隱藏格子）
+        if (!hideGridVisuals && cellObjects[gridX, gridZ] != null)
         {
             cellObjects[gridX, gridZ].SetActive(true);
 
