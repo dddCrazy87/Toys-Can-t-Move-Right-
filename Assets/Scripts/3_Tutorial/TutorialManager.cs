@@ -479,6 +479,11 @@ public class TutorialManager : MonoBehaviour
             Debug.Log("所有玩家都完成了教學！準備進入遊戲...");
             networkManager.BroadcastNavigateToPlaying();
             gameManager.UpdatePlayerInfo(networkManager.playersInfo);
+
+            // 根據選擇的關卡載入對應場景
+            string selectedLevel = gameManager.selectedLevel;
+            Debug.Log($"[TutorialManager] 載入選擇的關卡: {selectedLevel}");
+            tutorialSceneFadeOut.SetNextScene(selectedLevel);
             tutorialSceneFadeOut.LoadNextSceneWithFadeOut();
         }
         else

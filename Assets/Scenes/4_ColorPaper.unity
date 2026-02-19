@@ -192,10 +192,10 @@ MonoBehaviour:
   canvasMax: {x: 19.6, y: 21.2}
   brushSize: 0.05
   paintMaterial: {fileID: 2100000, guid: a7237596869144c6c82022062eaa01cf, type: 2}
-  blueColor: {r: 0.2, g: 0.4, b: 1, a: 1}
-  yellowColor: {r: 1, g: 0.9, b: 0.2, a: 1}
-  greenColor: {r: 0.2, g: 0.8, b: 0.3, a: 1}
-  redColor: {r: 1, g: 0.3, b: 0.3, a: 1}
+  blueColor: {r: 0.29699183, g: 0.44444197, b: 0.8867924, a: 1}
+  yellowColor: {r: 1, g: 0.84786, b: 0.19999999, a: 1}
+  greenColor: {r: 0.44255075, g: 0.8018868, b: 0.5012658, a: 1}
+  redColor: {r: 0.9433962, g: 0.36044857, b: 0.37163606, a: 1}
 --- !u!4 &62564403
 Transform:
   m_ObjectHideFlags: 0

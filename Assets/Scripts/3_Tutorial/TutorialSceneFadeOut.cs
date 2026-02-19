@@ -15,6 +15,16 @@ public class TutorialSceneFadeOut : MonoBehaviour
     }
 
     public string nextSceneName = "";
+
+    /// <summary>
+    /// 動態設定下一個場景名稱
+    /// </summary>
+    public void SetNextScene(string sceneName)
+    {
+        nextSceneName = sceneName;
+        Debug.Log($"[TutorialSceneFadeOut] 下一個場景設定為: {sceneName}");
+    }
+
     public void LoadNextSceneWithFadeOut()
     {
         fadeScript.ShowUI(fadeInSpeed);

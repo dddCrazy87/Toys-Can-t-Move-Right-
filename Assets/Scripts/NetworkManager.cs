@@ -22,6 +22,10 @@ public class InitialMessage { public string type; public string color; }
 public class FinalPlayerData { public int rank; public string name; public int point; public string color; public string skin; }
 [System.Serializable]
 public class TerminateMessage { public string type; public List<FinalPlayerData> finalPlayerDatas; }
+[System.Serializable]
+public class SelectLevelMessage : BaseMessage { public string level; }
+[System.Serializable]
+public class LevelSelectedMessage { public string type; public string level; }
 #endregion
 
 public class NetworkManager : MonoBehaviour
@@ -112,6 +116,10 @@ public class NetworkManager : MonoBehaviour
                     HandleMoveMessage(message, senderPeerId);
                     break;
 
+                case "select_level":
+                    HandleSelectLevel(message, senderPeerId);
+                    break;
+
                 default:
                     break;
             }
@@ -175,6 +183,35 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
+    private void HandleSelectLevel(string message, string senderPeerId)
+    {
+        // 只有主機可以選擇關卡
+        if (senderPeerId != hostPeerId)
+        {
+            Debug.LogWarning($"非主機 {senderPeerId} 嘗試選擇關卡，已忽略");
+            return;
+        }
+
+        SelectLevelMessage msg = JsonUtility.FromJson<SelectLevelMessage>(message);
+
+        // 驗證關卡是否有效
+        if (!System.Array.Exists(GameManager.AvailableLevels, level => level == msg.level))
+        {
+            Debug.LogWarning($"無效的關卡: {msg.level}");
+            return;
+        }
+
+        // 存儲選擇的關卡
+        if (gameManager != null)
+        {
+            gameManager.selectedLevel = msg.level;
+            Debug.Log($"[NetworkManager] 主機選擇了關卡: {msg.level}");
+
+            // 廣播給所有玩家
+            BroadcastLevelSelected(msg.level);
+        }
+    }
+
     // ------------- BroadcastInitialToPeer -------------
 
     private void BroadcastInitialToPeer(string peerId, string color)
@@ -203,6 +240,22 @@ public class NetworkManager : MonoBehaviour
         string jsonMessage = JsonUtility.ToJson(hostMessage);
         webRTCConnection.SendDataChannelMessage(jsonMessage);
         Debug.Log("Broadcasting Host Update: " + jsonMessage);
+    }
+
+    // ------------- BroadcastLevelSelected -------------
+
+    private void BroadcastLevelSelected(string level)
+    {
+        if (webRTCConnection == null) return;
+
+        LevelSelectedMessage levelMessage = new()
+        {
+            type = "level_selected",
+            level = level
+        };
+        string jsonMessage = JsonUtility.ToJson(levelMessage);
+        webRTCConnection.SendDataChannelMessage(jsonMessage);
+        Debug.Log($"Broadcasting Level Selected: {jsonMessage}");
     }
 
     // ------------- BroadcastNavigateToGame -------------
