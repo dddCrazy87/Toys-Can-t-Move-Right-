@@ -89,7 +89,7 @@ public class ColorGrid : MonoBehaviour
                     cell = GameObject.CreatePrimitive(PrimitiveType.Quad);
                     cell.transform.position = worldPos;
                     cell.transform.rotation = Quaternion.Euler(90f, 0f, 0f);  // 讓 Quad 朝上
-                    cell.transform.localScale = new Vector3(cellSize * 0.95f, cellSize * 0.95f, 1f);
+                    cell.transform.localScale = new Vector3(cellSize, cellSize, 1f);
                     cell.transform.SetParent(gridParent.transform);
 
                     // 移除碰撞器（不需要）
@@ -159,7 +159,8 @@ public class ColorGrid : MonoBehaviour
 
             if (player == null) continue;
 
-            Vector3 playerPos = player.transform.position;
+            // 筆畫位置往角色後方偏移
+            Vector3 playerPos = player.transform.position - player.transform.forward * 0.5f;
             PaintAtPosition(playerPos, playerIndex, player.playerColor);
         }
     }
@@ -189,12 +190,14 @@ public class ColorGrid : MonoBehaviour
     }
 
     /// <summary>
-    /// 取得每個玩家的分數（填色格子數）
+    /// 取得每個玩家的分數（百分比，總分 100）
     /// </summary>
     public Dictionary<int, int> GetPlayerScores()
     {
-        Dictionary<int, int> scores = new Dictionary<int, int>();
+        Dictionary<int, int> cellCounts = new Dictionary<int, int>();
+        int totalOwned = 0;
 
+        // 先計算每個玩家的格子數
         for (int x = 0; x < gridWidth; x++)
         {
             for (int z = 0; z < gridDepth; z++)
@@ -202,10 +205,22 @@ public class ColorGrid : MonoBehaviour
                 int owner = gridOwnership[x, z];
                 if (owner >= 0)
                 {
-                    if (!scores.ContainsKey(owner))
-                        scores[owner] = 0;
-                    scores[owner]++;
+                    if (!cellCounts.ContainsKey(owner))
+                        cellCounts[owner] = 0;
+                    cellCounts[owner]++;
+                    totalOwned++;
                 }
+            }
+        }
+
+        // 轉換成百分比分數
+        Dictionary<int, int> scores = new Dictionary<int, int>();
+        if (totalOwned > 0)
+        {
+            foreach (var kvp in cellCounts)
+            {
+                // 四捨五入到整數百分比
+                scores[kvp.Key] = Mathf.RoundToInt((float)kvp.Value / totalOwned * 100f);
             }
         }
 

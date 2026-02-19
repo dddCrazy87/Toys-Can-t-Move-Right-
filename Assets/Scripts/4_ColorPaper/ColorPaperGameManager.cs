@@ -13,6 +13,12 @@ public class ColorPaperGameManager : MonoBehaviour
     BgmPlayer bgmPlayer;
     NetworkManager networkManager;
     GameManager gameManager;
+    PlayerPointUiManager pointUiManager;
+
+    [Header("分數更新設定")]
+    [SerializeField] private float scoreUpdateInterval = 0.5f;  // 每 0.5 秒更新一次 UI
+    private float scoreUpdateTimer;
+    private bool isGameRunning = false;
 
     void Start()
     {
@@ -41,7 +47,7 @@ public class ColorPaperGameManager : MonoBehaviour
             gameManager.StartGame();
         }
 
-        var pointUiManager = FindFirstObjectByType<PlayerPointUiManager>();
+        pointUiManager = FindFirstObjectByType<PlayerPointUiManager>();
         if (pointUiManager != null)
         {
             pointUiManager.InitialPlayerPointUi();
@@ -50,47 +56,50 @@ public class ColorPaperGameManager : MonoBehaviour
         // 啟動填色系統
         if (colorGrid) colorGrid.EnableColoring();
 
+        isGameRunning = true;
+
         if (countdownUI != null)
         {
             countdownUI.StartCountdown(gameTimeLimit, OnCountdownFinished);
         }
     }
 
+    void Update()
+    {
+        if (!isGameRunning || colorGrid == null || pointUiManager == null) return;
+
+        scoreUpdateTimer += Time.deltaTime;
+        if (scoreUpdateTimer >= scoreUpdateInterval)
+        {
+            scoreUpdateTimer = 0f;
+            UpdateScoreUI();
+        }
+    }
+
+    void UpdateScoreUI()
+    {
+        var playerScores = colorGrid.GetPlayerScores();
+        foreach (var kvp in playerScores)
+        {
+            // 直接設定玩家的 point 為百分比分數
+            gameManager.playersInfo[kvp.Key].point = kvp.Value;
+            pointUiManager.UpdatePlayerPointUi(kvp.Key);
+        }
+    }
+
     void OnCountdownFinished()
     {
+        isGameRunning = false;
+
         // 停止填色
         if (colorGrid) colorGrid.DisableColoring();
 
-        // 計算最終分數
-        CalculateFinalScores();
+        // 最終更新一次分數 UI
+        UpdateScoreUI();
 
         if (bgmPlayer) bgmPlayer.PauseBGM();
         if (gameOverAudio) gameOverAudio.Play();
         Invoke(nameof(LoadNextSceneWithFadeOut), 1f);
-    }
-
-    void CalculateFinalScores()
-    {
-        if (colorGrid == null) return;
-
-        // 取得每個玩家的填色數量，更新分數
-        var playerScores = colorGrid.GetPlayerScores();
-        foreach (var kvp in playerScores)
-        {
-            int playerIndex = kvp.Key;
-            int score = kvp.Value;
-            gameManager.IncreasePlayerPoint(playerIndex, score);
-        }
-
-        // 更新 UI
-        var pointUiManager = FindFirstObjectByType<PlayerPointUiManager>();
-        if (pointUiManager)
-        {
-            foreach (var kvp in playerScores)
-            {
-                pointUiManager.UpdatePlayerPointUi(kvp.Key);
-            }
-        }
     }
 
     void LoadNextSceneWithFadeOut()

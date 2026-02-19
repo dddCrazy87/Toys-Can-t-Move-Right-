@@ -122,6 +122,7 @@ public class PlayerBoundsLimiter : MonoBehaviour
         if (IsOutsidePolygon(pos))
         {
             Vector3 clamped = GetClosestPointOnPolygon(pos);
+            clamped.y = pos.y;  // 保持原本的 Y 位置
             transform.position = clamped;
 
             rb.linearVelocity = Vector3.zero;
