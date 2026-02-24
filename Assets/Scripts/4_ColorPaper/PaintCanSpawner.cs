@@ -6,8 +6,12 @@ public class PaintCanSpawner : MonoBehaviour
 {
     [Header("生成設定")]
     [SerializeField] private GameObject paintCanPrefab;
-    [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private int maxPaintCans = 2;
+
+    [Header("生成區域（矩形範圍）")]
+    [SerializeField] private Vector2 spawnAreaMin = new Vector2(-10f, -10f);  // X, Z 最小值
+    [SerializeField] private Vector2 spawnAreaMax = new Vector2(10f, 10f);    // X, Z 最大值
+    [SerializeField] private float spawnHeight = 0f;  // Y 高度
 
     [Header("時間設定（隨機間隔）")]
     [SerializeField] private float minSpawnInterval = 8f;
@@ -15,12 +19,14 @@ public class PaintCanSpawner : MonoBehaviour
     [SerializeField] private float initialDelay = 5f;
     [SerializeField] private float respawnDelay = 3f;
 
-    private Dictionary<int, GameObject> spawnedCans = new Dictionary<int, GameObject>();
+    [Header("除錯")]
+    [SerializeField] private bool showSpawnArea = true;  // 在 Scene 視窗顯示生成區域
+
+    private List<GameObject> spawnedCans = new List<GameObject>();
     private bool isSpawning = false;
 
     void Start()
     {
-        // 遊戲開始後延遲啟動生成
         StartCoroutine(StartSpawningAfterDelay());
     }
 
@@ -35,63 +41,41 @@ public class PaintCanSpawner : MonoBehaviour
     {
         while (isSpawning)
         {
-            // 檢查是否可以生成
             if (GetCurrentPaintCanCount() < maxPaintCans)
             {
-                SpawnRandomPaintCan();
+                SpawnAtRandomPosition();
             }
 
-            // 隨機等待時間
             float waitTime = Random.Range(minSpawnInterval, maxSpawnInterval);
             yield return new WaitForSeconds(waitTime);
         }
     }
 
-    void SpawnRandomPaintCan()
+    void SpawnAtRandomPosition()
     {
-        if (paintCanPrefab == null || spawnPoints == null || spawnPoints.Length == 0) return;
+        if (paintCanPrefab == null) return;
 
-        // 找出可用的生成點
-        List<int> availablePoints = new List<int>();
-        for (int i = 0; i < spawnPoints.Length; i++)
-        {
-            if (!spawnedCans.ContainsKey(i) || spawnedCans[i] == null)
-            {
-                availablePoints.Add(i);
-            }
-        }
+        // 在區域內隨機生成位置
+        float randomX = Random.Range(spawnAreaMin.x, spawnAreaMax.x);
+        float randomZ = Random.Range(spawnAreaMin.y, spawnAreaMax.y);
+        Vector3 spawnPosition = new Vector3(randomX, spawnHeight, randomZ);
 
-        if (availablePoints.Count == 0) return;
-
-        // 隨機選擇一個生成點
-        int randomIndex = availablePoints[Random.Range(0, availablePoints.Count)];
-        SpawnAtPoint(randomIndex);
-    }
-
-    void SpawnAtPoint(int pointIndex)
-    {
-        if (pointIndex < 0 || pointIndex >= spawnPoints.Length) return;
-
-        Transform spawnPoint = spawnPoints[pointIndex];
-        GameObject paintCan = Instantiate(paintCanPrefab, spawnPoint.position, Quaternion.identity);
+        GameObject paintCan = Instantiate(paintCanPrefab, spawnPosition, Quaternion.identity);
 
         PaintCanItem item = paintCan.GetComponent<PaintCanItem>();
         if (item != null)
         {
-            item.SetSpawnPointIndex(pointIndex);
+            item.SetSpawnPointIndex(spawnedCans.Count);
         }
 
-        spawnedCans[pointIndex] = paintCan;
-        Debug.Log($"[PaintCanSpawner] 在生成點 {pointIndex} 生成顏料罐");
+        spawnedCans.Add(paintCan);
+        Debug.Log($"[PaintCanSpawner] 在 {spawnPosition} 生成顏料罐");
     }
 
     public void OnPaintCanCollected(int spawnPointIndex)
     {
-        // 移除追蹤
-        if (spawnedCans.ContainsKey(spawnPointIndex))
-        {
-            spawnedCans.Remove(spawnPointIndex);
-        }
+        // 清理列表中的空引用
+        CleanupNullReferences();
 
         // 延遲後嘗試生成新的
         StartCoroutine(RespawnAfterDelay());
@@ -103,27 +87,19 @@ public class PaintCanSpawner : MonoBehaviour
 
         if (isSpawning && GetCurrentPaintCanCount() < maxPaintCans)
         {
-            SpawnRandomPaintCan();
+            SpawnAtRandomPosition();
         }
     }
 
     int GetCurrentPaintCanCount()
     {
-        // 清理已被銷毀的引用
-        List<int> toRemove = new List<int>();
-        foreach (var kvp in spawnedCans)
-        {
-            if (kvp.Value == null)
-            {
-                toRemove.Add(kvp.Key);
-            }
-        }
-        foreach (int key in toRemove)
-        {
-            spawnedCans.Remove(key);
-        }
-
+        CleanupNullReferences();
         return spawnedCans.Count;
+    }
+
+    void CleanupNullReferences()
+    {
+        spawnedCans.RemoveAll(item => item == null);
     }
 
     public void StopSpawning()
@@ -134,13 +110,39 @@ public class PaintCanSpawner : MonoBehaviour
 
     public void ClearAllPaintCans()
     {
-        foreach (var kvp in spawnedCans)
+        foreach (var paintCan in spawnedCans)
         {
-            if (kvp.Value != null)
+            if (paintCan != null)
             {
-                Destroy(kvp.Value);
+                Destroy(paintCan);
             }
         }
         spawnedCans.Clear();
+    }
+
+    // 在 Scene 視窗顯示生成區域（方便調整）
+    void OnDrawGizmos()
+    {
+        if (!showSpawnArea) return;
+
+        Gizmos.color = new Color(0f, 1f, 0f, 0.3f);
+
+        Vector3 center = new Vector3(
+            (spawnAreaMin.x + spawnAreaMax.x) / 2f,
+            spawnHeight,
+            (spawnAreaMin.y + spawnAreaMax.y) / 2f
+        );
+
+        Vector3 size = new Vector3(
+            spawnAreaMax.x - spawnAreaMin.x,
+            0.5f,
+            spawnAreaMax.y - spawnAreaMin.y
+        );
+
+        Gizmos.DrawCube(center, size);
+
+        // 畫邊框
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(center, size);
     }
 }

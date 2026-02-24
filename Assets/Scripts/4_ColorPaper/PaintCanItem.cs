@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using DG.Tweening;
 
 public class PaintCanItem : MonoBehaviour
 {
@@ -7,6 +8,17 @@ public class PaintCanItem : MonoBehaviour
     [SerializeField] private float explosionRadius = 3f;
     [SerializeField] private float explosionBrushSize = 0.15f;
     [SerializeField] private int paintDensity = 30;
+
+    [Header("顏色設定")]
+    [SerializeField] private Renderer targetRenderer;
+    [SerializeField] private int materialIndex = 0;
+    [SerializeField] private float colorChangeInterval = 0.4f;
+
+    [Header("四種顏色")]
+    [SerializeField] private Color blueColor = new Color(0.3f, 0.45f, 0.9f, 1f);
+    [SerializeField] private Color greenColor = new Color(0.45f, 0.8f, 0.5f, 1f);
+    [SerializeField] private Color yellowColor = new Color(1f, 0.85f, 0.2f, 1f);
+    [SerializeField] private Color redColor = new Color(0.95f, 0.36f, 0.37f, 1f);
 
     [Header("視覺效果")]
     [SerializeField] private GameObject explosionEffectPrefab;
@@ -16,7 +28,7 @@ public class PaintCanItem : MonoBehaviour
     [SerializeField] private AudioClip collectSound;
     [SerializeField] private AudioClip explosionSound;
 
-    [Header("動畫")]
+    [Header("閒置動畫")]
     [SerializeField] private float bobSpeed = 2f;
     [SerializeField] private float bobHeight = 0.3f;
     [SerializeField] private float rotateSpeed = 50f;
@@ -25,11 +37,33 @@ public class PaintCanItem : MonoBehaviour
     private Vector3 startPosition;
     private bool isCollected = false;
     private int spawnPointIndex = -1;
+    private int currentColorIndex = 0;
+    private float colorTimer = 0f;
+
+    private Color[] colors;
+    private MaterialPropertyBlock propertyBlock;
 
     void Start()
     {
         startPosition = transform.position;
         paintCanvas = FindFirstObjectByType<PaintCanvas>();
+
+        // 初始化顏色陣列
+        colors = new Color[] { blueColor, greenColor, yellowColor, redColor };
+
+        // 初始化 MaterialPropertyBlock
+        propertyBlock = new MaterialPropertyBlock();
+
+        // 設定初始顏色
+        if (targetRenderer != null)
+        {
+            Debug.Log($"[PaintCanItem] 初始化成功，位置: {transform.position}");
+            SetColor(0);
+        }
+        else
+        {
+            Debug.LogWarning("[PaintCanItem] Target Renderer 未設定！");
+        }
     }
 
     void Update()
@@ -42,15 +76,56 @@ public class PaintCanItem : MonoBehaviour
 
         // 旋轉動畫
         transform.Rotate(Vector3.up, rotateSpeed * Time.deltaTime);
+
+        // 顏色循環
+        colorTimer += Time.deltaTime;
+        if (colorTimer >= colorChangeInterval)
+        {
+            colorTimer = 0f;
+            currentColorIndex = (currentColorIndex + 1) % colors.Length;
+            SetColor(currentColorIndex);
+        }
+    }
+
+    void SetColor(int index)
+    {
+        if (targetRenderer == null || colors == null || index >= colors.Length) return;
+
+        // 使用 MaterialPropertyBlock 改變顏色（效能好、不影響其他物件）
+        targetRenderer.GetPropertyBlock(propertyBlock, materialIndex);
+        // 同時設定兩種常見的顏色屬性名稱
+        propertyBlock.SetColor("_BaseColor", colors[index]);  // URP
+        propertyBlock.SetColor("_Color", colors[index]);      // Standard
+        targetRenderer.SetPropertyBlock(propertyBlock, materialIndex);
+    }
+
+    void SetColorByName(string colorName)
+    {
+        Color color = GetColorFromString(colorName);
+
+        if (targetRenderer == null) return;
+
+        targetRenderer.GetPropertyBlock(propertyBlock, materialIndex);
+        propertyBlock.SetColor("_BaseColor", color);  // URP
+        propertyBlock.SetColor("_Color", color);      // Standard
+        targetRenderer.SetPropertyBlock(propertyBlock, materialIndex);
     }
 
     void OnTriggerEnter(Collider other)
     {
+        Debug.Log($"[PaintCanItem] OnTriggerEnter 被觸發，碰撞物件: {other.name}");
+
         if (isCollected) return;
 
-        PlayerController player = other.GetComponent<PlayerController>();
-        if (player == null) return;
+        // 往父物件尋找 PlayerController（因為 Collider 可能在子物件上）
+        PlayerController player = other.GetComponentInParent<PlayerController>();
+        if (player == null)
+        {
+            Debug.Log($"[PaintCanItem] {other.name} 及其父物件都沒有 PlayerController");
+            return;
+        }
 
+        Debug.Log($"[PaintCanItem] 玩家 {player.playerName} 收集了顏料罐！");
         isCollected = true;
         StartCoroutine(TriggerExplosion(player));
     }
@@ -60,20 +135,33 @@ public class PaintCanItem : MonoBehaviour
         string playerColor = player.playerColor;
         Vector3 explosionCenter = transform.position;
 
+        // 變成玩家的顏色
+        SetColorByName(playerColor);
+
         // 播放收集音效
         if (collectSound != null)
         {
             AudioSource.PlayClipAtPoint(collectSound, explosionCenter);
         }
 
-        // 隱藏顏料罐
-        foreach (var renderer in GetComponentsInChildren<Renderer>())
-        {
-            renderer.enabled = false;
-        }
-        GetComponent<Collider>().enabled = false;
+        // 關閉碰撞
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
 
-        yield return new WaitForSeconds(0.1f);
+        // DOTween 收集動畫
+        Sequence collectSequence = DOTween.Sequence();
+
+        // 先彈跳放大
+        collectSequence.Append(transform.DOScale(1.3f, 0.1f).SetEase(Ease.OutBack));
+
+        // 快速旋轉
+        collectSequence.Join(transform.DORotate(new Vector3(0, 360, 0), 0.3f, RotateMode.FastBeyond360).SetEase(Ease.Linear));
+
+        // 縮小消失
+        collectSequence.Append(transform.DOScale(0f, 0.2f).SetEase(Ease.InBack));
+
+        // 等待動畫完成
+        yield return collectSequence.WaitForCompletion();
 
         // 播放爆炸音效
         if (explosionSound != null)
@@ -109,7 +197,6 @@ public class PaintCanItem : MonoBehaviour
             spawner.OnPaintCanCollected(spawnPointIndex);
         }
 
-        yield return new WaitForSeconds(0.5f);
         Destroy(gameObject);
     }
 
@@ -117,10 +204,10 @@ public class PaintCanItem : MonoBehaviour
     {
         return colorName switch
         {
-            "blue" => new Color(0.3f, 0.45f, 0.9f, 1f),
-            "yellow" => new Color(1f, 0.85f, 0.2f, 1f),
-            "green" => new Color(0.45f, 0.8f, 0.5f, 1f),
-            "red" => new Color(0.95f, 0.36f, 0.37f, 1f),
+            "blue" => blueColor,
+            "green" => greenColor,
+            "yellow" => yellowColor,
+            "red" => redColor,
             _ => Color.white
         };
     }

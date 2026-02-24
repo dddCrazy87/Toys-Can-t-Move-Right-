@@ -1797,6 +1797,60 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 543172394}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &564380770
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 564380772}
+  - component: {fileID: 564380771}
+  m_Layer: 0
+  m_Name: PaintCanSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &564380771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564380770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 530b0f05912ea4cecbf19511a142a5a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  paintCanPrefab: {fileID: 3731081709618970229, guid: e07e5bf2a2aec422fbeb7428c2dfb082, type: 3}
+  maxPaintCans: 2
+  spawnAreaMin: {x: -20.4, y: -6.6}
+  spawnAreaMax: {x: 16.6, y: 18.2}
+  spawnHeight: -4
+  minSpawnInterval: 8
+  maxSpawnInterval: 15
+  initialDelay: 5
+  respawnDelay: 3
+  showSpawnArea: 1
+--- !u!4 &564380772
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564380770}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.6811447, y: -5.0312223, z: 6.06106}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &591266211
 GameObject:
   m_ObjectHideFlags: 0
@@ -4688,3 +4742,4 @@ SceneRoots:
   - {fileID: 1730831348}
   - {fileID: 490604104}
   - {fileID: 62564403}
+  - {fileID: 564380772}

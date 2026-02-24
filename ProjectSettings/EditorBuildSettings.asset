@@ -14,7 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/3_Tutorial.unity
     guid: 113f86e13d4a84b639a8dcbaffb52beb
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/4_Toybox.unity
     guid: 540506af811896d47a1beb140f3df74c
   - enabled: 1
