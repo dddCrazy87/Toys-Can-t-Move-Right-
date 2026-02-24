@@ -33,6 +33,7 @@ public class PaintCanvas : MonoBehaviour
     {
         public Vector2 uv;
         public Color color;
+        public float brushSize;  // 0 表示使用預設大小
     }
 
     void Awake()
@@ -173,8 +174,8 @@ public class PaintCanvas : MonoBehaviour
             color = Color.white;
         }
 
-        // 加入待處理列表
-        pendingPaints.Add(new PaintCommand { uv = uv, color = color });
+        // 加入待處理列表（使用預設筆刷大小）
+        pendingPaints.Add(new PaintCommand { uv = uv, color = color, brushSize = 0 });
     }
 
     void LateUpdate()
@@ -188,7 +189,9 @@ public class PaintCanvas : MonoBehaviour
         foreach (var cmd in pendingPaints)
         {
             paintMaterial.SetVector("_BrushPos", new Vector4(cmd.uv.x, cmd.uv.y, 0, 0));
-            paintMaterial.SetFloat("_BrushSize", brushSize);
+            // 使用自訂筆刷大小，若為 0 則使用預設值
+            float size = cmd.brushSize > 0 ? cmd.brushSize : brushSize;
+            paintMaterial.SetFloat("_BrushSize", size);
             paintMaterial.SetColor("_BrushColor", cmd.color);
 
             Graphics.Blit(paintTexture, tempRT);
@@ -209,6 +212,55 @@ public class PaintCanvas : MonoBehaviour
             float t = (float)i / segments;
             Vector3 pos = Vector3.Lerp(fromPos, toPos, t);
             Paint(pos, playerColor);
+        }
+    }
+
+    /// <summary>
+    /// 大範圍噴灑顏料（顏料罐爆炸效果）
+    /// </summary>
+    public void PaintExplosion(Vector3 center, string playerColor, float radius, float explosionBrushSize, int density)
+    {
+        if (paintMaterial == null || paintTexture == null) return;
+
+        // 取得顏色
+        if (!colorMapping.TryGetValue(playerColor, out Color color))
+        {
+            color = Color.white;
+        }
+
+        // 在圓形範圍內隨機噴灑多個點
+        for (int i = 0; i < density; i++)
+        {
+            // 隨機角度和距離（使用平方根讓分布更均勻）
+            float angle = Random.Range(0f, Mathf.PI * 2f);
+            float distance = Mathf.Sqrt(Random.Range(0f, 1f)) * radius;
+
+            // 計算世界座標
+            Vector3 offset = new Vector3(
+                Mathf.Cos(angle) * distance,
+                0f,
+                Mathf.Sin(angle) * distance
+            );
+            Vector3 worldPos = center + offset;
+
+            // 轉換為 UV
+            Vector2 uv = WorldToUV(worldPos);
+
+            // 檢查是否在畫布範圍內
+            if (uv.x < 0 || uv.x > 1 || uv.y < 0 || uv.y > 1) continue;
+
+            // 隨機變化筆刷大小，製造更自然的效果
+            float randomSize = explosionBrushSize * Random.Range(0.7f, 1.3f);
+
+            // 加入待處理列表（使用較大的筆刷）
+            pendingPaints.Add(new PaintCommand { uv = uv, color = color, brushSize = randomSize });
+        }
+
+        // 中心點畫一個較大的圓
+        Vector2 centerUV = WorldToUV(center);
+        if (centerUV.x >= 0 && centerUV.x <= 1 && centerUV.y >= 0 && centerUV.y <= 1)
+        {
+            pendingPaints.Add(new PaintCommand { uv = centerUV, color = color, brushSize = explosionBrushSize * 1.5f });
         }
     }
 
