@@ -54,8 +54,8 @@ Shader "Custom/PaintBrush"
                 // 計算與筆刷中心的距離
                 float dist = distance(i.uv, _BrushPos.xy);
 
-                // 計算筆刷強度（平滑邊緣）
-                float brushStrength = 1.0 - smoothstep(_BrushSize * _BrushHardness, _BrushSize, dist);
+                // 計算筆刷強度（硬邊緣，避免灰色暈染）
+                float brushStrength = dist < _BrushSize ? 1.0 : 0.0;
 
                 // 混合顏色（新顏色覆蓋舊顏色）
                 fixed4 finalColor = lerp(baseColor, _BrushColor, brushStrength);

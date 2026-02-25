@@ -1,16 +1,16 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using System.Collections.Generic;
 
 public class PaintCanvas : MonoBehaviour
 {
     [Header("畫布設定")]
     [SerializeField] private int textureSize = 2048;
-    [SerializeField] private MeshRenderer canvasRenderer;  // 畫布平面的 Renderer
+    [SerializeField] private DecalProjector decalProjector;  // Decal 投影器
 
-    [Header("畫布範圍（自動從 Quad 獲取）")]
-    [SerializeField] private bool autoDetectBounds = true;  // 自動從 Quad 獲取範圍
-    [SerializeField] private Vector2 canvasMin = new Vector2(-21.6f, -8.1f);  // X, Z 最小值（手動設定時使用）
-    [SerializeField] private Vector2 canvasMax = new Vector2(17.6f, 19.5f);   // X, Z 最大值（手動設定時使用）
+    [Header("畫布範圍（從 Decal Projector 自動獲取）")]
+    [SerializeField] private Vector2 canvasMin = new Vector2(-21.6f, -8.1f);  // X, Z 最小值
+    [SerializeField] private Vector2 canvasMax = new Vector2(17.6f, 19.5f);   // X, Z 最大值
 
     [Header("筆刷設定")]
     [SerializeField] private float brushSize = 0.05f;  // 筆刷大小（UV 空間，0-1）
@@ -47,44 +47,28 @@ public class PaintCanvas : MonoBehaviour
             { "red", redColor }
         };
 
-        // 自動從 Quad 獲取範圍
-        if (autoDetectBounds && canvasRenderer != null)
+        // 從 Decal Projector 獲取範圍
+        if (decalProjector != null)
         {
-            DetectBoundsFromQuad();
+            DetectBoundsFromDecal();
         }
 
         InitializeCanvas();
     }
 
     /// <summary>
-    /// 從 Quad 自動獲取畫布範圍
+    /// 從 Decal Projector 獲取畫布範圍
     /// </summary>
-    void DetectBoundsFromQuad()
+    void DetectBoundsFromDecal()
     {
-        // 獲取 Quad 的四個角的世界座標
-        MeshFilter meshFilter = canvasRenderer.GetComponent<MeshFilter>();
-        if (meshFilter == null || meshFilter.sharedMesh == null) return;
+        Vector3 pos = decalProjector.transform.position;
+        float halfWidth = decalProjector.size.x / 2f;
+        float halfHeight = decalProjector.size.y / 2f;
 
-        Mesh mesh = meshFilter.sharedMesh;
-        Vector3[] vertices = mesh.vertices;
+        canvasMin = new Vector2(pos.x - halfWidth, pos.z - halfHeight);
+        canvasMax = new Vector2(pos.x + halfWidth, pos.z + halfHeight);
 
-        // 找出所有頂點的世界座標
-        float minX = float.MaxValue, maxX = float.MinValue;
-        float minZ = float.MaxValue, maxZ = float.MinValue;
-
-        foreach (Vector3 vertex in vertices)
-        {
-            Vector3 worldPos = canvasRenderer.transform.TransformPoint(vertex);
-            minX = Mathf.Min(minX, worldPos.x);
-            maxX = Mathf.Max(maxX, worldPos.x);
-            minZ = Mathf.Min(minZ, worldPos.z);
-            maxZ = Mathf.Max(maxZ, worldPos.z);
-        }
-
-        canvasMin = new Vector2(minX, minZ);
-        canvasMax = new Vector2(maxX, maxZ);
-
-        Debug.Log($"[PaintCanvas] 自動檢測畫布範圍: Min({canvasMin.x:F2}, {canvasMin.y:F2}) Max({canvasMax.x:F2}, {canvasMax.y:F2})");
+        Debug.Log($"[PaintCanvas] 從 Decal 檢測畫布範圍: Min({canvasMin.x:F2}, {canvasMin.y:F2}) Max({canvasMax.x:F2}, {canvasMax.y:F2})");
     }
 
     void InitializeCanvas()
@@ -97,25 +81,26 @@ public class PaintCanvas : MonoBehaviour
         // 清空為透明
         ClearCanvas();
 
-        // 設定畫布材質（使用透明 Shader）
-        if (canvasRenderer != null)
+        // 設定 Decal 材質
+        if (decalProjector != null)
         {
-            // 使用支援透明的 Unlit Shader
-            canvasMaterial = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
-            canvasMaterial.mainTexture = paintTexture;
+            // 使用 Decal Shader
+            Shader decalShader = Shader.Find("Shader Graphs/Decal");
+            if (decalShader == null)
+            {
+                Debug.LogError("[PaintCanvas] 找不到 Shader Graphs/Decal！請確認 URP Decal 已啟用。");
+                return;
+            }
 
-            // 設定為透明模式
-            canvasMaterial.SetFloat("_Surface", 1); // 1 = Transparent
-            canvasMaterial.SetFloat("_Blend", 0);   // 0 = Alpha
-            canvasMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-            canvasMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-            canvasMaterial.SetInt("_ZWrite", 0);
-            canvasMaterial.DisableKeyword("_ALPHATEST_ON");
-            canvasMaterial.EnableKeyword("_ALPHABLEND_ON");
-            canvasMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-            canvasMaterial.renderQueue = 3000; // Transparent queue
+            canvasMaterial = new Material(decalShader);
+            canvasMaterial.SetTexture("Base_Map", paintTexture);
 
-            canvasRenderer.material = canvasMaterial;
+            decalProjector.material = canvasMaterial;
+            Debug.Log("[PaintCanvas] Decal 材質初始化成功");
+        }
+        else
+        {
+            Debug.LogWarning("[PaintCanvas] Decal Projector 未設定！");
         }
     }
 
@@ -135,25 +120,10 @@ public class PaintCanvas : MonoBehaviour
     /// </summary>
     public Vector2 WorldToUV(Vector3 worldPos)
     {
-        if (canvasRenderer != null)
-        {
-            // 將世界座標轉換為 Quad 的本地座標
-            Vector3 localPos = canvasRenderer.transform.InverseTransformPoint(worldPos);
-
-            // Quad 的本地座標範圍通常是 -0.5 到 0.5
-            // 轉換為 UV (0 到 1)
-            float u = localPos.x + 0.5f;
-            float v = localPos.y + 0.5f;
-
-            return new Vector2(u, v);
-        }
-        else
-        {
-            // Fallback：使用手動設定的範圍
-            float u = Mathf.InverseLerp(canvasMin.x, canvasMax.x, worldPos.x);
-            float v = Mathf.InverseLerp(canvasMin.y, canvasMax.y, worldPos.z);
-            return new Vector2(u, v);
-        }
+        // 使用畫布範圍計算 UV
+        float u = Mathf.InverseLerp(canvasMin.x, canvasMax.x, worldPos.x);
+        float v = Mathf.InverseLerp(canvasMin.y, canvasMax.y, worldPos.z);
+        return new Vector2(u, v);
     }
 
     /// <summary>
