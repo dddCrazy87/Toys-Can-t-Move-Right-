@@ -40,13 +40,13 @@ namespace SimpleWebRTC
         private readonly Dictionary<string, AudioSource> audioReceivers = new Dictionary<string, AudioSource>();
 
         private readonly string localPeerId;
-        private readonly string stunServerAddress;
+        private readonly RTCIceServer[] iceServers;
         private readonly WebRTCConnection connectionGameObject;
 
-        public WebRTCManager(string localPeerId, string stunServerAddress, WebRTCConnection connectionObject)
+        public WebRTCManager(string localPeerId, RTCIceServer[] iceServers, WebRTCConnection connectionObject)
         {
             this.localPeerId = localPeerId;
-            this.stunServerAddress = stunServerAddress;
+            this.iceServers = iceServers;
             this.connectionGameObject = connectionObject;
         }
 
@@ -100,16 +100,14 @@ namespace SimpleWebRTC
 
         private RTCPeerConnection CreateNewRTCPeerConnection()
         {
-            if (string.IsNullOrEmpty(stunServerAddress))
+            if (iceServers == null || iceServers.Length == 0)
             {
                 return new RTCPeerConnection();
             }
 
             RTCConfiguration config = new RTCConfiguration
             {
-                iceServers = new[] {
-                    new RTCIceServer { urls = new[] { stunServerAddress } }
-                }
+                iceServers = iceServers
             };
             return new RTCPeerConnection(ref config);
         }

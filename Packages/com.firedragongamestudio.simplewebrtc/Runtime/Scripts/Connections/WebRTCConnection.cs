@@ -1,5 +1,6 @@
 using NativeWebSocket;
 using System.Collections;
+using System.Collections.Generic;
 using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.Events;
@@ -22,7 +23,17 @@ namespace SimpleWebRTC
 
         [Header("Connection Setup")]
         [SerializeField] private string WebSocketServerAddress = "wss://server-for-toy-cant-move.onrender.com/";
-        [SerializeField] private string StunServerAddress = "stun:stun.l.google.com:19302";
+        [SerializeField] private string StunServerAddress = "stun:stun.relay.metered.ca:80";
+
+        [Header("TURN Server (Optional - for NAT traversal)")]
+        [SerializeField] private string TurnServerUrl1 = "turn:global.relay.metered.ca:80";
+        [SerializeField] private string TurnServerUrl2 = "turn:global.relay.metered.ca:80?transport=tcp";
+        [SerializeField] private string TurnServerUrl3 = "turn:global.relay.metered.ca:443";
+        [SerializeField] private string TurnServerUrl4 = "turns:global.relay.metered.ca:443?transport=tcp";
+        [SerializeField] private string TurnUsername = "";
+        [SerializeField] private string TurnCredential = "";
+
+        [Header("Peer Settings")]
         [SerializeField] private string LocalPeerId = "PeerId";
         [SerializeField] private bool UseHTTPHeader = true;
         [SerializeField] private bool IsVideoAudioSender = false;
@@ -65,8 +76,8 @@ namespace SimpleWebRTC
 
         private void Awake()
         {
-            DontDestroyOnLoad(gameObject); 
-            
+            DontDestroyOnLoad(gameObject);
+
             SimpleWebRTCLogger.EnableLogging = ShowLogs;
             SimpleWebRTCLogger.EnableDataChannelLogging = ShowDataChannelLogs;
 
@@ -74,7 +85,40 @@ namespace SimpleWebRTC
             {
                 LocalPeerId = GenerateRandomUniquePeerId();
             }
-            webRTCManager = new WebRTCManager(LocalPeerId, StunServerAddress, this);
+
+            // Build ICE servers array (STUN + TURN)
+            var iceServersList = new List<RTCIceServer>();
+
+            // Add STUN server
+            if (!string.IsNullOrEmpty(StunServerAddress))
+            {
+                iceServersList.Add(new RTCIceServer { urls = new[] { StunServerAddress } });
+            }
+
+            // Add TURN servers if credentials are provided
+            if (!string.IsNullOrEmpty(TurnUsername) && !string.IsNullOrEmpty(TurnCredential))
+            {
+                string[] turnUrls = { TurnServerUrl1, TurnServerUrl2, TurnServerUrl3, TurnServerUrl4 };
+                foreach (var turnUrl in turnUrls)
+                {
+                    if (!string.IsNullOrEmpty(turnUrl))
+                    {
+                        iceServersList.Add(new RTCIceServer
+                        {
+                            urls = new[] { turnUrl },
+                            username = TurnUsername,
+                            credential = TurnCredential
+                        });
+                    }
+                }
+                Debug.Log($"[WebRTCConnection] TURN servers configured: {iceServersList.Count - 1} TURN + 1 STUN");
+            }
+            else
+            {
+                Debug.LogWarning("[WebRTCConnection] TURN credentials not set. Only STUN will be used (may fail on restricted networks).");
+            }
+
+            webRTCManager = new WebRTCManager(LocalPeerId, iceServersList.ToArray(), this);
 
             // register events for webrtc connection
             webRTCManager.OnWebSocketConnection += WebSocketConnectionChanged.Invoke;
