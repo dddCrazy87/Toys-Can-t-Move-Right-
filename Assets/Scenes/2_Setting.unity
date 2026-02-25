@@ -1354,6 +1354,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WebSocketServerAddress: wss://server-for-toy-cant-move.onrender.com/
   StunServerAddress: stun:stun.l.google.com:19302
+  TurnServerUrl1: turn:global.relay.metered.ca:80
+  TurnServerUrl2: turn:global.relay.metered.ca:80?transport=tcp
+  TurnServerUrl3: turn:global.relay.metered.ca:443
+  TurnServerUrl4: turns:global.relay.metered.ca:443?transport=tcp
+  TurnUsername: 05448449676f3fce5e1f1c64
+  TurnCredential: Sr0tjpM3XbD2ZDWU
   LocalPeerId: PeerId
   UseHTTPHeader: 1
   IsVideoAudioSender: 0

@@ -63,6 +63,14 @@ public class NetworkManager : MonoBehaviour
     private void OnPeerDisconnected(string senderPeerId)
     {
         Debug.Log($"Peer {senderPeerId} is disconnected.");
+
+        // 檢查 peer 是否存在於字典中（可能連線還沒完成就斷了）
+        if (!peerIdToPlayer.ContainsKey(senderPeerId))
+        {
+            Debug.LogWarning($"Peer {senderPeerId} 不在玩家字典中，可能連線尚未完成就斷線了。");
+            return;
+        }
+
         if (SceneManager.GetActiveScene().name == "2_Setting")
         {
             Player leavingPlayer = peerIdToPlayer[senderPeerId];

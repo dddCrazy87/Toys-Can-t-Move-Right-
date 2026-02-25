@@ -83,14 +83,17 @@ MonoBehaviour:
   explosionRadius: 3
   explosionBrushSize: 0.15
   paintDensity: 30
-  colorMaterials:
-  - {fileID: 2100000, guid: de39c6b3d8b524bb7be9f982ab254df5, type: 2}
-  - {fileID: 2100000, guid: 5cae87663fef54f17be3805598475282, type: 2}
-  - {fileID: 2100000, guid: 36c5adea64efc4ccebec0611c8b1d91c, type: 2}
-  - {fileID: 2100000, guid: 8b650f174ee9a435c8df5725a97d34bd, type: 2}
   targetRenderer: {fileID: -7511558181221131132, guid: e8de35d8a0f7d44c789087fd7d2bdcde, type: 3}
   materialIndex: 1
   colorChangeInterval: 0.4
+  blueMaterial: {fileID: 2100000, guid: de39c6b3d8b524bb7be9f982ab254df5, type: 2}
+  greenMaterial: {fileID: 2100000, guid: 5cae87663fef54f17be3805598475282, type: 2}
+  yellowMaterial: {fileID: 2100000, guid: 36c5adea64efc4ccebec0611c8b1d91c, type: 2}
+  redMaterial: {fileID: 2100000, guid: 8b650f174ee9a435c8df5725a97d34bd, type: 2}
+  blueColor: {r: 0.3, g: 0.45, b: 0.9, a: 1}
+  greenColor: {r: 0.45, g: 0.8, b: 0.5, a: 1}
+  yellowColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  redColor: {r: 0.95, g: 0.36, b: 0.37, a: 1}
   explosionEffectPrefab: {fileID: 0}
   effectDuration: 1.5
   collectSound: {fileID: 0}
@@ -98,7 +101,6 @@ MonoBehaviour:
   bobSpeed: 2
   bobHeight: 0.3
   rotateSpeed: 50
-  collectAnimDuration: 0.4
 --- !u!65 &2000750943624860791
 BoxCollider:
   m_ObjectHideFlags: 0

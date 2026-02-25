@@ -1827,7 +1827,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paintCanPrefab: {fileID: 3731081709618970229, guid: e07e5bf2a2aec422fbeb7428c2dfb082, type: 3}
-  maxPaintCans: 2
+  maxPaintCans: 1
   spawnAreaMin: {x: -20.4, y: -6.6}
   spawnAreaMax: {x: 16.6, y: 18.2}
   spawnHeight: -4
