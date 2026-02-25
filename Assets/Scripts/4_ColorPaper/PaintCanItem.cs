@@ -34,6 +34,7 @@ public class PaintCanItem : MonoBehaviour
     [Header("音效")]
     [SerializeField] private AudioClip collectSound;
     [SerializeField] private AudioClip explosionSound;
+    [SerializeField] [Range(0f, 2f)] private float soundVolume = 1.5f;  // 音量倍率
 
     [Header("閒置動畫")]
     [SerializeField] private float bobSpeed = 2f;
@@ -163,7 +164,7 @@ public class PaintCanItem : MonoBehaviour
         // 播放收集音效
         if (collectSound != null)
         {
-            AudioSource.PlayClipAtPoint(collectSound, explosionCenter);
+            PlaySoundAtPoint(collectSound, explosionCenter, soundVolume);
         }
 
         // 關閉碰撞
@@ -188,7 +189,7 @@ public class PaintCanItem : MonoBehaviour
         // 播放爆炸音效
         if (explosionSound != null)
         {
-            AudioSource.PlayClipAtPoint(explosionSound, explosionCenter);
+            PlaySoundAtPoint(explosionSound, explosionCenter, soundVolume);
         }
 
         // 生成爆炸粒子效果
@@ -237,5 +238,20 @@ public class PaintCanItem : MonoBehaviour
     public void SetSpawnPointIndex(int index)
     {
         spawnPointIndex = index;
+    }
+
+    /// <summary>
+    /// 播放音效（支援自訂音量）
+    /// </summary>
+    void PlaySoundAtPoint(AudioClip clip, Vector3 position, float volume)
+    {
+        GameObject tempGO = new GameObject("TempAudio");
+        tempGO.transform.position = position;
+        AudioSource audioSource = tempGO.AddComponent<AudioSource>();
+        audioSource.clip = clip;
+        audioSource.volume = volume;
+        audioSource.spatialBlend = 0f;  // 2D 音效，不受距離影響
+        audioSource.Play();
+        Destroy(tempGO, clip.length + 0.1f);
     }
 }
