@@ -97,6 +97,7 @@ MonoBehaviour:
   effectDuration: 1.5
   collectSound: {fileID: 8300000, guid: ed1a931129a79fa4c891ef8410133aa2, type: 3}
   explosionSound: {fileID: 0}
+  soundVolume: 1.5
   bobSpeed: 2
   bobHeight: 0.3
   rotateSpeed: 50
