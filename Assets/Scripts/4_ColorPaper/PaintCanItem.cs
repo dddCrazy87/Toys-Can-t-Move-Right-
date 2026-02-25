@@ -10,11 +10,18 @@ public class PaintCanItem : MonoBehaviour
     [SerializeField] private int paintDensity = 30;
 
     [Header("顏色設定")]
-    [SerializeField] private Renderer targetRenderer;
-    [SerializeField] private int materialIndex = 0;
+    [SerializeField] private int materialIndex = 1;
     [SerializeField] private float colorChangeInterval = 0.4f;
 
-    [Header("四種顏色")]
+    private Renderer targetRenderer;
+
+    [Header("四種材質球")]
+    [SerializeField] private Material blueMaterial;
+    [SerializeField] private Material greenMaterial;
+    [SerializeField] private Material yellowMaterial;
+    [SerializeField] private Material redMaterial;
+
+    [Header("顏色對照（用於爆炸效果）")]
     [SerializeField] private Color blueColor = new Color(0.3f, 0.45f, 0.9f, 1f);
     [SerializeField] private Color greenColor = new Color(0.45f, 0.8f, 0.5f, 1f);
     [SerializeField] private Color yellowColor = new Color(1f, 0.85f, 0.2f, 1f);
@@ -40,29 +47,29 @@ public class PaintCanItem : MonoBehaviour
     private int currentColorIndex = 0;
     private float colorTimer = 0f;
 
+    private Material[] materials;
     private Color[] colors;
-    private MaterialPropertyBlock propertyBlock;
 
     void Start()
     {
         startPosition = transform.position;
         paintCanvas = FindFirstObjectByType<PaintCanvas>();
 
-        // 初始化顏色陣列
+        // 動態取得 Renderer（避免 Prefab 參照問題）
+        targetRenderer = GetComponentInChildren<Renderer>();
+
+        // 初始化材質和顏色陣列（順序對應：blue, green, yellow, red）
+        materials = new Material[] { blueMaterial, greenMaterial, yellowMaterial, redMaterial };
         colors = new Color[] { blueColor, greenColor, yellowColor, redColor };
 
-        // 初始化 MaterialPropertyBlock
-        propertyBlock = new MaterialPropertyBlock();
-
-        // 設定初始顏色
         if (targetRenderer != null)
         {
+            SetMaterial(0);
             Debug.Log($"[PaintCanItem] 初始化成功，位置: {transform.position}");
-            SetColor(0);
         }
         else
         {
-            Debug.LogWarning("[PaintCanItem] Target Renderer 未設定！");
+            Debug.LogWarning("[PaintCanItem] 找不到 Renderer！");
         }
     }
 
@@ -77,38 +84,53 @@ public class PaintCanItem : MonoBehaviour
         // 旋轉動畫
         transform.Rotate(Vector3.up, rotateSpeed * Time.deltaTime);
 
-        // 顏色循環
+        // 材質循環
         colorTimer += Time.deltaTime;
         if (colorTimer >= colorChangeInterval)
         {
             colorTimer = 0f;
-            currentColorIndex = (currentColorIndex + 1) % colors.Length;
-            SetColor(currentColorIndex);
+            currentColorIndex = (currentColorIndex + 1) % materials.Length;
+            SetMaterial(currentColorIndex);
         }
     }
 
-    void SetColor(int index)
+    void SetMaterial(int index)
     {
-        if (targetRenderer == null || colors == null || index >= colors.Length) return;
+        if (targetRenderer == null)
+        {
+            Debug.LogError("[PaintCanItem] targetRenderer is null!");
+            return;
+        }
+        if (materials == null || index >= materials.Length)
+        {
+            Debug.LogError($"[PaintCanItem] materials array issue! materials={materials}, index={index}");
+            return;
+        }
+        if (materials[index] == null)
+        {
+            Debug.LogError($"[PaintCanItem] materials[{index}] is null! 請在 Inspector 設定材質球");
+            return;
+        }
 
-        // 使用 MaterialPropertyBlock 改變顏色（效能好、不影響其他物件）
-        targetRenderer.GetPropertyBlock(propertyBlock, materialIndex);
-        // 同時設定兩種常見的顏色屬性名稱
-        propertyBlock.SetColor("_BaseColor", colors[index]);  // URP
-        propertyBlock.SetColor("_Color", colors[index]);      // Standard
-        targetRenderer.SetPropertyBlock(propertyBlock, materialIndex);
+        // 直接換材質球（用 .materials 才能在執行時對實例生效）
+        Material[] mats = targetRenderer.materials;
+        mats[materialIndex] = materials[index];
+        targetRenderer.materials = mats;
     }
 
-    void SetColorByName(string colorName)
+    void SetMaterialByName(string colorName)
     {
-        Color color = GetColorFromString(colorName);
+        if (targetRenderer == null || materials == null) return;
 
-        if (targetRenderer == null) return;
-
-        targetRenderer.GetPropertyBlock(propertyBlock, materialIndex);
-        propertyBlock.SetColor("_BaseColor", color);  // URP
-        propertyBlock.SetColor("_Color", color);      // Standard
-        targetRenderer.SetPropertyBlock(propertyBlock, materialIndex);
+        int index = colorName switch
+        {
+            "blue" => 0,
+            "green" => 1,
+            "yellow" => 2,
+            "red" => 3,
+            _ => 0
+        };
+        SetMaterial(index);
     }
 
     void OnTriggerEnter(Collider other)
@@ -136,7 +158,7 @@ public class PaintCanItem : MonoBehaviour
         Vector3 explosionCenter = transform.position;
 
         // 變成玩家的顏色
-        SetColorByName(playerColor);
+        SetMaterialByName(playerColor);
 
         // 播放收集音效
         if (collectSound != null)
