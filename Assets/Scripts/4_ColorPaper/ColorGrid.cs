@@ -194,14 +194,14 @@ public class ColorGrid : MonoBehaviour
     }
 
     /// <summary>
-    /// 取得每個玩家的分數（百分比，總分 100）
+    /// 取得每個玩家的分數（絕對覆蓋率，基於整張畫布）
     /// </summary>
     public Dictionary<int, int> GetPlayerScores()
     {
         Dictionary<int, int> cellCounts = new Dictionary<int, int>();
-        int totalOwned = 0;
+        int totalCells = gridWidth * gridDepth;  // 整張畫布的格子數
 
-        // 先計算每個玩家的格子數
+        // 計算每個玩家的格子數
         for (int x = 0; x < gridWidth; x++)
         {
             for (int z = 0; z < gridDepth; z++)
@@ -212,23 +212,39 @@ public class ColorGrid : MonoBehaviour
                     if (!cellCounts.ContainsKey(owner))
                         cellCounts[owner] = 0;
                     cellCounts[owner]++;
-                    totalOwned++;
                 }
             }
         }
 
-        // 轉換成百分比分數
+        // 轉換成絕對覆蓋率（基於整張畫布）
         Dictionary<int, int> scores = new Dictionary<int, int>();
-        if (totalOwned > 0)
+        foreach (var kvp in cellCounts)
         {
-            foreach (var kvp in cellCounts)
-            {
-                // 四捨五入到整數百分比
-                scores[kvp.Key] = Mathf.RoundToInt((float)kvp.Value / totalOwned * 100f);
-            }
+            // 四捨五入到整數百分比
+            scores[kvp.Key] = Mathf.RoundToInt((float)kvp.Value / totalCells * 100f);
         }
 
         return scores;
+    }
+
+    /// <summary>
+    /// 取得總覆蓋率（所有玩家加總）
+    /// </summary>
+    public int GetTotalCoverage()
+    {
+        int totalCells = gridWidth * gridDepth;
+        int ownedCells = 0;
+
+        for (int x = 0; x < gridWidth; x++)
+        {
+            for (int z = 0; z < gridDepth; z++)
+            {
+                if (gridOwnership[x, z] >= 0)
+                    ownedCells++;
+            }
+        }
+
+        return Mathf.RoundToInt((float)ownedCells / totalCells * 100f);
     }
 
     /// <summary>

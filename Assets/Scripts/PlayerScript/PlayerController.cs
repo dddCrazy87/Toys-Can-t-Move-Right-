@@ -30,6 +30,10 @@ public class PlayerController : MonoBehaviour
     public int defenceWeakness = 5;
     [HideInInspector] public float rotateSpeed = 15f;
 
+    [Header("筆刷設定")]
+    [Tooltip("角色專屬筆刷貼圖（在 Prefab 設定）")]
+    public Texture2D brushTexture;
+
 
     private Rigidbody rb;
     private PlayerBoundsLimiter boundsLimiter;

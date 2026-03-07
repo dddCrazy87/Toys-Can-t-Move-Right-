@@ -6,8 +6,14 @@ public class PaintCanItem : MonoBehaviour
 {
     [Header("爆炸設定")]
     [SerializeField] private float explosionRadius = 3f;
-    [SerializeField] private float explosionBrushSize = 0.15f;
+    [SerializeField] private float explosionBrushSize = 0.2f;
     [SerializeField] private int paintDensity = 30;
+
+    [Header("角色力量影響（根據 bounceForce）")]
+    [SerializeField] private float minPowerMultiplier = 0.6f;   // 最弱角色的爆炸倍率
+    [SerializeField] private float maxPowerMultiplier = 1.5f;   // 最強角色的爆炸倍率
+    [SerializeField] private float minBounceForce = 25f;   // 最弱角色的 bounceForce
+    [SerializeField] private float maxBounceForce = 100f;  // 最強角色的 bounceForce
 
     [Header("顏色設定")]
     [SerializeField] private int materialIndex = 1;
@@ -158,6 +164,20 @@ public class PaintCanItem : MonoBehaviour
         string playerColor = player.playerColor;
         Vector3 explosionCenter = transform.position;
 
+        // 根據角色力量計算爆炸參數
+        float powerNormalized = Mathf.InverseLerp(minBounceForce, maxBounceForce, player.bounceForce);
+        float powerMultiplier = Mathf.Lerp(minPowerMultiplier, maxPowerMultiplier, powerNormalized);
+
+        float adjustedRadius = explosionRadius * powerMultiplier;
+        float adjustedBrushSize = explosionBrushSize * powerMultiplier;
+        int adjustedDensity = Mathf.RoundToInt(paintDensity * powerMultiplier);
+
+        // 取得角色專屬筆刷貼圖
+        Texture2D playerBrushTexture = player.brushTexture;
+
+        string brushName = playerBrushTexture != null ? playerBrushTexture.name : "圓形";
+        Debug.Log($"[PaintCanItem] {player.playerName} 力量:{player.bounceForce} 爆炸倍率:{powerMultiplier:F2} 範圍:{adjustedRadius:F2} 密度:{adjustedDensity} 筆刷:{brushName}");
+
         // 變成玩家的顏色
         SetMaterialByName(playerColor);
 
@@ -207,10 +227,10 @@ public class PaintCanItem : MonoBehaviour
             Destroy(effect, effectDuration);
         }
 
-        // 在畫布上噴灑顏料
+        // 在畫布上噴灑顏料（使用根據角色力量調整後的參數 + 角色專屬筆刷貼圖）
         if (paintCanvas != null)
         {
-            paintCanvas.PaintExplosion(explosionCenter, playerColor, explosionRadius, explosionBrushSize, paintDensity);
+            paintCanvas.PaintExplosion(explosionCenter, playerColor, adjustedRadius, adjustedBrushSize, adjustedDensity, playerBrushTexture);
         }
 
         // 通知 Spawner
