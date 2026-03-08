@@ -19,6 +19,7 @@ public class PaintCanvas : MonoBehaviour
 
     [Header("筆刷設定")]
     [SerializeField] private float brushSize = 0.12f;  // 筆刷大小（UV 空間，0-1）
+    [SerializeField] [Range(0f, 1f)] private float brushOpacity = 0.6f;  // 筆刷透明度（越低越透明）
     [SerializeField] private Material paintMaterial;   // 畫圓的材質
 
     [Header("顏色設定")]
@@ -122,7 +123,8 @@ public class PaintCanvas : MonoBehaviour
         {
             float aspectRatio = (float)actualTextureWidth / actualTextureHeight;
             paintMaterial.SetFloat("_AspectRatio", aspectRatio);
-            Debug.Log($"[PaintCanvas] 筆刷長寬比: {aspectRatio:F2}");
+            paintMaterial.SetFloat("_BrushOpacity", brushOpacity);
+            Debug.Log($"[PaintCanvas] 筆刷長寬比: {aspectRatio:F2}, 透明度: {brushOpacity:F2}");
         }
 
         // 清空為透明

@@ -11,6 +11,7 @@ Shader "Custom/PaintBrush"
         _AspectRatio ("Aspect Ratio (Width/Height)", Float) = 1.0
         _UseBrushTexture ("Use Brush Texture", Float) = 0
         _AlphaThreshold ("Alpha Threshold", Float) = 0.3
+        _BrushOpacity ("Brush Opacity", Range(0, 1)) = 0.6
     }
 
     SubShader
@@ -45,6 +46,7 @@ Shader "Custom/PaintBrush"
             float _AspectRatio;
             float _UseBrushTexture;
             float _AlphaThreshold;
+            float _BrushOpacity;
 
             v2f vert (appdata v)
             {
@@ -75,9 +77,7 @@ Shader "Custom/PaintBrush"
                     // 檢查是否在筆刷範圍內
                     if (brushUV.x >= 0.0 && brushUV.x <= 1.0 && brushUV.y >= 0.0 && brushUV.y <= 1.0)
                     {
-                        float rawAlpha = tex2D(_BrushTex, brushUV).a;
-                        // 使用閾值讓邊緣更銳利，避免灰色混合
-                        brushStrength = rawAlpha > _AlphaThreshold ? 1.0 : 0.0;
+                        brushStrength = tex2D(_BrushTex, brushUV).a;
                     }
                 }
                 else
@@ -86,10 +86,26 @@ Shader "Custom/PaintBrush"
                     brushStrength = dist < _BrushSize ? 1.0 : 0.0;
                 }
 
-                // 混合顏色（新顏色覆蓋舊顏色）
-                fixed4 finalColor = lerp(baseColor, _BrushColor, brushStrength);
+                // 套用整體透明度
+                brushStrength *= _BrushOpacity;
 
-                return finalColor;
+                // 正確的 alpha 混合（避免與透明黑底混合產生灰色）
+                // 使用 "over" 合成：新顏色疊在舊顏色上
+                float newAlpha = brushStrength * _BrushColor.a;
+                float outAlpha = newAlpha + baseColor.a * (1.0 - newAlpha);
+
+                fixed3 outRGB;
+                if (outAlpha > 0.001)
+                {
+                    // 正確的預乘 alpha 混合
+                    outRGB = (_BrushColor.rgb * newAlpha + baseColor.rgb * baseColor.a * (1.0 - newAlpha)) / outAlpha;
+                }
+                else
+                {
+                    outRGB = baseColor.rgb;
+                }
+
+                return fixed4(outRGB, outAlpha);
             }
             ENDCG
         }
