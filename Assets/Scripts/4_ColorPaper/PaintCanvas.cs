@@ -142,6 +142,9 @@ public class PaintCanvas : MonoBehaviour
             canvasMaterial = new Material(decalShader);
             canvasMaterial.SetTexture("Base_Map", paintTexture);
 
+            // 設定較低的 Render Queue，讓顏料顯示在底圖線稿下面
+            canvasMaterial.renderQueue = 2900;
+
             decalProjector.material = canvasMaterial;
             Debug.Log("[PaintCanvas] Decal 材質初始化成功");
         }

@@ -87,6 +87,7 @@ MonoBehaviour:
   stealSkill: 7
   defenceWeakness: 2
   rotateSpeed: 15
+  brushTexture: {fileID: 2800000, guid: b90fb13201558483d8be4fc794a73be1, type: 3}
   isKnockback: 0
   followPoint: {fileID: 4457411327459357901}
   immunityStolenDuration: 0.3
