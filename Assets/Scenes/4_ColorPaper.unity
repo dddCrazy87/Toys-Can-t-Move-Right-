@@ -191,6 +191,7 @@ MonoBehaviour:
   canvasMin: {x: -23.4, y: -9.6}
   canvasMax: {x: 19.6, y: 21.2}
   brushSize: 0.05
+  brushOpacity: 0.6
   paintMaterial: {fileID: 2100000, guid: a7237596869144c6c82022062eaa01cf, type: 2}
   blueColor: {r: 0.29699183, g: 0.44444197, b: 0.8867924, a: 1}
   yellowColor: {r: 1, g: 0.84786, b: 0.19999999, a: 1}
@@ -431,6 +432,60 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: -5.719}
+--- !u!1 &205835851
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 205835853}
+  - component: {fileID: 205835852}
+  m_Layer: 0
+  m_Name: EraserSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &205835852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 205835851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba57e321d03cf469ea20aaecab01ead1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eraserPrefab: {fileID: 7158479547331130677, guid: f8e5f856eba914939bfe99ce499bca45, type: 3}
+  maxErasers: 1
+  spawnAreaMin: {x: -20.4, y: -6.6}
+  spawnAreaMax: {x: 16.6, y: 18.2}
+  spawnHeight: -3
+  minSpawnInterval: 15
+  maxSpawnInterval: 25
+  initialDelay: 15
+  respawnDelay: 5
+  showSpawnArea: 1
+--- !u!4 &205835853
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 205835851}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.5308728, y: -5.9641643, z: 0.7845835}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &206886125
 GameObject:
   m_ObjectHideFlags: 0
@@ -1942,7 +1997,7 @@ MonoBehaviour:
   spawnHeight: -3
   minSpawnInterval: 8
   maxSpawnInterval: 15
-  initialDelay: 5
+  initialDelay: 10
   respawnDelay: 3
   showSpawnArea: 1
 --- !u!4 &564380772
@@ -4959,3 +5014,4 @@ SceneRoots:
   - {fileID: 578708858}
   - {fileID: 684421352}
   - {fileID: 134614791}
+  - {fileID: 205835853}

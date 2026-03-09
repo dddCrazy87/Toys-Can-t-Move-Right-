@@ -12,6 +12,7 @@ Shader "Custom/PaintBrush"
         _UseBrushTexture ("Use Brush Texture", Float) = 0
         _AlphaThreshold ("Alpha Threshold", Float) = 0.3
         _BrushOpacity ("Brush Opacity", Range(0, 1)) = 0.6
+        _IsErasing ("Is Erasing", Float) = 0
     }
 
     SubShader
@@ -47,6 +48,7 @@ Shader "Custom/PaintBrush"
             float _UseBrushTexture;
             float _AlphaThreshold;
             float _BrushOpacity;
+            float _IsErasing;
 
             v2f vert (appdata v)
             {
@@ -88,6 +90,16 @@ Shader "Custom/PaintBrush"
 
                 // 套用整體透明度
                 brushStrength *= _BrushOpacity;
+
+                // 擦除模式
+                if (_IsErasing > 0.5)
+                {
+                    // 擦除：減少 alpha（保持 RGB）
+                    // 使用較強的擦除力道（不受 BrushOpacity 影響太多）
+                    float eraseAmount = brushStrength * 2.0;  // 加強擦除效果
+                    float outAlpha = max(0.0, baseColor.a - eraseAmount);
+                    return fixed4(baseColor.rgb, outAlpha);
+                }
 
                 // 正確的 alpha 混合（避免與透明黑底混合產生灰色）
                 // 使用 "over" 合成：新顏色疊在舊顏色上

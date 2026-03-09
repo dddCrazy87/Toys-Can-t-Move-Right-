@@ -41,6 +41,7 @@ public class PaintCanvas : MonoBehaviour
         public Color color;
         public float brushSize;  // 0 表示使用預設大小
         public Texture2D brushTexture;  // null 表示使用圓形筆刷
+        public bool isErasing;  // true 表示擦除模式
     }
 
     void Awake()
@@ -213,7 +214,38 @@ public class PaintCanvas : MonoBehaviour
         }
 
         // 加入待處理列表
-        pendingPaints.Add(new PaintCommand { uv = uv, color = color, brushSize = customBrushSize, brushTexture = brushTex });
+        pendingPaints.Add(new PaintCommand { uv = uv, color = color, brushSize = customBrushSize, brushTexture = brushTex, isErasing = false });
+    }
+
+    /// <summary>
+    /// 擦除指定位置
+    /// </summary>
+    public void Erase(Vector3 worldPos, float customBrushSize, Texture2D brushTex = null)
+    {
+        if (paintMaterial == null || paintTexture == null) return;
+
+        Vector2 uv = WorldToUV(worldPos);
+
+        // 檢查是否在畫布範圍內
+        if (uv.x < 0 || uv.x > 1 || uv.y < 0 || uv.y > 1) return;
+
+        Debug.Log($"[PaintCanvas] 擦除中！UV: {uv}, 大小: {customBrushSize}");
+
+        // 加入待處理列表（擦除模式）
+        pendingPaints.Add(new PaintCommand { uv = uv, color = Color.clear, brushSize = customBrushSize, brushTexture = brushTex, isErasing = true });
+    }
+
+    /// <summary>
+    /// 連續擦除線
+    /// </summary>
+    public void EraseLine(Vector3 fromPos, Vector3 toPos, float customBrushSize, Texture2D brushTex = null, int segments = 5)
+    {
+        for (int i = 0; i <= segments; i++)
+        {
+            float t = (float)i / segments;
+            Vector3 pos = Vector3.Lerp(fromPos, toPos, t);
+            Erase(pos, customBrushSize, brushTex);
+        }
     }
 
     /// <summary>
@@ -250,6 +282,9 @@ public class PaintCanvas : MonoBehaviour
             {
                 paintMaterial.SetFloat("_UseBrushTexture", 0f);
             }
+
+            // 設定擦除模式
+            paintMaterial.SetFloat("_IsErasing", cmd.isErasing ? 1f : 0f);
 
             Graphics.Blit(paintTexture, tempRT);
             Graphics.Blit(tempRT, paintTexture, paintMaterial);

@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 14107185608648286}
   - component: {fileID: 870339367475923015}
   - component: {fileID: 1087386116866520172}
+  - component: {fileID: -2537166050331196859}
   m_Layer: 0
   m_Name: redDog
   m_TagString: Player
@@ -218,6 +219,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   polygonPoints: []
+--- !u!114 &-2537166050331196859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5347661894307015562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbd57376271f340118af01b360c7767c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minMoveDistance: 0.08
+  backwardOffset: 0.5
+  minBrushMultiplier: 1.8
+  maxBrushMultiplier: 3
+  minSpeed: 8
+  maxSpeed: 20
+  eraserDuration: 5
+  eraserEffectPrefab: {fileID: 0}
+  eraserAnimatorTrigger: Eraser
+  erasingSound: {fileID: 8300000, guid: 299b63a29561940ccbb99f950c8e4b0c, type: 3}
+  erasingSoundVolume: 0.8
 --- !u!1 &6998051841689757619
 GameObject:
   m_ObjectHideFlags: 0

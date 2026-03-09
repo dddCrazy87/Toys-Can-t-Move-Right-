@@ -130,8 +130,12 @@ public class ColorPaperGameManager : MonoBehaviour
             PlayerController player = kvp.Value;
             if (player == null) continue;
 
-            // 添加 PaintBrush 組件
-            PaintBrush brush = player.gameObject.AddComponent<PaintBrush>();
+            // 取得或添加 PaintBrush 組件
+            PaintBrush brush = player.GetComponent<PaintBrush>();
+            if (brush == null)
+            {
+                brush = player.gameObject.AddComponent<PaintBrush>();
+            }
             brush.Initialize(paintCanvas, player.playerColor);
             brush.StartPainting();
         }

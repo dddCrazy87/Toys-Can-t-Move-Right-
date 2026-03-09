@@ -83,6 +83,10 @@ MonoBehaviour:
   explosionRadius: 1.5
   explosionBrushSize: 0.08
   paintDensity: 15
+  minPowerMultiplier: 0.6
+  maxPowerMultiplier: 1.5
+  minBounceForce: 25
+  maxBounceForce: 100
   materialIndex: 1
   colorChangeInterval: 0.4
   blueMaterial: {fileID: 2100000, guid: de39c6b3d8b524bb7be9f982ab254df5, type: 2}
@@ -96,7 +100,7 @@ MonoBehaviour:
   explosionEffectPrefab: {fileID: 0}
   effectDuration: 1.5
   collectSound: {fileID: 8300000, guid: ed1a931129a79fa4c891ef8410133aa2, type: 3}
-  explosionSound: {fileID: 0}
+  explosionSound: {fileID: 8300000, guid: 37079a8220b7442c2800036486fac241, type: 3}
   soundVolume: 1.5
   bobSpeed: 2
   bobHeight: 0.3

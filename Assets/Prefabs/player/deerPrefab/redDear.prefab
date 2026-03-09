@@ -157,6 +157,7 @@ GameObject:
   - component: {fileID: 2374803230021627960}
   - component: {fileID: 5425275877878908163}
   - component: {fileID: 8855400171632067188}
+  - component: {fileID: -6497322980525981286}
   m_Layer: 0
   m_Name: redDear
   m_TagString: Player
@@ -249,3 +250,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   polygonPoints: []
+--- !u!114 &-6497322980525981286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5392670551590722871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbd57376271f340118af01b360c7767c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minMoveDistance: 0.08
+  backwardOffset: 0.5
+  minBrushMultiplier: 1.8
+  maxBrushMultiplier: 3
+  minSpeed: 8
+  maxSpeed: 20
+  eraserDuration: 5
+  eraserEffectPrefab: {fileID: 0}
+  eraserAnimatorTrigger: Eraser
+  erasingSound: {fileID: 8300000, guid: 299b63a29561940ccbb99f950c8e4b0c, type: 3}
+  erasingSoundVolume: 0.8
