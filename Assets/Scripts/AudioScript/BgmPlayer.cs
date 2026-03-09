@@ -18,9 +18,12 @@ public class BgmPlayer : MonoBehaviour
     }
 
     public AudioSource bgm;
-    public AudioClip toyboxBgm;
-    public AudioClip gameStartBgm;
-    public AudioClip leaderboardBgm;
+
+    [Header("各場景 BGM")]
+    public AudioClip gameStartBgm;      // 預設（大廳、設定、教學等）
+    public AudioClip toyboxBgm;         // 4_Toybox
+    public AudioClip colorPaperBgm;     // 4_ColorPaper
+    public AudioClip leaderboardBgm;    // 5_GameRestart（頒獎）
 
     public void PauseBGM()
     {
@@ -36,10 +39,10 @@ public class BgmPlayer : MonoBehaviour
         string sceneName = SceneManager.GetActiveScene().name;
         bgm.resource = sceneName switch
         {
-            "1_GameStart" => gameStartBgm,
             "4_Toybox" => toyboxBgm,
+            "4_ColorPaper" => colorPaperBgm,
             "5_GameRestart" => leaderboardBgm,
-            _ => toyboxBgm
+            _ => gameStartBgm  // 預設（大廳、設定、教學等）
         };
         Invoke(nameof(PlayBGM), 0.5f);
 
