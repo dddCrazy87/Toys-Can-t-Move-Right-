@@ -30,7 +30,8 @@ public class ColorPaperGameManager : MonoBehaviour
         gameManager = FindFirstObjectByType<GameManager>();
         networkManager = FindFirstObjectByType<NetworkManager>();
 
-        if (bgmPlayer) bgmPlayer.ChangeBgm();
+        // 倒數期間先暫停 BGM
+        if (bgmPlayer) bgmPlayer.PauseBGM();
 
         var gameStartCountDown = FindFirstObjectByType<GameStartCountDown>();
         if (gameStartCountDown != null)
@@ -50,6 +51,9 @@ public class ColorPaperGameManager : MonoBehaviour
         {
             gameManager.StartGame();
         }
+
+        // 倒數結束後才播放 BGM
+        if (bgmPlayer) bgmPlayer.ChangeBgm();
 
         pointUiManager = FindFirstObjectByType<PlayerPointUiManager>();
         if (pointUiManager != null)

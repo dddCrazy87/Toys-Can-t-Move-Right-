@@ -17,13 +17,20 @@ public class ToyBoxGameManager : MonoBehaviour
         bgmPlayer = FindFirstObjectByType<BgmPlayer>();
         gameManager = FindFirstObjectByType<GameManager>();
         networkManager = FindFirstObjectByType<NetworkManager>();
-        if (bgmPlayer) bgmPlayer.ChangeBgm();
+
+        // 倒數期間先暫停 BGM
+        if (bgmPlayer) bgmPlayer.PauseBGM();
+
         FindFirstObjectByType<GameStartCountDown>().CountDownAndStartGame(OnCountDownFinished);
     }
 
     void OnCountDownFinished()
     {
         gameManager.StartGame();
+
+        // 倒數結束後才播放 BGM
+        if (bgmPlayer) bgmPlayer.ChangeBgm();
+
         FindFirstObjectByType<PlayerPointUiManager>().InitialPlayerPointUi();
         countdownUI.StartCountdown(gameTimeLimit, OnCountdownFinished);
     }

@@ -99,7 +99,7 @@ MonoBehaviour:
   redColor: {r: 0.95, g: 0.36, b: 0.37, a: 1}
   explosionEffectPrefab: {fileID: 0}
   effectDuration: 1.5
-  collectSound: {fileID: 8300000, guid: ed1a931129a79fa4c891ef8410133aa2, type: 3}
+  collectSound: {fileID: 8300000, guid: e97c2e547bd67e442b7c77efeaf0ad9c, type: 3}
   explosionSound: {fileID: 8300000, guid: 37079a8220b7442c2800036486fac241, type: 3}
   soundVolume: 1.5
   bobSpeed: 2

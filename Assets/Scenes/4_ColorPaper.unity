@@ -1051,6 +1051,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameStartCountDown
       objectReference: {fileID: 0}
+    - target: {fileID: 7230945315225015864, guid: 733130b8ca88f2e429eba967c05642d9, type: 3}
+      propertyPath: beep1Sound
+      value: 
+      objectReference: {fileID: 8300000, guid: fbb3e08b5341942a0a396efa8647b984, type: 3}
+    - target: {fileID: 7230945315225015864, guid: 733130b8ca88f2e429eba967c05642d9, type: 3}
+      propertyPath: beep2Sound
+      value: 
+      objectReference: {fileID: 8300000, guid: fbb3e08b5341942a0a396efa8647b984, type: 3}
+    - target: {fileID: 7230945315225015864, guid: 733130b8ca88f2e429eba967c05642d9, type: 3}
+      propertyPath: beep3Sound
+      value: 
+      objectReference: {fileID: 8300000, guid: fbb3e08b5341942a0a396efa8647b984, type: 3}
+    - target: {fileID: 7230945315225015864, guid: 733130b8ca88f2e429eba967c05642d9, type: 3}
+      propertyPath: startSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 88d70af4763ab431487677ca6f4b1d19, type: 3}
+    - target: {fileID: 7230945315225015864, guid: 733130b8ca88f2e429eba967c05642d9, type: 3}
+      propertyPath: countdownSound
+      value: 
+      objectReference: {fileID: 8300000, guid: f63b39707f96a45b486e5ee832255ca8, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

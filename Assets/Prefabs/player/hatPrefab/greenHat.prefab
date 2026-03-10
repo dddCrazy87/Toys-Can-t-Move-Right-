@@ -237,7 +237,7 @@ MonoBehaviour:
   minSpeed: 8
   maxSpeed: 20
   eraserDuration: 5
-  eraserEffectPrefab: {fileID: 0}
+  eraserEffectPrefab: {fileID: 6695134503712969535, guid: 6c15ae650a40941769a9057cb8cc08b9, type: 3}
   eraserAnimatorTrigger: Eraser
   erasingSound: {fileID: 8300000, guid: 299b63a29561940ccbb99f950c8e4b0c, type: 3}
   erasingSoundVolume: 0.8
