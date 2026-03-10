@@ -8,6 +8,7 @@ public class PaintCanItem : MonoBehaviour
     [SerializeField] private float explosionRadius = 3f;
     [SerializeField] private float explosionBrushSize = 0.2f;
     [SerializeField] private int paintDensity = 30;
+    [SerializeField] [Range(0f, 1f)] private float explosionOpacity = 1f;  // 爆炸顏料透明度（1 = 完全不透明）
 
     [Header("角色力量影響（根據 bounceForce）")]
     [SerializeField] private float minPowerMultiplier = 0.6f;   // 最弱角色的爆炸倍率
@@ -230,7 +231,7 @@ public class PaintCanItem : MonoBehaviour
         // 在畫布上噴灑顏料（使用根據角色力量調整後的參數 + 角色專屬筆刷貼圖）
         if (paintCanvas != null)
         {
-            paintCanvas.PaintExplosion(explosionCenter, playerColor, adjustedRadius, adjustedBrushSize, adjustedDensity, playerBrushTexture);
+            paintCanvas.PaintExplosion(explosionCenter, playerColor, adjustedRadius, adjustedBrushSize, adjustedDensity, playerBrushTexture, explosionOpacity);
         }
 
         // 通知 Spawner

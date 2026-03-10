@@ -6,7 +6,7 @@ public class ColorGrid : MonoBehaviour
     [Header("畫布範圍設定")]
     [SerializeField] private Vector2 gridMin = new Vector2(-32f, -29f);  // X, Z 最小值
     [SerializeField] private Vector2 gridMax = new Vector2(40f, 20f);    // X, Z 最大值
-    [SerializeField] private float cellSize = 1f;                         // 每個格子的大小
+    [SerializeField] private float cellSize = 2f;                         // 每個格子的大小
     [SerializeField] private float gridHeight = -34.5f;                   // Y 高度
 
     [Header("顏色設定")]

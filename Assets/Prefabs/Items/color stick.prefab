@@ -83,6 +83,7 @@ MonoBehaviour:
   explosionRadius: 4
   explosionBrushSize: 0.08
   paintDensity: 15
+  explosionOpacity: 0.9
   minPowerMultiplier: 0.6
   maxPowerMultiplier: 1.5
   minBounceForce: 25

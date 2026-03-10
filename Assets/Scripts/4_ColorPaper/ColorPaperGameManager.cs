@@ -12,7 +12,7 @@ public class ColorPaperGameManager : MonoBehaviour
 
     [Header("Render Texture 畫布")]
     [SerializeField] private PaintCanvas paintCanvas;
-    [SerializeField] private float brushSize = 0.03f;  // 筆刷大小（UV 空間）
+    [SerializeField] private float brushSize = 0.06f;  // 筆刷大小（UV 空間）
 
     BgmPlayer bgmPlayer;
     NetworkManager networkManager;

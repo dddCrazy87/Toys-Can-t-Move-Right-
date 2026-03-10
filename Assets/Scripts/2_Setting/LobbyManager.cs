@@ -8,9 +8,9 @@ public class LobbyManager : MonoBehaviour
     {
         string roomId = System.Guid.NewGuid().ToString("N")[..8];
         string unityPeerId = $"unity-{roomId}";
-        // qrCodeGenerator.EncodeTextToQrCode("https://web-toy-cant-move.vercel.app/?peerId=" + unityPeerId);
+        qrCodeGenerator.EncodeTextToQrCode("https://web-toy-cant-move.vercel.app/?peerId=" + unityPeerId);
         //for debug
-        qrCodeGenerator.EncodeTextToQrCode("https://web-toy-cant-move.vercel.app/?peerId=" + unityPeerId + "&debug=true");
+        // qrCodeGenerator.EncodeTextToQrCode("https://web-toy-cant-move.vercel.app/?peerId=" + unityPeerId + "&debug=true"); 
         networkManager.SetwebRTCConnection(unityPeerId);
     }
 }

@@ -190,8 +190,8 @@ MonoBehaviour:
   decalProjector: {fileID: 578708857}
   canvasMin: {x: -23.4, y: -9.6}
   canvasMax: {x: 19.6, y: 21.2}
-  brushSize: 0.05
-  brushOpacity: 0.6
+  brushSize: 0.08
+  brushOpacity: 0.5
   paintMaterial: {fileID: 2100000, guid: a7237596869144c6c82022062eaa01cf, type: 2}
   blueColor: {r: 0.29699183, g: 0.44444197, b: 0.8867924, a: 1}
   yellowColor: {r: 1, g: 0.84786, b: 0.19999999, a: 1}
@@ -2196,7 +2196,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paintCanPrefab: {fileID: 3731081709618970229, guid: e07e5bf2a2aec422fbeb7428c2dfb082, type: 3}
-  maxPaintCans: 1
+  maxPaintCans: 2
   spawnAreaMin: {x: -20.4, y: -6.6}
   spawnAreaMax: {x: 16.6, y: 18.2}
   spawnHeight: -3
@@ -3295,7 +3295,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridMin: {x: -23.4, y: -9.6}
   gridMax: {x: 19.6, y: 21.2}
-  cellSize: 0.5
+  cellSize: 2
   gridHeight: -3.85
   blueColor: {r: 0.19406372, g: 0.35545346, b: 0.8396226, a: 1}
   yellowColor: {r: 0.990566, g: 0.8725887, b: 0.34109113, a: 1}

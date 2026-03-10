@@ -42,6 +42,7 @@ public class PaintCanvas : MonoBehaviour
         public float brushSize;  // 0 表示使用預設大小
         public Texture2D brushTexture;  // null 表示使用圓形筆刷
         public bool isErasing;  // true 表示擦除模式
+        public float opacity;  // 0 表示使用預設透明度
     }
 
     void Awake()
@@ -272,6 +273,10 @@ public class PaintCanvas : MonoBehaviour
             paintMaterial.SetFloat("_BrushSize", size);
             paintMaterial.SetColor("_BrushColor", cmd.color);
 
+            // 使用自訂透明度，若為 0 則使用預設值
+            float opacity = cmd.opacity > 0 ? cmd.opacity : brushOpacity;
+            paintMaterial.SetFloat("_BrushOpacity", opacity);
+
             // 設定筆刷貼圖
             if (cmd.brushTexture != null)
             {
@@ -328,13 +333,21 @@ public class PaintCanvas : MonoBehaviour
     /// </summary>
     public void PaintExplosion(Vector3 center, string playerColor, float radius, float explosionBrushSize, int density)
     {
-        PaintExplosion(center, playerColor, radius, explosionBrushSize, density, null);
+        PaintExplosion(center, playerColor, radius, explosionBrushSize, density, null, 1f);
     }
 
     /// <summary>
     /// 大範圍噴灑顏料（顏料罐爆炸效果）- 使用自訂筆刷貼圖
     /// </summary>
     public void PaintExplosion(Vector3 center, string playerColor, float radius, float explosionBrushSize, int density, Texture2D brushTex)
+    {
+        PaintExplosion(center, playerColor, radius, explosionBrushSize, density, brushTex, 1f);
+    }
+
+    /// <summary>
+    /// 大範圍噴灑顏料（顏料罐爆炸效果）- 使用自訂筆刷貼圖和透明度
+    /// </summary>
+    public void PaintExplosion(Vector3 center, string playerColor, float radius, float explosionBrushSize, int density, Texture2D brushTex, float opacity)
     {
         if (paintMaterial == null || paintTexture == null) return;
 
@@ -368,15 +381,15 @@ public class PaintCanvas : MonoBehaviour
             // 隨機變化筆刷大小，製造更自然的效果
             float randomSize = explosionBrushSize * Random.Range(0.7f, 1.3f);
 
-            // 加入待處理列表（使用角色的筆刷貼圖）
-            pendingPaints.Add(new PaintCommand { uv = uv, color = color, brushSize = randomSize, brushTexture = brushTex });
+            // 加入待處理列表（使用角色的筆刷貼圖和指定透明度）
+            pendingPaints.Add(new PaintCommand { uv = uv, color = color, brushSize = randomSize, brushTexture = brushTex, opacity = opacity });
         }
 
         // 中心點畫一個較大的圓
         Vector2 centerUV = WorldToUV(center);
         if (centerUV.x >= 0 && centerUV.x <= 1 && centerUV.y >= 0 && centerUV.y <= 1)
         {
-            pendingPaints.Add(new PaintCommand { uv = centerUV, color = color, brushSize = explosionBrushSize * 1.5f, brushTexture = brushTex });
+            pendingPaints.Add(new PaintCommand { uv = centerUV, color = color, brushSize = explosionBrushSize * 1.5f, brushTexture = brushTex, opacity = opacity });
         }
     }
 
