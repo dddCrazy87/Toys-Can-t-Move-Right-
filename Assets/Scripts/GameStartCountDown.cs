@@ -24,11 +24,12 @@ public class GameStartCountDown : MonoBehaviour
         countDown2.gameObject.SetActive(true);
         countDown1.gameObject.SetActive(true);
 
-        // 播放 "3" 的音效
+        // 播放 "3" 的音效，同時顯示 3
         PlaySound(beep3Sound);
+        countDown3.ShowUI(0.3f);
 
-        countDown3.ShowUI(2f);
-        Invoke(nameof(CountDown3), 1.5f);
+        // 1 秒後進入下一階段
+        Invoke(nameof(ShowCountDown2), 1.0f);
     }
 
     void PlaySound(AudioClip clip)
@@ -45,40 +46,32 @@ public class GameStartCountDown : MonoBehaviour
         audioSource.PlayOneShot(clip, countdownVolume);
     }
 
-    void CountDown3()
-    {
-        countDown3.HideUI(2f);
-        Invoke(nameof(ShowCountDown2), 0.7f);
-    }
-
     void ShowCountDown2()
     {
+        // 隱藏 3，播放音效，顯示 2
+        countDown3.HideUI(0.3f);
         PlaySound(beep2Sound);
-        countDown2.ShowUI(2f);
-        Invoke(nameof(CountDown2), 1.5f);
-    }
+        countDown2.ShowUI(0.3f);
 
-    void CountDown2()
-    {
-        countDown2.HideUI(2f);
-        Invoke(nameof(ShowCountDown1), 0.7f);
+        // 1 秒後進入下一階段
+        Invoke(nameof(ShowCountDown1), 1.0f);
     }
 
     void ShowCountDown1()
     {
+        // 隱藏 2，播放音效，顯示 1
+        countDown2.HideUI(0.3f);
         PlaySound(beep1Sound);
-        countDown1.ShowUI(2f);
-        Invoke(nameof(CountDown1), 1.5f);
-    }
+        countDown1.ShowUI(0.3f);
 
-    void CountDown1()
-    {
-        countDown1.HideUI(2f);
-        Invoke(nameof(StartGame), 1f);
+        // 1 秒後進入開始階段
+        Invoke(nameof(StartGame), 1.0f);
     }
 
     void StartGame()
     {
+        // 隱藏 1，播放開始音效
+        countDown1.HideUI(0.3f);
         PlaySound(startSound);
         onCountDownFinished?.Invoke();
         onCountDownFinished = null;

@@ -80,7 +80,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f58e9c404d5444cb7963607cc389d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionRadius: 1.5
+  explosionRadius: 4
   explosionBrushSize: 0.08
   paintDensity: 15
   minPowerMultiplier: 0.6

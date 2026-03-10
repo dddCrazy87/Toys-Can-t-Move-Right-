@@ -22,6 +22,7 @@ public class PaintBrush : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] private float erasingSoundVolume = 0.5f;
 
     private PaintCanvas paintCanvas;
+    private ColorGrid colorGrid;  // 用於擦除時同步扣分
     private string playerColor;
     private Vector3 lastPaintPos;
     private bool isInitialized = false;
@@ -44,6 +45,9 @@ public class PaintBrush : MonoBehaviour
         paintCanvas = canvas;
         playerColor = color;
         lastPaintPos = GetPaintPosition();
+
+        // 取得 ColorGrid（用於橡皮擦扣分）
+        colorGrid = FindFirstObjectByType<ColorGrid>();
 
         // 根據角色速度計算筆刷大小
         CalculateBrushSize();
@@ -202,6 +206,11 @@ public class PaintBrush : MonoBehaviour
         if (isEraserMode)
         {
             paintCanvas.Erase(lastPaintPos, characterBrushSize, characterBrushTexture);
+            // 同步擦除 ColorGrid
+            if (colorGrid != null)
+            {
+                colorGrid.EraseAtPosition(lastPaintPos);
+            }
         }
         else
         {
@@ -257,8 +266,19 @@ public class PaintBrush : MonoBehaviour
 
             if (isEraserMode)
             {
-                // 擦除模式
+                // 擦除模式 - 同時擦除視覺和計分
                 paintCanvas.EraseLine(lastPaintPos, currentPos, characterBrushSize, characterBrushTexture, segments);
+
+                // 同步擦除 ColorGrid 的格子所有權（扣分）
+                if (colorGrid != null)
+                {
+                    for (int i = 0; i <= segments; i++)
+                    {
+                        float t = (float)i / segments;
+                        Vector3 pos = Vector3.Lerp(lastPaintPos, currentPos, t);
+                        colorGrid.EraseAtPosition(pos);
+                    }
+                }
             }
             else
             {

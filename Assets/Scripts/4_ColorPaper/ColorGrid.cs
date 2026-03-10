@@ -194,6 +194,28 @@ public class ColorGrid : MonoBehaviour
     }
 
     /// <summary>
+    /// 擦除指定位置的格子（清除所有權）
+    /// </summary>
+    public void EraseAtPosition(Vector3 worldPos)
+    {
+        var (gridX, gridZ) = WorldToGrid(worldPos);
+
+        if (!IsValidGrid(gridX, gridZ)) return;
+
+        // 已經是空的就不用擦
+        if (gridOwnership[gridX, gridZ] == -1) return;
+
+        // 清除所有權
+        gridOwnership[gridX, gridZ] = -1;
+
+        // 更新視覺（如果沒有隱藏格子）
+        if (!hideGridVisuals && cellObjects[gridX, gridZ] != null)
+        {
+            cellObjects[gridX, gridZ].SetActive(false);
+        }
+    }
+
+    /// <summary>
     /// 取得每個玩家的分數（絕對覆蓋率，基於整張畫布）
     /// </summary>
     public Dictionary<int, int> GetPlayerScores()

@@ -17,7 +17,7 @@ public class ColorPaperGameManager : MonoBehaviour
     BgmPlayer bgmPlayer;
     NetworkManager networkManager;
     GameManager gameManager;
-    PlayerPointUiManager pointUiManager;
+    ColorPaperScoreUI scoreUI;
 
     [Header("分數更新設定")]
     [SerializeField] private float scoreUpdateInterval = 0.5f;  // 每 0.5 秒更新一次 UI
@@ -55,10 +55,16 @@ public class ColorPaperGameManager : MonoBehaviour
         // 倒數結束後才播放 BGM
         if (bgmPlayer) bgmPlayer.ChangeBgm();
 
-        pointUiManager = FindFirstObjectByType<PlayerPointUiManager>();
-        if (pointUiManager != null)
+        // 初始化長條圖計分 UI
+        scoreUI = FindFirstObjectByType<ColorPaperScoreUI>();
+        Debug.Log($"[ColorPaperGameManager] 找到 scoreUI: {scoreUI != null}");
+        if (scoreUI != null)
         {
-            pointUiManager.InitialPlayerPointUi();
+            scoreUI.Initialize();
+        }
+        else
+        {
+            Debug.LogWarning("[ColorPaperGameManager] 找不到 ColorPaperScoreUI！");
         }
 
         // 啟動填色系統
@@ -77,7 +83,7 @@ public class ColorPaperGameManager : MonoBehaviour
 
     void Update()
     {
-        if (!isGameRunning || colorGrid == null || pointUiManager == null) return;
+        if (!isGameRunning || colorGrid == null || scoreUI == null) return;
 
         scoreUpdateTimer += Time.deltaTime;
         if (scoreUpdateTimer >= scoreUpdateInterval)
@@ -90,12 +96,15 @@ public class ColorPaperGameManager : MonoBehaviour
     void UpdateScoreUI()
     {
         var playerScores = colorGrid.GetPlayerScores();
+
+        // 更新 GameManager 的分數（給結算畫面用）
         foreach (var kvp in playerScores)
         {
-            // 直接設定玩家的 point 為百分比分數
             gameManager.playersInfo[kvp.Key].point = kvp.Value;
-            pointUiManager.UpdatePlayerPointUi(kvp.Key);
         }
+
+        // 更新長條圖 UI
+        scoreUI.UpdateScores(playerScores);
     }
 
     void OnCountdownFinished()
