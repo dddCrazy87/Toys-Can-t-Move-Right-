@@ -73,6 +73,9 @@ public class ColorPaperGameManager : MonoBehaviour
         // 初始化並啟動玩家筆刷（Render Texture）
         InitializePlayerBrushes();
 
+        // 啟用玩家互撞
+        EnablePlayerCollision();
+
         isGameRunning = true;
 
         if (countdownUI != null)
@@ -167,6 +170,20 @@ public class ColorPaperGameManager : MonoBehaviour
             if (brush != null)
             {
                 brush.StopPainting();
+            }
+        }
+    }
+
+    void EnablePlayerCollision()
+    {
+        if (gameManager == null) return;
+
+        foreach (var kvp in gameManager.playerControllers)
+        {
+            PlayerController player = kvp.Value;
+            if (player != null)
+            {
+                player.enablePlayerCollision = true;
             }
         }
     }

@@ -141,6 +141,15 @@ public class PlayerController : MonoBehaviour
 
     private Coroutine immunityRoutine;
 
+    [Header("玩家互撞設定")]
+    [Tooltip("啟用玩家互相碰撞彈開")]
+    public bool enablePlayerCollision = false;  // 預設關閉，由各場景的 GameManager 啟用
+    [Tooltip("玩家碰撞後的彈開力道")]
+    public float playerBounceForce = 80f;
+    [Tooltip("碰撞後的免疫時間（防止連續碰撞）")]
+    public float collisionCooldown = 0.5f;
+    private bool isCollisionCooldown = false;
+
     // 玩家碰到道具
     private void OnTriggerEnter(Collider other)
     {
@@ -148,6 +157,72 @@ public class PlayerController : MonoBehaviour
         {
             ItemManager.Instance.RequestCollect(transform, other.transform, stealSkill);
         }
+    }
+
+    // 玩家互相碰撞
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!enablePlayerCollision) return;
+        if (isCollisionCooldown) return;
+
+        PlayerController otherPlayer = collision.gameObject.GetComponent<PlayerController>();
+        if (otherPlayer == null) return;
+
+        // 計算碰撞方向（從對方指向自己）
+        Vector3 bounceDirection = (transform.position - otherPlayer.transform.position).normalized;
+        bounceDirection.y = 0f;  // 只在水平面彈開
+
+        // 播放碰撞音效（只有一方播放，避免重複）
+        if (playerIndex < otherPlayer.playerIndex)
+        {
+            GameSoundEffect sfx = FindFirstObjectByType<GameSoundEffect>();
+            if (sfx != null) sfx.PlayPlayerCollisionSound();
+        }
+
+        // 對自己施加彈開
+        StartPlayerBounce(bounceDirection);
+    }
+
+    private void StartPlayerBounce(Vector3 direction)
+    {
+        if (isCollisionCooldown) return;
+
+        // 啟動碰撞冷卻
+        StartCoroutine(CollisionCooldownRoutine());
+
+        // 使用現有的 knockback 系統，但用玩家碰撞專屬的力道
+        if (knockbackCoroutine != null) StopCoroutine(knockbackCoroutine);
+        knockbackCoroutine = StartCoroutine(PlayerBounceRoutine(direction));
+    }
+
+    private IEnumerator PlayerBounceRoutine(Vector3 direction)
+    {
+        isKnockback = true;
+
+        Vector3 knockbackVelocity = direction.normalized * playerBounceForce;
+        rb.linearVelocity = knockbackVelocity;
+
+        float timer = 0f;
+        float duration = bounceDuration * 0.6f;  // 玩家碰撞的彈開時間較短
+
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            rb.linearVelocity = knockbackVelocity * (1f - timer / duration);  // 逐漸減速
+            boundsLimiter.ClampPositionImmediately();
+            yield return null;
+        }
+
+        ForceStopMotion();
+        isKnockback = false;
+        knockbackCoroutine = null;
+    }
+
+    private IEnumerator CollisionCooldownRoutine()
+    {
+        isCollisionCooldown = true;
+        yield return new WaitForSeconds(collisionCooldown);
+        isCollisionCooldown = false;
     }
 
     // 被搶成功時，ItemManager 會叫這個
