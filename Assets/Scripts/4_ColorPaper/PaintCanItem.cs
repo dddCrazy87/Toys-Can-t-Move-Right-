@@ -122,6 +122,14 @@ public class PaintCanItem : MonoBehaviour
 
         // 直接換材質球（用 .materials 才能在執行時對實例生效）
         Material[] mats = targetRenderer.materials;
+
+        // 檢查 materialIndex 是否超出範圍
+        if (materialIndex >= mats.Length)
+        {
+            Debug.LogWarning($"[PaintCanItem] materialIndex ({materialIndex}) 超出模型材質數量 ({mats.Length})，改用索引 0");
+            materialIndex = 0;
+        }
+
         mats[materialIndex] = materials[index];
         targetRenderer.materials = mats;
     }

@@ -12,30 +12,16 @@ public class PaintBrush : MonoBehaviour
     [SerializeField] private float minSpeed = 8f;   // 最慢角色速度
     [SerializeField] private float maxSpeed = 20f;  // 最快角色速度
 
-    [Header("橡皮擦模式")]
-    [SerializeField] private float eraserDuration = 5f;  // 橡皮擦持續時間
-    [SerializeField] private GameObject eraserEffectPrefab;  // 橡皮擦特效 Prefab（可選）
-    [SerializeField] private string eraserAnimatorTrigger = "Eraser";  // Animator 觸發器名稱（可選）
-
-    [Header("橡皮擦音效")]
-    [SerializeField] private AudioClip erasingSound;  // 擦除時的音效（會循環播放）
-    [SerializeField] [Range(0f, 1f)] private float erasingSoundVolume = 0.5f;
-
     private PaintCanvas paintCanvas;
-    private ColorGrid colorGrid;  // 用於擦除時同步扣分
     private string playerColor;
     private Vector3 lastPaintPos;
     private bool isInitialized = false;
-    private bool isPainting = false;
-    private float characterBrushSize;  // 角色專屬筆刷大小
-    private Texture2D characterBrushTexture;  // 角色專屬筆刷貼圖
+    private bool isPainting = false;  // 由按壓狀態控制
+    private float characterBrushSize;
+    private Texture2D characterBrushTexture;
 
-    // 橡皮擦狀態
-    private bool isEraserMode = false;
-    private float eraserTimeRemaining = 0f;
-    private GameObject activeEraserEffect;
-    private Animator playerAnimator;
-    private AudioSource erasingAudioSource;
+    private PlayerController playerController;
+    private PaintEnergy paintEnergy;  // 能量系統參照
 
     /// <summary>
     /// 初始化筆刷
@@ -46,114 +32,48 @@ public class PaintBrush : MonoBehaviour
         playerColor = color;
         lastPaintPos = GetPaintPosition();
 
-        // 取得 ColorGrid（用於橡皮擦扣分）
-        colorGrid = FindFirstObjectByType<ColorGrid>();
-
         // 根據角色速度計算筆刷大小
         CalculateBrushSize();
 
-        // 快取 Animator（用於橡皮擦動畫）
-        playerAnimator = GetComponentInChildren<Animator>();
+        // 取得 PlayerController 並訂閱按壓事件
+        playerController = GetComponent<PlayerController>();
+        if (playerController != null)
+        {
+            playerController.OnPressStateChanged += OnPressStateChanged;
+        }
+
+        // 取得或添加能量系統
+        paintEnergy = GetComponent<PaintEnergy>();
+        if (paintEnergy == null)
+        {
+            paintEnergy = gameObject.AddComponent<PaintEnergy>();
+        }
 
         isInitialized = true;
+        Debug.Log($"[PaintBrush] 初始化完成：{playerController?.playerName}");
     }
 
-    /// <summary>
-    /// 啟動橡皮擦模式
-    /// </summary>
-    public void ActivateEraserMode()
+    void OnDestroy()
     {
-        ActivateEraserMode(eraserDuration);
-    }
-
-    /// <summary>
-    /// 啟動橡皮擦模式（自訂時間）
-    /// </summary>
-    public void ActivateEraserMode(float duration)
-    {
-        isEraserMode = true;
-        eraserTimeRemaining = duration;
-
-        // 重設位置追蹤，避免第一次擦除跳太遠
-        lastPaintPos = GetPaintPosition();
-
-        // 啟動視覺效果
-        StartEraserVisualEffect();
-
-        Debug.Log($"[PaintBrush] 橡皮擦模式啟動！持續 {duration} 秒");
-    }
-
-    /// <summary>
-    /// 是否在橡皮擦模式
-    /// </summary>
-    public bool IsInEraserMode()
-    {
-        return isEraserMode;
-    }
-
-    /// <summary>
-    /// 取得橡皮擦剩餘時間
-    /// </summary>
-    public float GetEraserTimeRemaining()
-    {
-        return eraserTimeRemaining;
-    }
-
-    /// <summary>
-    /// 啟動橡皮擦視覺效果
-    /// </summary>
-    private void StartEraserVisualEffect()
-    {
-        // 生成特效
-        if (eraserEffectPrefab != null)
+        // 取消訂閱
+        if (playerController != null)
         {
-            activeEraserEffect = Instantiate(eraserEffectPrefab, transform);
-            activeEraserEffect.transform.localPosition = Vector3.zero;
-        }
-
-        // 觸發 Animator（如果有設定）
-        if (playerAnimator != null && !string.IsNullOrEmpty(eraserAnimatorTrigger))
-        {
-            playerAnimator.SetBool(eraserAnimatorTrigger, true);
-        }
-
-        // 播放擦除音效（循環）
-        if (erasingSound != null)
-        {
-            if (erasingAudioSource == null)
-            {
-                erasingAudioSource = gameObject.AddComponent<AudioSource>();
-                erasingAudioSource.spatialBlend = 0f;  // 2D 音效
-            }
-            erasingAudioSource.clip = erasingSound;
-            erasingAudioSource.volume = erasingSoundVolume;
-            erasingAudioSource.loop = true;
-            erasingAudioSource.Play();
+            playerController.OnPressStateChanged -= OnPressStateChanged;
         }
     }
 
     /// <summary>
-    /// 停止橡皮擦視覺效果
+    /// 按壓狀態變化回調
     /// </summary>
-    private void StopEraserVisualEffect()
+    private void OnPressStateChanged(bool isPressed)
     {
-        // 移除特效
-        if (activeEraserEffect != null)
+        if (isPressed)
         {
-            Destroy(activeEraserEffect);
-            activeEraserEffect = null;
+            StartPainting();
         }
-
-        // 停止 Animator
-        if (playerAnimator != null && !string.IsNullOrEmpty(eraserAnimatorTrigger))
+        else
         {
-            playerAnimator.SetBool(eraserAnimatorTrigger, false);
-        }
-
-        // 停止擦除音效
-        if (erasingAudioSource != null && erasingAudioSource.isPlaying)
-        {
-            erasingAudioSource.Stop();
+            StopPainting();
         }
     }
 
@@ -194,32 +114,28 @@ public class PaintBrush : MonoBehaviour
     }
 
     /// <summary>
-    /// 開始畫圖
+    /// 開始畫圖（由按壓事件觸發）
     /// </summary>
     public void StartPainting()
     {
         if (!isInitialized) return;
+
+        // 檢查能量是否足夠
+        if (paintEnergy != null && !paintEnergy.HasEnergy())
+        {
+            Debug.Log("[PaintBrush] 顏料不足，無法繪製");
+            return;
+        }
+
         isPainting = true;
         lastPaintPos = GetPaintPosition();
 
-        // 畫第一個點（根據模式決定畫或擦）
-        if (isEraserMode)
-        {
-            paintCanvas.Erase(lastPaintPos, characterBrushSize, characterBrushTexture);
-            // 同步擦除 ColorGrid
-            if (colorGrid != null)
-            {
-                colorGrid.EraseAtPosition(lastPaintPos);
-            }
-        }
-        else
-        {
-            paintCanvas.Paint(lastPaintPos, playerColor, characterBrushSize, characterBrushTexture);
-        }
+        // 畫第一個點
+        paintCanvas.Paint(lastPaintPos, playerColor, characterBrushSize, characterBrushTexture);
     }
 
     /// <summary>
-    /// 停止畫圖
+    /// 停止畫圖（由按壓事件觸發）
     /// </summary>
     public void StopPainting()
     {
@@ -228,65 +144,49 @@ public class PaintBrush : MonoBehaviour
 
     void Update()
     {
-        // 更新橡皮擦計時器
-        if (isEraserMode)
+        if (!isInitialized || paintCanvas == null) return;
+        if (!isPainting) return;
+
+        // 檢查能量，若耗盡則停止繪製
+        if (paintEnergy != null)
         {
-            eraserTimeRemaining -= Time.deltaTime;
-            if (eraserTimeRemaining <= 0f)
+            if (!paintEnergy.HasEnergy())
             {
-                isEraserMode = false;
-                eraserTimeRemaining = 0f;
-                StopEraserVisualEffect();
-                Debug.Log("[PaintBrush] 橡皮擦模式結束");
+                StopPainting();
+                return;
             }
+            // 消耗能量
+            paintEnergy.ConsumeEnergy(Time.deltaTime);
         }
-
-        if (!isInitialized || paintCanvas == null)
-        {
-            if (isEraserMode) Debug.LogWarning($"[PaintBrush] 擦除失敗：isInitialized={isInitialized}, paintCanvas={paintCanvas}");
-            return;
-        }
-
-        // 橡皮擦模式時強制執行，一般模式需要 isPainting
-        if (!isEraserMode && !isPainting) return;
 
         Vector3 currentPos = GetPaintPosition();
         float distance = Vector3.Distance(currentPos, lastPaintPos);
 
-        // Debug: 橡皮擦模式時顯示狀態
-        if (isEraserMode && distance >= minMoveDistance)
-        {
-            Debug.Log($"[PaintBrush] 擦除移動距離: {distance:F2} >= {minMoveDistance}");
-        }
-
-        // 移動超過最小距離才畫線/擦線
+        // 移動超過最小距離才畫線
         if (distance >= minMoveDistance)
         {
             int segments = Mathf.CeilToInt(distance / minMoveDistance);
-
-            if (isEraserMode)
-            {
-                // 擦除模式 - 同時擦除視覺和計分
-                paintCanvas.EraseLine(lastPaintPos, currentPos, characterBrushSize, characterBrushTexture, segments);
-
-                // 同步擦除 ColorGrid 的格子所有權（扣分）
-                if (colorGrid != null)
-                {
-                    for (int i = 0; i <= segments; i++)
-                    {
-                        float t = (float)i / segments;
-                        Vector3 pos = Vector3.Lerp(lastPaintPos, currentPos, t);
-                        colorGrid.EraseAtPosition(pos);
-                    }
-                }
-            }
-            else
-            {
-                // 一般畫圖模式
-                paintCanvas.PaintLine(lastPaintPos, currentPos, playerColor, characterBrushSize, characterBrushTexture, segments);
-            }
-
+            paintCanvas.PaintLine(lastPaintPos, currentPos, playerColor, characterBrushSize, characterBrushTexture, segments);
             lastPaintPos = currentPos;
         }
+    }
+
+    /// <summary>
+    /// 補充顏料（由道具呼叫）
+    /// </summary>
+    public void RefillEnergy(float amount)
+    {
+        if (paintEnergy != null)
+        {
+            paintEnergy.AddEnergy(amount);
+        }
+    }
+
+    /// <summary>
+    /// 取得能量系統（供 UI 使用）
+    /// </summary>
+    public PaintEnergy GetPaintEnergy()
+    {
+        return paintEnergy;
     }
 }

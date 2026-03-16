@@ -68,12 +68,19 @@ public class GameManager : MonoBehaviour
 
     // ---------Player Movement --------
 
+    // 保留原方法供其他場景使用（不需要按壓的場景）
     public void OnRemotePlayerMove(int index, float x, float y)
+    {
+        OnRemotePlayerMove(index, x, y, false);
+    }
+
+    // 支援按壓狀態的重載（ColorPaper 場景使用）
+    public void OnRemotePlayerMove(int index, float x, float y, bool isPress)
     {
         if (!isGameStart) return;
         if (playerControllers.TryGetValue(index, out PlayerController pc))
         {
-            pc.SetNetworkInput(x, y);
+            pc.SetNetworkInput(x, y, isPress);
         }
     }
 

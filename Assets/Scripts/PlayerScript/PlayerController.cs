@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,8 +51,23 @@ public class PlayerController : MonoBehaviour
     private Vector3 networkMovement;
     private Vector3 movement;
 
-    // 由手機 WebRTC 傳入
+    // 按壓狀態（用於 ColorPaper 場景的繪圖控制）
+    private bool isPressing = false;
+    public event Action<bool> OnPressStateChanged;
+
+    /// <summary>
+    /// 取得目前按壓狀態
+    /// </summary>
+    public bool IsPressing() => isPressing;
+
+    // 由手機 WebRTC 傳入（不需要按壓的場景）
     public void SetNetworkInput(float x, float y)
+    {
+        SetNetworkInput(x, y, false);
+    }
+
+    // 由手機 WebRTC 傳入（支援按壓狀態）
+    public void SetNetworkInput(float x, float y, bool isPress)
     {
         if (isKnockback) return;
 
@@ -61,6 +77,13 @@ public class PlayerController : MonoBehaviour
             networkMovement = Vector3.zero;
         else
             networkMovement = raw.normalized;
+
+        // 按壓狀態變化時觸發事件
+        if (isPressing != isPress)
+        {
+            isPressing = isPress;
+            OnPressStateChanged?.Invoke(isPressing);
+        }
     }
 
     void Update()

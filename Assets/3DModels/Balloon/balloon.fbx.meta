@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cd0a0cdc4504449b0992d6ae6adeccd7
+guid: f17dc1b625fe54777820758d74886654
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: eraser
-    second: {fileID: 2100000, guid: 76e8ebcd969d6464ea76c7cc043e40d6, type: 2}
+      name: Balloon
+    second: {fileID: 2100000, guid: 66d99bc099e5245b396fb3dd7ccac1ab, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

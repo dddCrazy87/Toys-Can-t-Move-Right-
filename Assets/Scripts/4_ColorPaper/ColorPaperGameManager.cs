@@ -14,6 +14,8 @@ public class ColorPaperGameManager : MonoBehaviour
     [SerializeField] private PaintCanvas paintCanvas;
     [SerializeField] private float brushSize = 0.06f;  // 筆刷大小（UV 空間）
 
+    // 顏料 UI 已整合到 ColorPaperScoreUI
+
     BgmPlayer bgmPlayer;
     NetworkManager networkManager;
     GameManager gameManager;
@@ -55,7 +57,13 @@ public class ColorPaperGameManager : MonoBehaviour
         // 倒數結束後才播放 BGM
         if (bgmPlayer) bgmPlayer.ChangeBgm();
 
-        // 初始化長條圖計分 UI
+        // 啟動填色系統
+        if (colorGrid) colorGrid.EnableColoring();
+
+        // 先初始化玩家筆刷和能量系統（必須在 UI 之前）
+        InitializePlayerBrushes();
+
+        // 再初始化長條圖計分 UI（這時候 PaintEnergy 已經存在）
         scoreUI = FindFirstObjectByType<ColorPaperScoreUI>();
         Debug.Log($"[ColorPaperGameManager] 找到 scoreUI: {scoreUI != null}");
         if (scoreUI != null)
@@ -66,12 +74,6 @@ public class ColorPaperGameManager : MonoBehaviour
         {
             Debug.LogWarning("[ColorPaperGameManager] 找不到 ColorPaperScoreUI！");
         }
-
-        // 啟動填色系統
-        if (colorGrid) colorGrid.EnableColoring();
-
-        // 初始化並啟動玩家筆刷（Render Texture）
-        InitializePlayerBrushes();
 
         // 啟用玩家互撞
         EnablePlayerCollision();
@@ -146,6 +148,14 @@ public class ColorPaperGameManager : MonoBehaviour
             PlayerController player = kvp.Value;
             if (player == null) continue;
 
+            // 取得或添加 PaintEnergy 組件
+            PaintEnergy energy = player.GetComponent<PaintEnergy>();
+            if (energy == null)
+            {
+                energy = player.gameObject.AddComponent<PaintEnergy>();
+            }
+            energy.Initialize();  // 初始化能量（預設 3 格）
+
             // 取得或添加 PaintBrush 組件
             PaintBrush brush = player.GetComponent<PaintBrush>();
             if (brush == null)
@@ -153,8 +163,9 @@ public class ColorPaperGameManager : MonoBehaviour
                 brush = player.gameObject.AddComponent<PaintBrush>();
             }
             brush.Initialize(paintCanvas, player.playerColor);
-            brush.StartPainting();
+            // 不再自動開始繪製，改由按壓事件控制
         }
+        // 顏料 UI 已整合到 ColorPaperScoreUI，會在 scoreUI.Initialize() 時自動設定
     }
 
     void StopPlayerBrushes()

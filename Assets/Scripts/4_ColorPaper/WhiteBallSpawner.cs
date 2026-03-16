@@ -2,27 +2,30 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class EraserSpawner : MonoBehaviour
+/// <summary>
+/// 白色水球生成器
+/// </summary>
+public class WhiteBallSpawner : MonoBehaviour
 {
     [Header("生成設定")]
-    [SerializeField] private GameObject eraserPrefab;
-    [SerializeField] private int maxErasers = 1;
+    [SerializeField] private GameObject whiteBallPrefab;
+    [SerializeField] private int maxWhiteBalls = 1;
 
     [Header("生成區域（矩形範圍）")]
-    [SerializeField] private Vector2 spawnAreaMin = new Vector2(-10f, -10f);  // X, Z 最小值
-    [SerializeField] private Vector2 spawnAreaMax = new Vector2(10f, 10f);    // X, Z 最大值
-    [SerializeField] private float spawnHeight = 0f;  // Y 高度
+    [SerializeField] private Vector2 spawnAreaMin = new Vector2(-10f, -10f);
+    [SerializeField] private Vector2 spawnAreaMax = new Vector2(10f, 10f);
+    [SerializeField] private float spawnHeight = 0f;
 
     [Header("時間設定（隨機間隔）")]
-    [SerializeField] private float minSpawnInterval = 15f;
-    [SerializeField] private float maxSpawnInterval = 25f;
-    [SerializeField] private float initialDelay = 10f;
-    [SerializeField] private float respawnDelay = 5f;
+    [SerializeField] private float minSpawnInterval = 20f;
+    [SerializeField] private float maxSpawnInterval = 35f;
+    [SerializeField] private float initialDelay = 15f;
+    [SerializeField] private float respawnDelay = 8f;
 
     [Header("除錯")]
-    [SerializeField] private bool showSpawnArea = true;  // 在 Scene 視窗顯示生成區域
+    [SerializeField] private bool showSpawnArea = true;
 
-    private List<GameObject> spawnedErasers = new List<GameObject>();
+    private List<GameObject> spawnedBalls = new List<GameObject>();
     private bool isSpawning = false;
 
     void Start()
@@ -41,7 +44,7 @@ public class EraserSpawner : MonoBehaviour
     {
         while (isSpawning)
         {
-            if (GetCurrentEraserCount() < maxErasers)
+            if (GetCurrentCount() < maxWhiteBalls)
             {
                 SpawnAtRandomPosition();
             }
@@ -53,31 +56,27 @@ public class EraserSpawner : MonoBehaviour
 
     void SpawnAtRandomPosition()
     {
-        if (eraserPrefab == null) return;
+        if (whiteBallPrefab == null) return;
 
-        // 在區域內隨機生成位置
         float randomX = Random.Range(spawnAreaMin.x, spawnAreaMax.x);
         float randomZ = Random.Range(spawnAreaMin.y, spawnAreaMax.y);
         Vector3 spawnPosition = new Vector3(randomX, spawnHeight, randomZ);
 
-        GameObject eraser = Instantiate(eraserPrefab, spawnPosition, Quaternion.identity);
+        GameObject ball = Instantiate(whiteBallPrefab, spawnPosition, Quaternion.identity);
 
-        EraserItem item = eraser.GetComponent<EraserItem>();
+        WhiteBallItem item = ball.GetComponent<WhiteBallItem>();
         if (item != null)
         {
-            item.SetSpawnPointIndex(spawnedErasers.Count);
+            item.SetSpawnPointIndex(spawnedBalls.Count);
         }
 
-        spawnedErasers.Add(eraser);
-        Debug.Log($"[EraserSpawner] 在 {spawnPosition} 生成橡皮擦");
+        spawnedBalls.Add(ball);
+        Debug.Log($"[WhiteBallSpawner] 在 {spawnPosition} 生成白色水球");
     }
 
-    public void OnEraserCollected(int spawnPointIndex)
+    public void OnWhiteBallCollected(int spawnPointIndex)
     {
-        // 清理列表中的空引用
         CleanupNullReferences();
-
-        // 延遲後嘗試生成新的
         StartCoroutine(RespawnAfterDelay());
     }
 
@@ -85,21 +84,21 @@ public class EraserSpawner : MonoBehaviour
     {
         yield return new WaitForSeconds(respawnDelay);
 
-        if (isSpawning && GetCurrentEraserCount() < maxErasers)
+        if (isSpawning && GetCurrentCount() < maxWhiteBalls)
         {
             SpawnAtRandomPosition();
         }
     }
 
-    int GetCurrentEraserCount()
+    int GetCurrentCount()
     {
         CleanupNullReferences();
-        return spawnedErasers.Count;
+        return spawnedBalls.Count;
     }
 
     void CleanupNullReferences()
     {
-        spawnedErasers.RemoveAll(item => item == null);
+        spawnedBalls.RemoveAll(item => item == null);
     }
 
     public void StopSpawning()
@@ -108,24 +107,20 @@ public class EraserSpawner : MonoBehaviour
         StopAllCoroutines();
     }
 
-    public void ClearAllErasers()
+    public void ClearAll()
     {
-        foreach (var eraser in spawnedErasers)
+        foreach (var ball in spawnedBalls)
         {
-            if (eraser != null)
-            {
-                Destroy(eraser);
-            }
+            if (ball != null) Destroy(ball);
         }
-        spawnedErasers.Clear();
+        spawnedBalls.Clear();
     }
 
-    // 在 Scene 視窗顯示生成區域（方便調整）
     void OnDrawGizmos()
     {
         if (!showSpawnArea) return;
 
-        Gizmos.color = new Color(1f, 0.5f, 0f, 0.3f);  // 橘色
+        Gizmos.color = new Color(1f, 1f, 1f, 0.3f);  // 白色
 
         Vector3 center = new Vector3(
             (spawnAreaMin.x + spawnAreaMax.x) / 2f,
@@ -140,9 +135,7 @@ public class EraserSpawner : MonoBehaviour
         );
 
         Gizmos.DrawCube(center, size);
-
-        // 畫邊框
-        Gizmos.color = new Color(1f, 0.5f, 0f, 1f);
+        Gizmos.color = Color.white;
         Gizmos.DrawWireCube(center, size);
     }
 }

@@ -13,7 +13,7 @@ public class IdentityMessage : BaseMessage { public string characterName; public
 [System.Serializable]
 public class Vector2Data { public float x; public float y; }
 [System.Serializable]
-public class MoveMessage : BaseMessage { public Vector2Data vector; }
+public class MoveMessage : BaseMessage { public Vector2Data vector; public bool is_press; }
 [System.Serializable]
 public class HostUpdateMessage { public string type; public string hostId; }
 [System.Serializable]
@@ -187,7 +187,7 @@ public class NetworkManager : MonoBehaviour
         {
             Player movingPlayer = peerIdToPlayer[senderPeerId];
             MoveMessage msg = JsonUtility.FromJson<MoveMessage>(message);
-            gameManager.OnRemotePlayerMove(movingPlayer.index, msg.vector.x, msg.vector.y);
+            gameManager.OnRemotePlayerMove(movingPlayer.index, msg.vector.x, msg.vector.y, msg.is_press);
         }
     }
 

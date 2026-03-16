@@ -394,6 +394,45 @@ public class PaintCanvas : MonoBehaviour
     }
 
     /// <summary>
+    /// 白色爆炸噴灑（擦除效果）- 用於白色水球
+    /// </summary>
+    public void WhiteExplosion(Vector3 center, float radius, float explosionBrushSize, int density, Texture2D brushTex = null, float opacity = 1f)
+    {
+        if (paintMaterial == null || paintTexture == null) return;
+
+        // 使用白色
+        Color whiteColor = Color.white;
+
+        // 在圓形範圍內隨機噴灑白色
+        for (int i = 0; i < density; i++)
+        {
+            float angle = Random.Range(0f, Mathf.PI * 2f);
+            float distance = Mathf.Sqrt(Random.Range(0f, 1f)) * radius;
+
+            Vector3 offset = new Vector3(
+                Mathf.Cos(angle) * distance,
+                0f,
+                Mathf.Sin(angle) * distance
+            );
+            Vector3 worldPos = center + offset;
+
+            Vector2 uv = WorldToUV(worldPos);
+
+            if (uv.x < 0 || uv.x > 1 || uv.y < 0 || uv.y > 1) continue;
+
+            float randomSize = explosionBrushSize * Random.Range(0.7f, 1.3f);
+            pendingPaints.Add(new PaintCommand { uv = uv, color = whiteColor, brushSize = randomSize, brushTexture = brushTex, opacity = opacity, isErasing = true });
+        }
+
+        // 中心點擦除
+        Vector2 centerUV = WorldToUV(center);
+        if (centerUV.x >= 0 && centerUV.x <= 1 && centerUV.y >= 0 && centerUV.y <= 1)
+        {
+            pendingPaints.Add(new PaintCommand { uv = centerUV, color = whiteColor, brushSize = explosionBrushSize * 1.5f, brushTexture = brushTex, opacity = opacity, isErasing = true });
+        }
+    }
+
+    /// <summary>
     /// 設定筆刷大小
     /// </summary>
     public void SetBrushSize(float size)

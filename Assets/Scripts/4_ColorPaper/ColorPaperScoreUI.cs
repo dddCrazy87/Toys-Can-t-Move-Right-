@@ -13,10 +13,22 @@ public class ColorPaperScoreUI : MonoBehaviour
     [SerializeField] private GameObject barPrefab;
     // Prefab 結構：
     // - Root (有 LayoutElement)
+    //   - Avatar (角色頭像 Image，固定在左側)
+    //   - EnergyIcons (放在進度條上方)
+    //     - Icon_0 ~ Icon_4 (Image，顏料罐 icon)
     //   - BarBackground (灰色圓角 Image)
     //     - BarFill (彩色圓角 Image，設定 Pivot 在左邊)
-    //     - Avatar (角色頭像 Image)
-    //   - PercentText (TextMeshProUGUI，可選)
+    //     - PercentText (TextMeshProUGUI，跟著 BarFill 移動)
+
+    [Header("顏料 Icon 設定")]
+    [SerializeField] private Sprite paintIconFull;   // 有顏料的 icon
+    [SerializeField] private Sprite paintIconEmpty;  // 空的 icon（灰色）
+    [SerializeField] private Color emptyIconColor = new Color(0.5f, 0.5f, 0.5f, 0.6f);
+
+    [Header("正在消耗的 Icon 閃爍效果")]
+    [SerializeField] private float blinkSpeed = 8f;           // 閃爍速度
+    [SerializeField] private float blinkMinAlpha = 0.4f;      // 最小透明度
+    [SerializeField] private float blinkMaxAlpha = 1f;        // 最大透明度
 
     [Header("顏色設定")]
     [SerializeField] private Color blueColor = new Color(0.2f, 0.4f, 1f, 1f);
@@ -73,9 +85,9 @@ public class ColorPaperScoreUI : MonoBehaviour
 
     [Header("長條圖設定")]
     [SerializeField] private float maxBarWidth = 300f;      // 長條最大寬度（100% 時）
-    [SerializeField] private float minBarWidth = 40f;       // 長條最小寬度（0% 時，讓頭像有位置）
+    [SerializeField] private float minBarWidth = 40f;       // 長條最小寬度（0% 時）
     [SerializeField] private float barLerpSpeed = 5f;       // 長條變化平滑速度
-    [SerializeField] private float avatarOffset = -20f;     // 頭像相對於長條右邊緣的偏移
+    [SerializeField] private float percentTextOffset = 10f; // 百分比文字相對於長條右邊緣的偏移
 
     [Header("排名動畫設定")]
     [SerializeField] private float rankSwapDuration = 0.3f; // 排名交換動畫時間
@@ -97,6 +109,15 @@ public class ColorPaperScoreUI : MonoBehaviour
         public RectTransform avatarRect;
         public Image avatarImage;
         public TextMeshProUGUI percentText;
+        public RectTransform percentTextRect;  // 百分比文字的 RectTransform
+
+        // 顏料 icon
+        public Image[] energyIcons;  // 5 個顏料 icon
+        public PaintEnergy paintEnergy;
+        public PlayerController playerController;
+        public string playerColorKey;  // 儲存玩家顏色 key
+        public int activeIconIndex;    // 正在消耗的 icon 索引（-1 表示沒有）
+        public float lastEnergy;       // 上次能量值（用於判斷是否正在消耗）
 
         public float targetWidth;
         public int currentPercent;
@@ -131,6 +152,8 @@ public class ColorPaperScoreUI : MonoBehaviour
     public void Initialize()
     {
         Debug.Log("[ColorPaperScoreUI] Initialize() 被呼叫了！");
+        Debug.Log($"[ColorPaperScoreUI] paintIconFull 設定: {(paintIconFull != null ? paintIconFull.name : "未設定")}");
+        Debug.Log($"[ColorPaperScoreUI] paintIconEmpty 設定: {(paintIconEmpty != null ? paintIconEmpty.name : "未設定")}");
 
         if (gameManager == null)
         {
@@ -190,10 +213,6 @@ public class ColorPaperScoreUI : MonoBehaviour
         RectTransform rootRect = barObj.GetComponent<RectTransform>();
 
         // 找到子組件
-        // 假設結構：Root > BarBackground > BarFill, Avatar
-        Transform barBackground = barObj.transform.GetChild(0);
-        RectTransform barFillRect = barBackground.Find("BarFill")?.GetComponent<RectTransform>();
-        Image barFillImage = barFillRect?.GetComponent<Image>();
         // 用名稱包含 "avatar"（不分大小寫）來搜尋
         Transform avatarTransform = null;
         Image[] allImages = barObj.GetComponentsInChildren<Image>();
@@ -206,9 +225,28 @@ public class ColorPaperScoreUI : MonoBehaviour
             }
         }
 
+        // 找到 BarBackground 和 BarFill
+        Transform barBackground = FindChildRecursive(barObj.transform, "BarBackground");
+        if (barBackground == null)
+        {
+            // 嘗試找第一個有 BarFill 子物件的
+            foreach (Transform child in barObj.transform)
+            {
+                if (child.Find("BarFill") != null)
+                {
+                    barBackground = child;
+                    break;
+                }
+            }
+        }
+
+        RectTransform barFillRect = barBackground?.Find("BarFill")?.GetComponent<RectTransform>();
+        Image barFillImage = barFillRect?.GetComponent<Image>();
+
         RectTransform avatarRect = avatarTransform?.GetComponent<RectTransform>();
         Image avatarImage = avatarTransform?.GetComponent<Image>();
         TextMeshProUGUI percentText = barObj.GetComponentInChildren<TextMeshProUGUI>();
+        RectTransform percentTextRect = percentText?.GetComponent<RectTransform>();
 
         if (barFillRect == null || barFillImage == null)
         {
@@ -217,9 +255,11 @@ public class ColorPaperScoreUI : MonoBehaviour
         }
 
         // 設定長條顏色
+        Color barColor = Color.white;
         if (colorMapping.TryGetValue(playerColor, out Color color))
         {
             barFillImage.color = color;
+            barColor = color;
         }
 
         // 設定頭像（從現有的 SkinColorMapping 獲取）
@@ -236,9 +276,43 @@ public class ColorPaperScoreUI : MonoBehaviour
                 Debug.LogWarning($"[ColorPaperScoreUI] 玩家 {playerId} 找不到頭像！");
             }
         }
+
+        // 找到並設定顏料 icon
+        Image[] energyIcons = new Image[5];
+        Transform energyIconsContainer = FindChildRecursive(barObj.transform, "EnergyIcons");
+        if (energyIconsContainer != null)
+        {
+            Debug.Log($"[ColorPaperScoreUI] 玩家 {playerId} 找到 EnergyIcons 容器，子物件數量: {energyIconsContainer.childCount}");
+            for (int i = 0; i < 5; i++)
+            {
+                Transform iconTransform = energyIconsContainer.Find($"Icon_{i}");
+                if (iconTransform == null && i < energyIconsContainer.childCount)
+                {
+                    iconTransform = energyIconsContainer.GetChild(i);
+                }
+
+                if (iconTransform != null)
+                {
+                    energyIcons[i] = iconTransform.GetComponent<Image>();
+                    // 設定 icon 顏色為玩家顏色
+                    if (energyIcons[i] != null)
+                    {
+                        energyIcons[i].color = barColor;
+                        Debug.Log($"[ColorPaperScoreUI] 玩家 {playerId} Icon_{i} 設定成功");
+                    }
+                }
+            }
+        }
         else
         {
-            Debug.LogWarning($"[ColorPaperScoreUI] 玩家 {playerId} 沒有 Avatar Image 組件！");
+            Debug.LogWarning($"[ColorPaperScoreUI] 玩家 {playerId} 找不到 EnergyIcons 容器！請確認 Prefab 結構");
+        }
+
+        // 取得玩家的 PaintEnergy
+        PaintEnergy paintEnergy = null;
+        if (gameManager.playerControllers.TryGetValue(playerId, out PlayerController player))
+        {
+            paintEnergy = player.GetComponent<PaintEnergy>();
         }
 
         // 初始位置
@@ -250,12 +324,6 @@ public class ColorPaperScoreUI : MonoBehaviour
         size.x = minBarWidth;
         barFillRect.sizeDelta = size;
 
-        // 初始頭像位置
-        if (avatarRect != null)
-        {
-            avatarRect.anchoredPosition = new Vector2(minBarWidth + avatarOffset, avatarRect.anchoredPosition.y);
-        }
-
         // 初始百分比文字
         if (percentText != null)
         {
@@ -263,7 +331,7 @@ public class ColorPaperScoreUI : MonoBehaviour
         }
 
         // 儲存資料
-        playerBars[playerId] = new BarData
+        BarData barData = new BarData
         {
             playerId = playerId,
             barObject = barObj,
@@ -273,6 +341,13 @@ public class ColorPaperScoreUI : MonoBehaviour
             avatarRect = avatarRect,
             avatarImage = avatarImage,
             percentText = percentText,
+            percentTextRect = percentTextRect,
+            energyIcons = energyIcons,
+            paintEnergy = paintEnergy,
+            playerController = player,
+            playerColorKey = playerColor,
+            activeIconIndex = -1,
+            lastEnergy = paintEnergy != null ? paintEnergy.GetCurrentEnergy() : 3f,
             targetWidth = minBarWidth,
             currentPercent = 0,
             targetPercent = 0,
@@ -281,6 +356,21 @@ public class ColorPaperScoreUI : MonoBehaviour
             targetY = initialY,
             isAnimating = false
         };
+
+        playerBars[playerId] = barData;
+
+        // 訂閱 PaintEnergy 事件
+        if (paintEnergy != null)
+        {
+            Debug.Log($"[ColorPaperScoreUI] 玩家 {playerId} 訂閱 PaintEnergy 事件成功，當前能量: {paintEnergy.GetCurrentEnergy()}/{paintEnergy.GetMaxEnergy()}");
+            paintEnergy.OnEnergyChanged += (current, max) => UpdateEnergyIcons(barData, current, max);
+            // 立即更新一次
+            UpdateEnergyIcons(barData, paintEnergy.GetCurrentEnergy(), paintEnergy.GetMaxEnergy());
+        }
+        else
+        {
+            Debug.LogWarning($"[ColorPaperScoreUI] 玩家 {playerId} 找不到 PaintEnergy 組件！");
+        }
     }
 
     Sprite GetPlayerAvatarSprite(int playerId)
@@ -373,15 +463,43 @@ public class ColorPaperScoreUI : MonoBehaviour
             // 平滑更新長條寬度
             UpdateBarWidth(data);
 
-            // 更新頭像位置
-            UpdateAvatarPosition(data);
-
-            // 更新百分比文字
+            // 更新百分比文字（位置和數值）
             UpdatePercentText(data);
 
             // 排名動畫
             UpdateRankAnimation(data);
+
+            // 正在消耗的 icon 閃爍效果
+            UpdateActiveIconBlink(data);
         }
+    }
+
+    /// <summary>
+    /// 更新正在消耗的 icon 閃爍效果
+    /// </summary>
+    void UpdateActiveIconBlink(BarData data)
+    {
+        if (data.energyIcons == null) return;
+        if (data.activeIconIndex < 0 || data.activeIconIndex >= 5) return;
+
+        Image activeIcon = data.energyIcons[data.activeIconIndex];
+        if (activeIcon == null) return;
+
+        // 取得玩家顏色
+        Color playerColor = Color.white;
+        if (colorMapping.TryGetValue(data.playerColorKey, out Color mappedColor))
+        {
+            playerColor = mappedColor;
+        }
+
+        // 計算閃爍透明度（使用正弦波）
+        float blinkAlpha = Mathf.Lerp(blinkMinAlpha, blinkMaxAlpha,
+            (Mathf.Sin(Time.time * blinkSpeed) + 1f) / 2f);
+
+        // 應用閃爍效果
+        Color blinkColor = playerColor;
+        blinkColor.a = blinkAlpha;
+        activeIcon.color = blinkColor;
     }
 
     void UpdateBarWidth(BarData data)
@@ -393,21 +511,6 @@ public class ColorPaperScoreUI : MonoBehaviour
         {
             size.x = Mathf.Lerp(currentWidth, data.targetWidth, Time.deltaTime * barLerpSpeed);
             data.barFillRect.sizeDelta = size;
-        }
-    }
-
-    void UpdateAvatarPosition(BarData data)
-    {
-        if (data.avatarRect == null) return;
-
-        float barWidth = data.barFillRect.sizeDelta.x;
-        float targetX = barWidth + avatarOffset;
-
-        Vector2 pos = data.avatarRect.anchoredPosition;
-        if (Mathf.Abs(pos.x - targetX) > 0.5f)
-        {
-            pos.x = Mathf.Lerp(pos.x, targetX, Time.deltaTime * barLerpSpeed);
-            data.avatarRect.anchoredPosition = pos;
         }
     }
 
@@ -423,6 +526,20 @@ public class ColorPaperScoreUI : MonoBehaviour
         {
             data.currentPercent = displayPercent;
             data.percentText.text = $"{displayPercent}%";
+        }
+
+        // 讓百分比文字跟著進度條移動
+        if (data.percentTextRect != null)
+        {
+            float barWidth = data.barFillRect.sizeDelta.x;
+            float targetX = barWidth + percentTextOffset;
+
+            Vector2 pos = data.percentTextRect.anchoredPosition;
+            if (Mathf.Abs(pos.x - targetX) > 0.5f)
+            {
+                pos.x = Mathf.Lerp(pos.x, targetX, Time.deltaTime * barLerpSpeed);
+                data.percentTextRect.anchoredPosition = pos;
+            }
         }
     }
 
@@ -444,6 +561,100 @@ public class ColorPaperScoreUI : MonoBehaviour
             data.rootRect.anchoredPosition = pos;
             data.currentRank = data.targetRank;
             data.isAnimating = false;
+        }
+    }
+
+    /// <summary>
+    /// 更新顏料 icon 顯示
+    /// </summary>
+    void UpdateEnergyIcons(BarData data, float currentEnergy, float maxEnergy)
+    {
+        if (data.energyIcons == null)
+        {
+            Debug.LogWarning($"[ColorPaperScoreUI] 玩家 {data.playerId} energyIcons 是 null！");
+            return;
+        }
+
+        // 取得玩家顏色
+        Color playerColor = Color.white;
+        if (colorMapping.TryGetValue(data.playerColorKey, out Color mappedColor))
+        {
+            playerColor = mappedColor;
+            Debug.Log($"[ColorPaperScoreUI] 玩家 {data.playerId} 顏色 key={data.playerColorKey} -> RGB({playerColor.r:F2}, {playerColor.g:F2}, {playerColor.b:F2})");
+        }
+        else
+        {
+            Debug.LogWarning($"[ColorPaperScoreUI] 玩家 {data.playerId} 找不到顏色 key={data.playerColorKey}！");
+        }
+
+        // 判斷是否正在消耗能量（玩家正在按壓繪圖）
+        bool isConsuming = data.playerController != null && data.playerController.IsPressing() && currentEnergy > 0;
+
+        // 找出正在消耗的 icon 索引（部分填充的那格）
+        int newActiveIndex = -1;
+        if (isConsuming)
+        {
+            newActiveIndex = Mathf.FloorToInt(currentEnergy);
+            if (newActiveIndex >= 5) newActiveIndex = 4;
+            if (currentEnergy <= 0) newActiveIndex = -1;
+        }
+        data.activeIconIndex = newActiveIndex;
+
+        // 更新每個 icon 的狀態
+        for (int i = 0; i < 5; i++)
+        {
+            if (data.energyIcons[i] == null)
+            {
+                Debug.LogWarning($"[ColorPaperScoreUI] 玩家 {data.playerId} energyIcons[{i}] 是 null！");
+                continue;
+            }
+
+            float iconEnergy = i + 1;  // icon 0 代表 0-1 格，icon 1 代表 1-2 格...
+
+            if (currentEnergy >= iconEnergy)
+            {
+                // 滿格 - 顯示玩家顏色
+                data.energyIcons[i].color = playerColor;
+                Debug.Log($"[ColorPaperScoreUI] 玩家 {data.playerId} Icon_{i} 設為滿格顏色 RGB({playerColor.r:F2}, {playerColor.g:F2}, {playerColor.b:F2})");
+                if (paintIconFull != null)
+                {
+                    data.energyIcons[i].sprite = paintIconFull;
+                }
+            }
+            else if (currentEnergy > i)
+            {
+                // 部分填充 - 使用玩家顏色（閃爍效果在 Update 中處理）
+                data.energyIcons[i].color = playerColor;
+                if (paintIconFull != null)
+                {
+                    data.energyIcons[i].sprite = paintIconFull;
+                }
+            }
+            else
+            {
+                // 空格 - 顯示灰色
+                data.energyIcons[i].color = emptyIconColor;
+                if (paintIconEmpty != null)
+                {
+                    data.energyIcons[i].sprite = paintIconEmpty;
+                }
+            }
+        }
+
+        data.lastEnergy = currentEnergy;
+    }
+
+    void OnDestroy()
+    {
+        // 取消訂閱事件（避免記憶體洩漏）
+        foreach (var kvp in playerBars)
+        {
+            BarData data = kvp.Value;
+            if (data.paintEnergy != null)
+            {
+                // 注意：由於使用 lambda，無法精確取消訂閱
+                // 但 OnDestroy 時物件即將被銷毀，所以沒問題
+            }
         }
     }
 }
