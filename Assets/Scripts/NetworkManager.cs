@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SimpleWebRTC;
@@ -262,34 +263,23 @@ public class NetworkManager : MonoBehaviour
             level = level
         };
         string jsonMessage = JsonUtility.ToJson(levelMessage);
-        webRTCConnection.SendDataChannelMessage(jsonMessage);
-        Debug.Log($"Broadcasting Level Selected: {jsonMessage}");
+
+        // 使用重試機制發送
+        StartCoroutine(BroadcastMessageWithRetry(jsonMessage, 3, 0.3f));
     }
 
     // ------------- BroadcastNavigateToGame -------------
 
     private void BroadcastNavigateToGame()
     {
-        if (webRTCConnection == null) return;
-
-        BaseMessage navigateMessage = new() { type = "navigate_to_game" };
-        string jsonMessage = JsonUtility.ToJson(navigateMessage);
-
-        webRTCConnection.SendDataChannelMessage(jsonMessage);
-        Debug.Log("Broadcasting Navigate to Game: " + jsonMessage);
+        StartCoroutine(BroadcastWithRetry("navigate_to_game", 3, 0.3f));
     }
 
     // ------------- BroadcastNavigateToPlaying -------------
 
     public void BroadcastNavigateToPlaying()
     {
-        if (webRTCConnection == null) return;
-
-        BaseMessage navigateMessage = new() { type = "navigate_to_playing" };
-        string jsonMessage = JsonUtility.ToJson(navigateMessage);
-
-        webRTCConnection.SendDataChannelMessage(jsonMessage);
-        Debug.Log("Broadcasting Navigate to Playing: " + jsonMessage);
+        StartCoroutine(BroadcastWithRetry("navigate_to_playing", 3, 0.3f));
     }
 
     // ------------- BroadcastTerminate -------------
@@ -335,9 +325,52 @@ public class NetworkManager : MonoBehaviour
         };
 
         string jsonMessage = JsonUtility.ToJson(terminateMessage);
-        webRTCConnection.SendDataChannelMessage(jsonMessage);
 
-        Debug.Log("Broadcasting Terminate: " + jsonMessage);
+        // 使用重試機制發送
+        StartCoroutine(BroadcastMessageWithRetry(jsonMessage, 3, 0.3f));
+    }
+
+    // ------------- 重試機制 Coroutines -------------
+
+    /// <summary>
+    /// 重複發送簡單訊息（只有 type）
+    /// </summary>
+    private IEnumerator BroadcastWithRetry(string messageType, int retryCount, float interval)
+    {
+        if (webRTCConnection == null) yield break;
+
+        BaseMessage message = new() { type = messageType };
+        string jsonMessage = JsonUtility.ToJson(message);
+
+        for (int i = 0; i < retryCount; i++)
+        {
+            webRTCConnection.SendDataChannelMessage(jsonMessage);
+            Debug.Log($"Broadcasting {messageType} (attempt {i + 1}/{retryCount}): {jsonMessage}");
+
+            if (i < retryCount - 1)
+            {
+                yield return new WaitForSeconds(interval);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 重複發送已序列化的 JSON 訊息
+    /// </summary>
+    private IEnumerator BroadcastMessageWithRetry(string jsonMessage, int retryCount, float interval)
+    {
+        if (webRTCConnection == null) yield break;
+
+        for (int i = 0; i < retryCount; i++)
+        {
+            webRTCConnection.SendDataChannelMessage(jsonMessage);
+            Debug.Log($"Broadcasting message (attempt {i + 1}/{retryCount}): {jsonMessage}");
+
+            if (i < retryCount - 1)
+            {
+                yield return new WaitForSeconds(interval);
+            }
+        }
     }
 
 
