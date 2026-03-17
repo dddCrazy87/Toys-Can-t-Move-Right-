@@ -145,6 +145,17 @@ public class PaintBrush : MonoBehaviour
     void Update()
     {
         if (!isInitialized || paintCanvas == null) return;
+
+        // 檢查玩家是否正在按壓
+        bool isPlayerPressing = playerController != null && playerController.IsPressing();
+
+        // 如果玩家正在按壓但 isPainting = false，且有能量，則重新開始繪製
+        // 這解決了「能量耗盡後補充，但因為一直按著所以 OnPressStateChanged 沒觸發」的問題
+        if (isPlayerPressing && !isPainting && paintEnergy != null && paintEnergy.HasEnergy())
+        {
+            StartPainting();
+        }
+
         if (!isPainting) return;
 
         // 檢查能量，若耗盡則停止繪製
