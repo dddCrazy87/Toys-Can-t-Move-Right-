@@ -7,6 +7,9 @@ public class ColorPaperGameManager : MonoBehaviour
     [SerializeField] private float gameTimeLimit = 90f;
     [SerializeField] private AudioSource gameOverAudio;
 
+    [Header("遊戲說明")]
+    [SerializeField] private GameInstructionUI instructionUI;
+
     [Header("填色系統")]
     [SerializeField] private ColorGrid colorGrid;
 
@@ -35,6 +38,22 @@ public class ColorPaperGameManager : MonoBehaviour
         // 倒數期間先暫停 BGM
         if (bgmPlayer) bgmPlayer.PauseBGM();
 
+        // 先顯示說明圖，完成後再開始倒數
+        if (instructionUI != null)
+        {
+            Debug.Log("[ColorPaperGameManager] 顯示說明圖...");
+            instructionUI.ShowInstruction(OnInstructionComplete);
+        }
+        else
+        {
+            // 沒有說明圖，直接開始倒數
+            Debug.LogWarning("[ColorPaperGameManager] instructionUI 未設定，跳過說明圖");
+            OnInstructionComplete();
+        }
+    }
+
+    void OnInstructionComplete()
+    {
         var gameStartCountDown = FindFirstObjectByType<GameStartCountDown>();
         if (gameStartCountDown != null)
         {

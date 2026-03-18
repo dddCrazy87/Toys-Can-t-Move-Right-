@@ -40,6 +40,8 @@ public class NetworkManager : MonoBehaviour
     private List<string> selectedSkinColor = new();
 
     private static string hostPeerId = null;
+    private Dictionary<string, float> lastIdentifyTime = new();  // 防止重複 identify
+    private const float IDENTIFY_COOLDOWN = 1f;  // 1 秒內不重複處理
     void Start()
     {
         WebRTCManager.OnDataMessageReceived_Static += OnDataReceived;
@@ -77,6 +79,7 @@ public class NetworkManager : MonoBehaviour
             Player leavingPlayer = peerIdToPlayer[senderPeerId];
             playersInfo.Remove(leavingPlayer);
             peerIdToPlayer.Remove(senderPeerId);
+            lastIdentifyTime.Remove(senderPeerId);
 
             if (hostPeerId == senderPeerId)
             {
@@ -141,6 +144,18 @@ public class NetworkManager : MonoBehaviour
 
     private void HandleIdentifyMessage(string message, string senderPeerId)
     {
+        // 防止短時間內重複處理同一玩家的 identify
+        float currentTime = Time.time;
+        if (lastIdentifyTime.ContainsKey(senderPeerId))
+        {
+            if (currentTime - lastIdentifyTime[senderPeerId] < IDENTIFY_COOLDOWN)
+            {
+                Debug.Log($"[NetworkManager] 忽略重複的 identify（冷卻中）: {senderPeerId}");
+                return;
+            }
+        }
+        lastIdentifyTime[senderPeerId] = currentTime;
+
         IdentityMessage identity = JsonUtility.FromJson<IdentityMessage>(message);
         Debug.Log($"Received identify message from {senderPeerId} ({identity.nickname}) is now controlling {identity.characterName}");
 
@@ -173,13 +188,14 @@ public class NetworkManager : MonoBehaviour
             BroadcastInitialToPeer(senderPeerId, chosenColor);
         }
 
-        // 若無 Host 則指定
-        if (hostPeerId == null || senderPeerId == hostPeerId)
+        // 若無 Host 則指定（只在 host 真的改變時才廣播）
+        if (hostPeerId == null)
         {
             hostPeerId = senderPeerId;
             Debug.Log($"{senderPeerId} ({identity.nickname}) is now the host.");
             BroadcastHostUpdate();
         }
+        // 如果是已存在的 host 重連，不需要重新廣播
     }
 
     private void HandleMoveMessage(string message, string senderPeerId)
@@ -382,6 +398,7 @@ public class NetworkManager : MonoBehaviour
 
         playersInfo.Clear();
         peerIdToPlayer.Clear();
+        lastIdentifyTime.Clear();
         selectedSkinColor = new List<string>() { "green", "yellow", "blue", "red" };
         hostPeerId = null;
     }

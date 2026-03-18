@@ -8,6 +8,10 @@ public class ToyBoxGameManager : MonoBehaviour
     [SerializeField] private SceneFadeInFadeOut sceneFadeInFadeOut;
     [SerializeField] private float gameTimeLimit = 90f;
     [SerializeField] private AudioSource gameOverAudio;
+
+    [Header("遊戲說明")]
+    [SerializeField] private GameInstructionUI instructionUI;
+
     BgmPlayer bgmPlayer;
     NetworkManager networkManager;
     GameManager gameManager;
@@ -21,7 +25,31 @@ public class ToyBoxGameManager : MonoBehaviour
         // 倒數期間先暫停 BGM
         if (bgmPlayer) bgmPlayer.PauseBGM();
 
-        FindFirstObjectByType<GameStartCountDown>().CountDownAndStartGame(OnCountDownFinished);
+        // 先顯示說明圖，完成後再開始倒數
+        if (instructionUI != null)
+        {
+            Debug.Log("[ToyBoxGameManager] 顯示說明圖...");
+            instructionUI.ShowInstruction(OnInstructionComplete);
+        }
+        else
+        {
+            // 沒有說明圖，直接開始倒數
+            Debug.LogWarning("[ToyBoxGameManager] instructionUI 未設定，跳過說明圖");
+            OnInstructionComplete();
+        }
+    }
+
+    void OnInstructionComplete()
+    {
+        var gameStartCountDown = FindFirstObjectByType<GameStartCountDown>();
+        if (gameStartCountDown != null)
+        {
+            gameStartCountDown.CountDownAndStartGame(OnCountDownFinished);
+        }
+        else
+        {
+            OnCountDownFinished();
+        }
     }
 
     void OnCountDownFinished()
