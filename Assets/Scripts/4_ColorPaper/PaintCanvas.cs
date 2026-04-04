@@ -28,6 +28,9 @@ public class PaintCanvas : MonoBehaviour
     [SerializeField] private Color greenColor = new Color(0.2f, 0.8f, 0.3f, 1f);
     [SerializeField] private Color redColor = new Color(1f, 0.3f, 0.3f, 1f);
 
+    [Header("Decal 材質（創建一個使用 Shader Graphs/Decal 的材質，拖到這裡）")]
+    [SerializeField] private Material templateDecalMaterial;
+
     private RenderTexture paintTexture;
     private Material canvasMaterial;
     private Dictionary<string, Color> colorMapping;
@@ -135,15 +138,15 @@ public class PaintCanvas : MonoBehaviour
         // 設定 Decal 材質
         if (decalProjector != null)
         {
-            // 使用 Decal Shader
-            Shader decalShader = Shader.Find("Shader Graphs/Decal");
-            if (decalShader == null)
+            // 從範本材質獲取 Shader
+            if (templateDecalMaterial == null)
             {
-                Debug.LogError("[PaintCanvas] 找不到 Shader Graphs/Decal！請確認 URP Decal 已啟用。");
+                Debug.LogError("[PaintCanvas] 範本 Decal 材質未指定！請在 Inspector 中指定一個使用 Shader Graphs/Decal 的材質。");
                 return;
             }
 
-            canvasMaterial = new Material(decalShader);
+            // 使用 Instantiate 複製材質（確保所有設定和 shader variants 都被保留）
+            canvasMaterial = Instantiate(templateDecalMaterial);
             canvasMaterial.SetTexture("Base_Map", paintTexture);
 
             // 設定較低的 Render Queue，讓顏料顯示在底圖線稿下面

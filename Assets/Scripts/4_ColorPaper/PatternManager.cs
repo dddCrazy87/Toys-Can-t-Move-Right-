@@ -11,6 +11,9 @@ public class PatternManager : MonoBehaviour
     [Header("測試用")]
     [SerializeField] private int forcePatternIndex = -1;  // -1 = 隨機, 0+ = 強制使用該索引
 
+    [Header("材質設定（創建一個使用 URP/Unlit 的材質，拖到這裡）")]
+    [SerializeField] private Material templateUnlitMaterial;
+
     private Material patternMaterial;
     private int currentPatternIndex = -1;
 
@@ -37,29 +40,15 @@ public class PatternManager : MonoBehaviour
     /// </summary>
     void InitializeMaterial()
     {
-        // 使用 Unlit 透明 Shader
-        Shader unlitShader = Shader.Find("Universal Render Pipeline/Unlit");
-        if (unlitShader == null)
+        // 使用模板材質（避免 Shader.Find 在 Build 後找不到）
+        if (templateUnlitMaterial == null)
         {
-            // 備用：標準 Unlit
-            unlitShader = Shader.Find("Unlit/Transparent");
-        }
-
-        if (unlitShader == null)
-        {
-            Debug.LogError("[PatternManager] 找不到 Unlit Shader！");
+            Debug.LogError("[PatternManager] 範本 Unlit 材質未指定！請在 Inspector 中指定一個使用 URP/Unlit 的透明材質。");
             return;
         }
 
-        patternMaterial = new Material(unlitShader);
-
-        // 設定透明模式
-        patternMaterial.SetFloat("_Surface", 1);  // Transparent
-        patternMaterial.SetFloat("_Blend", 0);    // Alpha blend
-        patternMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        patternMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        patternMaterial.SetInt("_ZWrite", 0);
-        patternMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        // 複製模板材質
+        patternMaterial = Instantiate(templateUnlitMaterial);
         patternMaterial.renderQueue = 3000;
 
         patternQuad.material = patternMaterial;
