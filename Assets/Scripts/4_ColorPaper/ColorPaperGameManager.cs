@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class ColorPaperGameManager : MonoBehaviour
 {
@@ -146,14 +147,44 @@ public class ColorPaperGameManager : MonoBehaviour
 
         if (bgmPlayer) bgmPlayer.PauseBGM();
         if (gameOverAudio) gameOverAudio.Play();
-        Invoke(nameof(LoadNextSceneWithFadeOut), 1f);
+        StartCoroutine(EndGameRoutine());
     }
 
-    void LoadNextSceneWithFadeOut()
+    [Header("上傳系統")]
+    [SerializeField] private ImgBBUploader imgUploader;
+
+    private IEnumerator EndGameRoutine()
     {
-        if (networkManager) networkManager.BroadcastTerminate();
+        yield return new WaitForSeconds(0.5f);
+
+        string uploadedUrl = "";
+
+        if (imgUploader != null)
+        {
+            yield return StartCoroutine(imgUploader.UploadToImgBB((url) =>
+            {
+                uploadedUrl = url;
+            }));
+
+            if (!string.IsNullOrEmpty(uploadedUrl))
+            {
+                Debug.Log($"圖片網址: {uploadedUrl}");
+            }
+            else
+            {
+                Debug.LogWarning("[ColorPaperGameManager] 上傳失敗");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[ColorPaperGameManager] 上傳被跳過");
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        if (networkManager) networkManager.BroadcastTerminate(uploadedUrl);
         sceneFadeInFadeOut.LoadNextSceneWithFadeOut();
     }
+
 
     void InitializePlayerBrushes()
     {

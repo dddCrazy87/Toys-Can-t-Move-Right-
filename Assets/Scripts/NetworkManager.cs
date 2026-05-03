@@ -22,7 +22,7 @@ public class InitialMessage { public string type; public string color; }
 [System.Serializable]
 public class FinalPlayerData { public int rank; public string name; public int point; public string color; public string skin; }
 [System.Serializable]
-public class TerminateMessage { public string type; public List<FinalPlayerData> finalPlayerDatas; }
+public class TerminateMessage { public string type; public string link; public List<FinalPlayerData> finalPlayerDatas; }
 [System.Serializable]
 public class SelectLevelMessage : BaseMessage { public string level; }
 [System.Serializable]
@@ -300,7 +300,7 @@ public class NetworkManager : MonoBehaviour
 
     // ------------- BroadcastTerminate -------------
 
-    public void BroadcastTerminate()
+    public void BroadcastTerminate(string url = "")
     {
         if (webRTCConnection == null) return;
 
@@ -336,6 +336,7 @@ public class NetworkManager : MonoBehaviour
 
         TerminateMessage terminateMessage = new()
         {
+            link = url,
             type = "terminate",
             finalPlayerDatas = finalPlayerDatas
         };
