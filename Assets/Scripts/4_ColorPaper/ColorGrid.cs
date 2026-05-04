@@ -155,13 +155,14 @@ public class ColorGrid : MonoBehaviour
     {
         if (!isColoringEnabled || gameManager == null) return;
 
-        // 遍歷所有玩家，檢查他們的位置並填色
+        // 遍歷所有玩家，只有按住時才填色計分
         foreach (var kvp in gameManager.playerControllers)
         {
             int playerIndex = kvp.Key;
             PlayerController player = kvp.Value;
 
             if (player == null) continue;
+            if (!player.IsPressing()) continue;
 
             // 筆畫位置往角色後方偏移
             Vector3 playerPos = player.transform.position - player.transform.forward * 0.5f;
@@ -169,7 +170,7 @@ public class ColorGrid : MonoBehaviour
         }
     }
 
-    void PaintAtPosition(Vector3 worldPos, int playerIndex, string playerColor)
+    public void PaintAtPosition(Vector3 worldPos, int playerIndex, string playerColor)
     {
         var (gridX, gridZ) = WorldToGrid(worldPos);
 

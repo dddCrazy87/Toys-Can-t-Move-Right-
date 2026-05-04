@@ -49,6 +49,7 @@ public class PaintCanItem : MonoBehaviour
     [SerializeField] private float rotateSpeed = 50f;
 
     private PaintCanvas paintCanvas;
+    private ColorGrid colorGrid;
     private Vector3 startPosition;
     private bool isCollected = false;
     private int spawnPointIndex = -1;
@@ -62,6 +63,7 @@ public class PaintCanItem : MonoBehaviour
     {
         startPosition = transform.position;
         paintCanvas = FindFirstObjectByType<PaintCanvas>();
+        colorGrid = FindFirstObjectByType<ColorGrid>();
 
         // 動態取得 Renderer（避免 Prefab 參照問題）
         targetRenderer = GetComponentInChildren<Renderer>();
@@ -242,6 +244,12 @@ public class PaintCanItem : MonoBehaviour
             paintCanvas.PaintExplosion(explosionCenter, playerColor, adjustedRadius, adjustedBrushSize, adjustedDensity, playerBrushTexture, explosionOpacity);
         }
 
+        // 同步填色到 ColorGrid（計分系統）
+        if (colorGrid != null)
+        {
+            PaintColorGridArea(explosionCenter, player.playerIndex, playerColor, adjustedRadius, adjustedDensity);
+        }
+
         // 通知 Spawner
         PaintCanSpawner spawner = FindFirstObjectByType<PaintCanSpawner>();
         if (spawner != null)
@@ -250,6 +258,24 @@ public class PaintCanItem : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    void PaintColorGridArea(Vector3 center, int playerIndex, string playerColor, float radius, int density)
+    {
+        for (int i = 0; i < density; i++)
+        {
+            float angle = Random.Range(0f, Mathf.PI * 2f);
+            float distance = Mathf.Sqrt(Random.Range(0f, 1f)) * radius;
+
+            Vector3 offset = new Vector3(
+                Mathf.Cos(angle) * distance,
+                0f,
+                Mathf.Sin(angle) * distance
+            );
+            colorGrid.PaintAtPosition(center + offset, playerIndex, playerColor);
+        }
+        // 中心點
+        colorGrid.PaintAtPosition(center, playerIndex, playerColor);
     }
 
     Color GetColorFromString(string colorName)
