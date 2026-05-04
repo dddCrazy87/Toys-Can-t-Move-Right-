@@ -244,10 +244,13 @@ public class PaintCanItem : MonoBehaviour
             paintCanvas.PaintExplosion(explosionCenter, playerColor, adjustedRadius, adjustedBrushSize, adjustedDensity, playerBrushTexture, explosionOpacity);
         }
 
-        // 同步填色到 ColorGrid（計分系統）
+        // 同步填色到 ColorGrid（計分系統）— 填滿爆炸範圍內所有格子
+        // 視覺上每個噴灑點還有 brushSize 的範圍，需要加上去才能匹配
         if (colorGrid != null)
         {
-            PaintColorGridArea(explosionCenter, player.playerIndex, playerColor, adjustedRadius, adjustedDensity);
+            float canvasWorldWidth = 39.2f;  // canvasMax.x - canvasMin.x (17.6 - (-21.6))
+            float brushWorldRadius = adjustedBrushSize * canvasWorldWidth * 0.5f;
+            colorGrid.PaintArea(explosionCenter, player.playerIndex, playerColor, adjustedRadius + brushWorldRadius);
         }
 
         // 通知 Spawner
@@ -258,24 +261,6 @@ public class PaintCanItem : MonoBehaviour
         }
 
         Destroy(gameObject);
-    }
-
-    void PaintColorGridArea(Vector3 center, int playerIndex, string playerColor, float radius, int density)
-    {
-        for (int i = 0; i < density; i++)
-        {
-            float angle = Random.Range(0f, Mathf.PI * 2f);
-            float distance = Mathf.Sqrt(Random.Range(0f, 1f)) * radius;
-
-            Vector3 offset = new Vector3(
-                Mathf.Cos(angle) * distance,
-                0f,
-                Mathf.Sin(angle) * distance
-            );
-            colorGrid.PaintAtPosition(center + offset, playerIndex, playerColor);
-        }
-        // 中心點
-        colorGrid.PaintAtPosition(center, playerIndex, playerColor);
     }
 
     Color GetColorFromString(string colorName)

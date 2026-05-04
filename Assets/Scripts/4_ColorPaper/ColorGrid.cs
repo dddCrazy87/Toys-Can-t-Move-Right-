@@ -195,6 +195,63 @@ public class ColorGrid : MonoBehaviour
     }
 
     /// <summary>
+    /// 填滿圓形範圍內的所有格子
+    /// </summary>
+    public void PaintArea(Vector3 center, int playerIndex, string playerColor, float radius)
+    {
+        var (centerGX, centerGZ) = WorldToGrid(center);
+        int cellRadius = Mathf.CeilToInt(radius / cellSize);
+
+        for (int dx = -cellRadius; dx <= cellRadius; dx++)
+        {
+            for (int dz = -cellRadius; dz <= cellRadius; dz++)
+            {
+                int gx = centerGX + dx;
+                int gz = centerGZ + dz;
+                if (!IsValidGrid(gx, gz)) continue;
+
+                // 檢查格子中心是否在圓形範圍內
+                Vector3 cellWorld = GridToWorld(gx, gz);
+                float dist = Vector2.Distance(
+                    new Vector2(center.x, center.z),
+                    new Vector2(cellWorld.x, cellWorld.z)
+                );
+                if (dist > radius) continue;
+
+                PaintAtPosition(cellWorld, playerIndex, playerColor);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 擦除圓形範圍內的所有格子
+    /// </summary>
+    public void EraseArea(Vector3 center, float radius)
+    {
+        var (centerGX, centerGZ) = WorldToGrid(center);
+        int cellRadius = Mathf.CeilToInt(radius / cellSize);
+
+        for (int dx = -cellRadius; dx <= cellRadius; dx++)
+        {
+            for (int dz = -cellRadius; dz <= cellRadius; dz++)
+            {
+                int gx = centerGX + dx;
+                int gz = centerGZ + dz;
+                if (!IsValidGrid(gx, gz)) continue;
+
+                Vector3 cellWorld = GridToWorld(gx, gz);
+                float dist = Vector2.Distance(
+                    new Vector2(center.x, center.z),
+                    new Vector2(cellWorld.x, cellWorld.z)
+                );
+                if (dist > radius) continue;
+
+                EraseAtPosition(cellWorld);
+            }
+        }
+    }
+
+    /// <summary>
     /// 擦除指定位置的格子（清除所有權）
     /// </summary>
     public void EraseAtPosition(Vector3 worldPos)

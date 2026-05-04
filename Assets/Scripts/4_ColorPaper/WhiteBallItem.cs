@@ -131,10 +131,13 @@ public class WhiteBallItem : MonoBehaviour
             paintCanvas.WhiteExplosion(explosionCenter, adjustedRadius, adjustedBrushSize, adjustedDensity, playerBrushTexture);
         }
 
-        // 同步擦除 ColorGrid
+        // 同步擦除 ColorGrid — 擦除爆炸範圍內所有格子
+        // 視覺上每個噴灑點還有 brushSize 的範圍，需要加上去才能匹配
         if (colorGrid != null)
         {
-            EraseColorGridArea(explosionCenter, adjustedRadius, adjustedDensity);
+            float canvasWorldWidth = 39.2f;  // canvasMax.x - canvasMin.x
+            float brushWorldRadius = adjustedBrushSize * canvasWorldWidth * 0.5f;
+            colorGrid.EraseArea(explosionCenter, adjustedRadius + brushWorldRadius);
         }
 
         // 通知 Spawner
@@ -147,23 +150,7 @@ public class WhiteBallItem : MonoBehaviour
         Destroy(gameObject);
     }
 
-    void EraseColorGridArea(Vector3 center, float radius, int density)
-    {
-        for (int i = 0; i < density; i++)
-        {
-            float angle = Random.Range(0f, Mathf.PI * 2f);
-            float distance = Mathf.Sqrt(Random.Range(0f, 1f)) * radius;
 
-            Vector3 offset = new Vector3(
-                Mathf.Cos(angle) * distance,
-                0f,
-                Mathf.Sin(angle) * distance
-            );
-            colorGrid.EraseAtPosition(center + offset);
-        }
-        // 中心點
-        colorGrid.EraseAtPosition(center);
-    }
 
     public void SetSpawnPointIndex(int index)
     {
