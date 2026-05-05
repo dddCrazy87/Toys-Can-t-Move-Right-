@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,6 +12,9 @@ public class ToyBoxGameManager : MonoBehaviour
 
     [Header("遊戲說明")]
     [SerializeField] private GameInstructionUI instructionUI;
+
+    [Header("上傳系統")]
+    [SerializeField] private ImgBBUploader imgUploader;
 
     BgmPlayer bgmPlayer;
     NetworkManager networkManager;
@@ -67,12 +71,38 @@ public class ToyBoxGameManager : MonoBehaviour
     {
         if (bgmPlayer) bgmPlayer.PauseBGM();
         gameOverAudio.Play();
-        Invoke(nameof(LoadNextSceneWithFadeOut), 1f);
+        StartCoroutine(EndGameRoutine());
     }
 
-    void LoadNextSceneWithFadeOut()
+    private IEnumerator EndGameRoutine()
     {
-        if (networkManager) networkManager.BroadcastTerminate();
+        yield return new WaitForSeconds(0.5f);
+
+        string uploadedUrl = "";
+
+        if (imgUploader != null)
+        {
+            yield return StartCoroutine(imgUploader.UploadToImgBB((url) =>
+            {
+                uploadedUrl = url;
+            }));
+
+            if (!string.IsNullOrEmpty(uploadedUrl))
+            {
+                Debug.Log($"[ToyBoxGameManager] 圖片網址: {uploadedUrl}");
+            }
+            else
+            {
+                Debug.LogWarning("[ToyBoxGameManager] 上傳失敗");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[ToyBoxGameManager] imgUploader 未設定，跳過截圖上傳");
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        if (networkManager) networkManager.BroadcastTerminate(uploadedUrl);
         sceneFadeInFadeOut.LoadNextSceneWithFadeOut();
     }
 }

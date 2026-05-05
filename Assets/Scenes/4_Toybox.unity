@@ -1191,8 +1191,28 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5657321441746767712, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 449703368}
   m_SourcePrefab: {fileID: 100100000, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
+--- !u!1 &449703367 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5657321441746767712, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
+  m_PrefabInstance: {fileID: 449703366}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &449703368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 449703367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71b895d20182e64d8c67cc8973c03b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &532358939
 GameObject:
   m_ObjectHideFlags: 0
@@ -4046,6 +4066,7 @@ MonoBehaviour:
   gameTimeLimit: 90
   gameOverAudio: {fileID: 1709939695}
   instructionUI: {fileID: 1757113899}
+  imgUploader: {fileID: 0}
 --- !u!4 &1709939694
 Transform:
   m_ObjectHideFlags: 0
