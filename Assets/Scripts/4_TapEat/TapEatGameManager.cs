@@ -152,13 +152,13 @@ public class TapEatGameManager : MonoBehaviour
             }
         }
 
-        // 更新分數 UI
-        UpdateScoreUI(playerIndex, state.totalBites);
+        // 更新分數 UI（顯示盤數）
+        UpdateScoreUI(playerIndex, state.platesCompleted);
 
-        // 更新 GameManager 的分數（讓 terminate 排名正確）
+        // 更新 GameManager 的分數（盤數 = 最終得分）
         if (gameManager != null)
         {
-            gameManager.playersInfo[playerIndex].point = state.totalBites;
+            gameManager.playersInfo[playerIndex].point = state.platesCompleted;
         }
     }
 
