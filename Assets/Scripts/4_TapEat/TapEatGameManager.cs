@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class TapEatGameManager : MonoBehaviour
 {
@@ -10,6 +12,13 @@ public class TapEatGameManager : MonoBehaviour
 
     [Header("References")]
     public NetworkManager networkManager;
+    public TextMeshProUGUI timerText;           // 倒數計時 UI
+    public TextMeshProUGUI countdownText;       // 3-2-1 倒數 UI
+    public TextMeshProUGUI[] playerScoreTexts;  // 各玩家分數 UI (長度 4)
+
+    [Header("Players")]
+    public FoodController[] foodControllers;    // 每位玩家的食物控制器 (長度 4)
+    public Animator[] playerAnimators;          // 每位玩家的動畫控制器 (長度 4，可選)
 
     // 每位玩家的吃東西狀態
     private Dictionary<int, PlayerEatState> playerStates = new();
@@ -38,22 +47,46 @@ public class TapEatGameManager : MonoBehaviour
             }
         }
 
+        // 隱藏未使用的玩家位置
+        for (int i = 0; i < foodControllers.Length; i++)
+        {
+            if (!playerStates.ContainsKey(i) && foodControllers[i] != null)
+            {
+                foodControllers[i].gameObject.SetActive(false);
+            }
+        }
+
+        UpdateTimerUI();
+        UpdateAllScoreUI();
+
         // 開始遊戲倒數
         StartCoroutine(StartCountdown());
     }
 
     private IEnumerator StartCountdown()
     {
-        // 3-2-1 倒數
-        Debug.Log("[TapEat] 3...");
-        yield return new WaitForSeconds(1f);
-        Debug.Log("[TapEat] 2...");
-        yield return new WaitForSeconds(1f);
-        Debug.Log("[TapEat] 1...");
-        yield return new WaitForSeconds(1f);
-        Debug.Log("[TapEat] 開始！");
+        if (countdownText != null)
+        {
+            countdownText.gameObject.SetActive(true);
+
+            countdownText.text = "3";
+            yield return new WaitForSeconds(1f);
+            countdownText.text = "2";
+            yield return new WaitForSeconds(1f);
+            countdownText.text = "1";
+            yield return new WaitForSeconds(1f);
+            countdownText.text = "開始！";
+            yield return new WaitForSeconds(0.5f);
+
+            countdownText.gameObject.SetActive(false);
+        }
+        else
+        {
+            yield return new WaitForSeconds(3f);
+        }
 
         isGameActive = true;
+        Debug.Log("[TapEat] 遊戲開始！");
     }
 
     void Update()
@@ -61,6 +94,7 @@ public class TapEatGameManager : MonoBehaviour
         if (!isGameActive) return;
 
         remainingTime -= Time.deltaTime;
+        UpdateTimerUI();
 
         if (remainingTime <= 0f)
         {
@@ -82,25 +116,31 @@ public class TapEatGameManager : MonoBehaviour
         state.totalBites++;
         state.currentFoodBites++;
 
-        Debug.Log($"[TapEat] Player {playerIndex} bite! Total: {state.totalBites}, Current food: {state.currentFoodBites}/{bitesPerFood}");
-
-        // TODO: 播放角色吃東西動畫
-        // TODO: 在食物上加咬痕遮罩
-
-        // 吃完一盤
-        if (state.currentFoodBites >= bitesPerFood)
+        // 播放角色吃東西動畫
+        if (playerAnimators != null && playerIndex < playerAnimators.Length && playerAnimators[playerIndex] != null)
         {
-            state.currentFoodBites = 0;
-            state.platesCompleted++;
-            Debug.Log($"[TapEat] Player {playerIndex} finished plate {state.platesCompleted}! Serving new food...");
-
-            // TODO: 換盤動畫 + 新食物
+            playerAnimators[playerIndex].SetTrigger("Eat");
         }
+
+        // 食物被咬
+        if (foodControllers != null && playerIndex < foodControllers.Length && foodControllers[playerIndex] != null)
+        {
+            bool finished = foodControllers[playerIndex].Bite();
+
+            if (finished)
+            {
+                // 吃完一盤，換新的
+                state.currentFoodBites = 0;
+                state.platesCompleted++;
+                foodControllers[playerIndex].ServeNextFood();
+                Debug.Log($"[TapEat] Player {playerIndex} 吃完第 {state.platesCompleted} 盤！");
+            }
+        }
+
+        // 更新分數 UI
+        UpdateScoreUI(playerIndex, state.totalBites);
     }
 
-    /// <summary>
-    /// 遊戲結束，計算排名並發送 terminate
-    /// </summary>
     private void OnGameEnd()
     {
         Debug.Log("[TapEat] 時間到！計算排名...");
@@ -116,17 +156,49 @@ public class TapEatGameManager : MonoBehaviour
                 }
             }
 
-            // 發送 terminate（NetworkManager 會自動排序）
             StartCoroutine(EndGameRoutine());
         }
     }
 
     private IEnumerator EndGameRoutine()
     {
-        // 顯示「時間到！」2 秒
+        // 顯示「時間到！」
+        if (countdownText != null)
+        {
+            countdownText.gameObject.SetActive(true);
+            countdownText.text = "時間到！";
+        }
+
         yield return new WaitForSeconds(2f);
 
-        // TODO: 截圖上傳（如果需要的話）
+        // TODO: 截圖上傳（如需要）
         networkManager.BroadcastTerminate("");
+    }
+
+    // --- UI 更新 ---
+
+    private void UpdateTimerUI()
+    {
+        if (timerText != null)
+        {
+            int seconds = Mathf.CeilToInt(remainingTime);
+            timerText.text = $"0:{seconds:D2}";
+        }
+    }
+
+    private void UpdateScoreUI(int playerIndex, int score)
+    {
+        if (playerScoreTexts != null && playerIndex < playerScoreTexts.Length && playerScoreTexts[playerIndex] != null)
+        {
+            playerScoreTexts[playerIndex].text = score.ToString();
+        }
+    }
+
+    private void UpdateAllScoreUI()
+    {
+        foreach (var kvp in playerStates)
+        {
+            UpdateScoreUI(kvp.Key, kvp.Value.totalBites);
+        }
     }
 }
