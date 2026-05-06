@@ -462,6 +462,24 @@ public class NetworkManager : MonoBehaviour
         Debug.LogWarning($"[ACK] Not all peers confirmed {ackTarget} after {maxRetries} retries.");
     }
 
+    /// <summary>
+    /// 簡單重試廣播（不需要 ACK 的訊息，例如 level_selected）
+    /// </summary>
+    private IEnumerator BroadcastMessageWithRetry(string jsonMessage, int retryCount, float interval)
+    {
+        if (webRTCConnection == null) yield break;
+
+        for (int i = 0; i < retryCount; i++)
+        {
+            webRTCConnection.SendDataChannelMessage(jsonMessage);
+            Debug.Log($"Broadcasting message (attempt {i + 1}/{retryCount})");
+
+            if (i < retryCount - 1)
+            {
+                yield return new WaitForSeconds(interval);
+            }
+        }
+    }
 
     // -------------------- Reset ---------------------
 
