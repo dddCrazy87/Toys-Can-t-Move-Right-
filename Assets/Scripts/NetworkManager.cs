@@ -27,6 +27,8 @@ public class TerminateMessage { public string type; public string link; public L
 public class SelectLevelMessage : BaseMessage { public string level; }
 [System.Serializable]
 public class LevelSelectedMessage { public string type; public string level; }
+[System.Serializable]
+public class NavigateAckMessage : BaseMessage { public string target; }
 #endregion
 
 public class NetworkManager : MonoBehaviour
@@ -42,6 +44,9 @@ public class NetworkManager : MonoBehaviour
     private static string hostPeerId = null;
     private Dictionary<string, float> lastIdentifyTime = new();  // 防止重複 identify
     private const float IDENTIFY_COOLDOWN = 1f;  // 1 秒內不重複處理
+
+    // ACK 追蹤：記錄哪些 peer 已確認收到哪個 navigate 訊息
+    private Dictionary<string, HashSet<string>> receivedAcks = new();
     void Start()
     {
         WebRTCManager.OnDataMessageReceived_Static += OnDataReceived;
@@ -130,6 +135,10 @@ public class NetworkManager : MonoBehaviour
 
                 case "select_level":
                     HandleSelectLevel(message, senderPeerId);
+                    break;
+
+                case "navigate_ack":
+                    HandleNavigateAck(message, senderPeerId);
                     break;
 
                 default:
@@ -284,18 +293,48 @@ public class NetworkManager : MonoBehaviour
         StartCoroutine(BroadcastMessageWithRetry(jsonMessage, 3, 0.3f));
     }
 
+    // ------------- HandleNavigateAck -------------
+
+    private void HandleNavigateAck(string message, string senderPeerId)
+    {
+        NavigateAckMessage ack = JsonUtility.FromJson<NavigateAckMessage>(message);
+        string target = ack.target;
+
+        if (!receivedAcks.ContainsKey(target))
+        {
+            receivedAcks[target] = new HashSet<string>();
+        }
+        receivedAcks[target].Add(senderPeerId);
+        Debug.Log($"[ACK] Received navigate_ack from {senderPeerId} for target: {target} ({receivedAcks[target].Count}/{peerIdToPlayer.Count})");
+    }
+
+    /// <summary>
+    /// 檢查是否所有玩家都已 ACK
+    /// </summary>
+    private bool AllPeersAcked(string target)
+    {
+        if (!receivedAcks.ContainsKey(target)) return false;
+        foreach (var peerId in peerIdToPlayer.Keys)
+        {
+            if (!receivedAcks[target].Contains(peerId)) return false;
+        }
+        return true;
+    }
+
     // ------------- BroadcastNavigateToGame -------------
 
     private void BroadcastNavigateToGame()
     {
-        StartCoroutine(BroadcastWithRetry("navigate_to_game", 3, 0.3f));
+        receivedAcks.Remove("tutorial");
+        StartCoroutine(BroadcastWithAckRetry("navigate_to_game", "tutorial", 5, 2f));
     }
 
     // ------------- BroadcastNavigateToPlaying -------------
 
     public void BroadcastNavigateToPlaying()
     {
-        StartCoroutine(BroadcastWithRetry("navigate_to_playing", 3, 0.3f));
+        receivedAcks.Remove("playing");
+        StartCoroutine(BroadcastWithAckRetry("navigate_to_playing", "playing", 5, 2f));
     }
 
     // ------------- BroadcastTerminate -------------
@@ -343,51 +382,84 @@ public class NetworkManager : MonoBehaviour
 
         string jsonMessage = JsonUtility.ToJson(terminateMessage);
 
-        // 使用重試機制發送
-        StartCoroutine(BroadcastMessageWithRetry(jsonMessage, 3, 0.3f));
+        receivedAcks.Remove("terminate");
+        StartCoroutine(BroadcastMessageWithAckRetry(jsonMessage, "terminate", 5, 2f));
     }
 
-    // ------------- 重試機制 Coroutines -------------
+    // ------------- ACK 重試機制 Coroutines -------------
 
     /// <summary>
-    /// 重複發送簡單訊息（只有 type）
+    /// 重複發送簡單訊息，直到所有 peer 回傳 ACK 或達到最大重試次數
     /// </summary>
-    private IEnumerator BroadcastWithRetry(string messageType, int retryCount, float interval)
+    private IEnumerator BroadcastWithAckRetry(string messageType, string ackTarget, int maxRetries, float interval)
     {
         if (webRTCConnection == null) yield break;
 
         BaseMessage message = new() { type = messageType };
         string jsonMessage = JsonUtility.ToJson(message);
 
-        for (int i = 0; i < retryCount; i++)
+        for (int i = 0; i < maxRetries; i++)
         {
-            webRTCConnection.SendDataChannelMessage(jsonMessage);
-            Debug.Log($"Broadcasting {messageType} (attempt {i + 1}/{retryCount}): {jsonMessage}");
-
-            if (i < retryCount - 1)
+            // 只發送給尚未 ACK 的 peer
+            foreach (var peerId in peerIdToPlayer.Keys)
             {
-                yield return new WaitForSeconds(interval);
+                if (receivedAcks.ContainsKey(ackTarget) && receivedAcks[ackTarget].Contains(peerId))
+                    continue;
+                webRTCConnection.SendDataChannelMessageToPeer(peerId, jsonMessage);
+            }
+            Debug.Log($"[ACK Retry] Broadcasting {messageType} (attempt {i + 1}/{maxRetries})");
+
+            if (AllPeersAcked(ackTarget))
+            {
+                Debug.Log($"[ACK] All peers confirmed {ackTarget}!");
+                yield break;
+            }
+
+            yield return new WaitForSeconds(interval);
+
+            if (AllPeersAcked(ackTarget))
+            {
+                Debug.Log($"[ACK] All peers confirmed {ackTarget}!");
+                yield break;
             }
         }
+
+        Debug.LogWarning($"[ACK] Not all peers confirmed {ackTarget} after {maxRetries} retries.");
     }
 
     /// <summary>
-    /// 重複發送已序列化的 JSON 訊息
+    /// 重複發送已序列化的 JSON 訊息，直到所有 peer 回傳 ACK 或達到最大重試次數
     /// </summary>
-    private IEnumerator BroadcastMessageWithRetry(string jsonMessage, int retryCount, float interval)
+    private IEnumerator BroadcastMessageWithAckRetry(string jsonMessage, string ackTarget, int maxRetries, float interval)
     {
         if (webRTCConnection == null) yield break;
 
-        for (int i = 0; i < retryCount; i++)
+        for (int i = 0; i < maxRetries; i++)
         {
-            webRTCConnection.SendDataChannelMessage(jsonMessage);
-            Debug.Log($"Broadcasting message (attempt {i + 1}/{retryCount}): {jsonMessage}");
-
-            if (i < retryCount - 1)
+            foreach (var peerId in peerIdToPlayer.Keys)
             {
-                yield return new WaitForSeconds(interval);
+                if (receivedAcks.ContainsKey(ackTarget) && receivedAcks[ackTarget].Contains(peerId))
+                    continue;
+                webRTCConnection.SendDataChannelMessageToPeer(peerId, jsonMessage);
+            }
+            Debug.Log($"[ACK Retry] Broadcasting message (attempt {i + 1}/{maxRetries})");
+
+            if (AllPeersAcked(ackTarget))
+            {
+                Debug.Log($"[ACK] All peers confirmed {ackTarget}!");
+                yield break;
+            }
+
+            yield return new WaitForSeconds(interval);
+
+            if (AllPeersAcked(ackTarget))
+            {
+                Debug.Log($"[ACK] All peers confirmed {ackTarget}!");
+                yield break;
             }
         }
+
+        Debug.LogWarning($"[ACK] Not all peers confirmed {ackTarget} after {maxRetries} retries.");
     }
 
 
@@ -400,6 +472,7 @@ public class NetworkManager : MonoBehaviour
         playersInfo.Clear();
         peerIdToPlayer.Clear();
         lastIdentifyTime.Clear();
+        receivedAcks.Clear();
         selectedSkinColor = new List<string>() { "green", "yellow", "blue", "red" };
         hostPeerId = null;
     }
