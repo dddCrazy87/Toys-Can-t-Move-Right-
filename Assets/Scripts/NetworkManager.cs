@@ -29,6 +29,8 @@ public class SelectLevelMessage : BaseMessage { public string level; }
 public class LevelSelectedMessage { public string type; public string level; }
 [System.Serializable]
 public class NavigateAckMessage : BaseMessage { public string target; }
+[System.Serializable]
+public class TapActionMessage : BaseMessage { }
 #endregion
 
 public class NetworkManager : MonoBehaviour
@@ -141,6 +143,10 @@ public class NetworkManager : MonoBehaviour
                     HandleNavigateAck(message, senderPeerId);
                     break;
 
+                case "tap_action":
+                    HandleTapAction(senderPeerId);
+                    break;
+
                 default:
                     break;
             }
@@ -243,6 +249,21 @@ public class NetworkManager : MonoBehaviour
 
             // 廣播給所有玩家
             BroadcastLevelSelected(msg.level);
+        }
+    }
+
+    // ------------- HandleTapAction -------------
+
+    private void HandleTapAction(string senderPeerId)
+    {
+        if (peerIdToPlayer.ContainsKey(senderPeerId))
+        {
+            Player player = peerIdToPlayer[senderPeerId];
+            var tapManager = FindFirstObjectByType<TapEatGameManager>();
+            if (tapManager != null)
+            {
+                tapManager.OnTapAction(player.index);
+            }
         }
     }
 
