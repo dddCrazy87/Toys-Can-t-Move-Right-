@@ -10,17 +10,19 @@ public class TapEatGameManager : MonoBehaviour
     public int bitesPerFood = 8;
 
     [Header("References")]
-    public NetworkManager networkManager;
-    public TextMeshProUGUI timerText;              // CountDownUI → Text (TMP)，顯示 60 秒倒數
-    public GameObject countdownRoot;               // GameStartCountDown 物件（底下有 3, 2, 1 子物件）
-    public TextMeshProUGUI[] playerScoreTexts;     // 各玩家分數 UI (長度 4)
+    public CountDownUI countdownUI;                // 遊戲中 60 秒倒數 UI
+    public SceneFadeInFadeOut sceneFadeInFadeOut;   // 場景轉場（可選）
+    public TextMeshProUGUI[] playerScoreTexts;      // 各玩家分數 UI
+
+    [Header("上傳系統")]
+    public ImgBBUploader imgUploader;               // 截圖上傳（可選）
 
     [Header("Players")]
-    public FoodController[] foodControllers;       // 每位玩家的食物控制器 (長度 4)
-    public Animator[] playerAnimators;             // 每位玩家的動畫控制器 (可選)
+    public FoodController[] foodControllers;        // 每位玩家的食物控制器 (長度 4)
 
+    private NetworkManager networkManager;
+    private GameManager gameManager;
     private Dictionary<int, PlayerEatState> playerStates = new();
-    private float remainingTime;
     private bool isGameActive = false;
 
     private class PlayerEatState
@@ -32,10 +34,30 @@ public class TapEatGameManager : MonoBehaviour
 
     void Start()
     {
-        remainingTime = gameDuration;
         networkManager = FindFirstObjectByType<NetworkManager>();
+        gameManager = FindFirstObjectByType<GameManager>();
 
-        // 初始化玩家狀態
+        // 先顯示 GameStartCountDown 3-2-1，然後開始遊戲
+        var gameStartCountDown = FindFirstObjectByType<GameStartCountDown>();
+        if (gameStartCountDown != null)
+        {
+            gameStartCountDown.CountDownAndStartGame(OnCountDownFinished);
+        }
+        else
+        {
+            OnCountDownFinished();
+        }
+    }
+
+    void OnCountDownFinished()
+    {
+        // 呼叫 GameManager.StartGame() 來生成玩家角色
+        if (gameManager != null)
+        {
+            gameManager.StartGame();
+        }
+
+        // 初始化玩家吃東西狀態
         if (networkManager != null)
         {
             foreach (var kvp in networkManager.peerIdToPlayer)
@@ -44,71 +66,34 @@ public class TapEatGameManager : MonoBehaviour
             }
         }
 
-        // 隱藏未使用的玩家位置
+        // 隱藏未使用的玩家位置（盤子 + 食物）
         for (int i = 0; i < foodControllers.Length; i++)
         {
             if (!playerStates.ContainsKey(i) && foodControllers[i] != null)
             {
-                // 隱藏整個 SpawnPoint（食物 + 盤子 + 角色）
                 foodControllers[i].transform.parent.gameObject.SetActive(false);
             }
         }
 
-        UpdateTimerUI();
-        UpdateAllScoreUI();
-
-        StartCoroutine(StartCountdown());
-    }
-
-    private IEnumerator StartCountdown()
-    {
-        // 使用 GameStartCountDown 底下的子物件 (3, 2, 1)
-        if (countdownRoot != null)
+        // 開始 60 秒倒數
+        if (countdownUI != null)
         {
-            countdownRoot.SetActive(true);
-
-            // 先全部隱藏
-            foreach (Transform child in countdownRoot.transform)
-            {
-                child.gameObject.SetActive(false);
-            }
-
-            // 依序顯示 3 → 2 → 1
-            int childCount = countdownRoot.transform.childCount;
-            for (int i = 0; i < childCount; i++)
-            {
-                Transform child = countdownRoot.transform.GetChild(i);
-                child.gameObject.SetActive(true);
-                yield return new WaitForSeconds(1f);
-                child.gameObject.SetActive(false);
-            }
-
-            countdownRoot.SetActive(false);
-        }
-        else
-        {
-            yield return new WaitForSeconds(3f);
+            countdownUI.StartCountdown(gameDuration, OnTimerFinished);
         }
 
         isGameActive = true;
         Debug.Log("[TapEat] 遊戲開始！");
     }
 
-    void Update()
+    void OnTimerFinished()
     {
-        if (!isGameActive) return;
-
-        remainingTime -= Time.deltaTime;
-        UpdateTimerUI();
-
-        if (remainingTime <= 0f)
-        {
-            remainingTime = 0f;
-            isGameActive = false;
-            OnGameEnd();
-        }
+        isGameActive = false;
+        OnGameEnd();
     }
 
+    /// <summary>
+    /// 收到玩家的點擊動作（由 NetworkManager 呼叫）
+    /// </summary>
     public void OnTapAction(int playerIndex)
     {
         if (!isGameActive) return;
@@ -117,12 +102,6 @@ public class TapEatGameManager : MonoBehaviour
         var state = playerStates[playerIndex];
         state.totalBites++;
         state.currentFoodBites++;
-
-        // 播放角色吃東西動畫
-        if (playerAnimators != null && playerIndex < playerAnimators.Length && playerAnimators[playerIndex] != null)
-        {
-            playerAnimators[playerIndex].SetTrigger("Eat");
-        }
 
         // 食物被咬
         if (foodControllers != null && playerIndex < foodControllers.Length && foodControllers[playerIndex] != null)
@@ -138,46 +117,50 @@ public class TapEatGameManager : MonoBehaviour
             }
         }
 
+        // 更新分數 UI
         UpdateScoreUI(playerIndex, state.totalBites);
+
+        // 更新 GameManager 的分數（讓 terminate 排名正確）
+        if (gameManager != null)
+        {
+            gameManager.playersInfo[playerIndex].point = state.totalBites;
+        }
     }
 
     private void OnGameEnd()
     {
         Debug.Log("[TapEat] 時間到！");
-
-        if (networkManager != null)
-        {
-            foreach (var kvp in networkManager.peerIdToPlayer)
-            {
-                if (playerStates.ContainsKey(kvp.Value.index))
-                {
-                    kvp.Value.point = playerStates[kvp.Value.index].totalBites;
-                }
-            }
-
-            StartCoroutine(EndGameRoutine());
-        }
+        StartCoroutine(EndGameRoutine());
     }
 
     private IEnumerator EndGameRoutine()
     {
-        // 顯示「時間到！」用倒數 UI
-        if (timerText != null)
+        yield return new WaitForSeconds(0.5f);
+
+        string uploadedUrl = "";
+
+        // 截圖上傳（如果有設定）
+        if (imgUploader != null)
         {
-            timerText.text = "時間到！";
+            yield return StartCoroutine(imgUploader.UploadToImgBB((url) =>
+            {
+                uploadedUrl = url;
+            }));
+        }
+        else
+        {
+            yield return new WaitForSeconds(0.5f);
         }
 
-        yield return new WaitForSeconds(2f);
-
-        networkManager.BroadcastTerminate("");
-    }
-
-    private void UpdateTimerUI()
-    {
-        if (timerText != null)
+        if (networkManager != null)
         {
-            int seconds = Mathf.CeilToInt(remainingTime);
-            timerText.text = $"0:{seconds:D2}";
+            networkManager.BroadcastTerminate(uploadedUrl);
+        }
+
+        // 場景轉場（如果有設定）
+        if (sceneFadeInFadeOut != null)
+        {
+            sceneFadeInFadeOut.LoadNextSceneWithFadeOut();
         }
     }
 
@@ -186,14 +169,6 @@ public class TapEatGameManager : MonoBehaviour
         if (playerScoreTexts != null && playerIndex < playerScoreTexts.Length && playerScoreTexts[playerIndex] != null)
         {
             playerScoreTexts[playerIndex].text = score.ToString();
-        }
-    }
-
-    private void UpdateAllScoreUI()
-    {
-        foreach (var kvp in playerStates)
-        {
-            UpdateScoreUI(kvp.Key, kvp.Value.totalBites);
         }
     }
 }
