@@ -67,8 +67,10 @@ public class TapEatGameManager : MonoBehaviour
                 // 放大角色
                 pc.transform.localScale *= playerScale;
 
-                // 讓角色面朝相機（旋轉 180 度）
+                // 讓角色面朝相機（旋轉 180 度，但保持原位）
+                Vector3 pos = pc.transform.position;
                 pc.transform.Rotate(0f, 180f, 0f);
+                pc.transform.position = pos;
 
                 // 停用移動（這關不需要走路）
                 pc.moveSpeed = 0f;
