@@ -19,10 +19,12 @@ public class TapEatGameManager : MonoBehaviour
 
     [Header("Players")]
     public FoodController[] foodControllers;        // 每位玩家的食物控制器 (長度 4)
+    public float playerScale = 2f;                  // 角色放大倍率
 
     private NetworkManager networkManager;
     private GameManager gameManager;
     private Dictionary<int, PlayerEatState> playerStates = new();
+    private Dictionary<int, EatAnimator> eatAnimators = new();
     private bool isGameActive = false;
 
     private class PlayerEatState
@@ -55,6 +57,28 @@ public class TapEatGameManager : MonoBehaviour
         if (gameManager != null)
         {
             gameManager.StartGame();
+
+            // 放大角色 + 加上吃東西動畫 + 停用移動
+            foreach (var kvp in gameManager.playerControllers)
+            {
+                int idx = kvp.Key;
+                PlayerController pc = kvp.Value;
+
+                // 放大角色
+                pc.transform.localScale *= playerScale;
+
+                // 停用移動（這關不需要走路）
+                pc.moveSpeed = 0f;
+                Rigidbody rb = pc.GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    rb.isKinematic = true;
+                }
+
+                // 加上吃東西動畫元件
+                EatAnimator eat = pc.gameObject.AddComponent<EatAnimator>();
+                eatAnimators[idx] = eat;
+            }
         }
 
         // 初始化玩家吃東西狀態
@@ -102,6 +126,12 @@ public class TapEatGameManager : MonoBehaviour
         var state = playerStates[playerIndex];
         state.totalBites++;
         state.currentFoodBites++;
+
+        // 播放吃東西動畫
+        if (eatAnimators.ContainsKey(playerIndex) && eatAnimators[playerIndex] != null)
+        {
+            eatAnimators[playerIndex].PlayEat();
+        }
 
         // 食物被咬
         if (foodControllers != null && playerIndex < foodControllers.Length && foodControllers[playerIndex] != null)
