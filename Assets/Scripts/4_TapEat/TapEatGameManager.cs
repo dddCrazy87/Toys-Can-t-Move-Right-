@@ -12,7 +12,6 @@ public class TapEatGameManager : MonoBehaviour
     [Header("References")]
     public CountDownUI countdownUI;                // 遊戲中 60 秒倒數 UI
     public SceneFadeInFadeOut sceneFadeInFadeOut;   // 場景轉場（可選）
-    public TextMeshProUGUI[] playerScoreTexts;      // 各玩家分數 UI
 
     [Header("上傳系統")]
     public ImgBBUploader imgUploader;               // 截圖上傳（可選）
@@ -25,6 +24,7 @@ public class TapEatGameManager : MonoBehaviour
     private GameManager gameManager;
     private Dictionary<int, PlayerEatState> playerStates = new();
     private Dictionary<int, EatAnimator> eatAnimators = new();
+    private PlayerPointUiManager pointUiManager;
     private bool isGameActive = false;
 
     private class PlayerEatState
@@ -64,14 +64,6 @@ public class TapEatGameManager : MonoBehaviour
                 int idx = kvp.Key;
                 PlayerController pc = kvp.Value;
 
-                // 放大角色
-                pc.transform.localScale *= playerScale;
-
-                // 讓角色面朝相機（旋轉 180 度，但保持原位）
-                Vector3 pos = pc.transform.position;
-                pc.transform.Rotate(0f, 180f, 0f);
-                pc.transform.position = pos;
-
                 // 停用移動（這關不需要走路）
                 pc.moveSpeed = 0f;
                 Rigidbody rb = pc.GetComponent<Rigidbody>();
@@ -80,8 +72,21 @@ public class TapEatGameManager : MonoBehaviour
                     rb.isKinematic = true;
                 }
 
-                // 加上吃東西動畫元件
-                EatAnimator eat = pc.gameObject.AddComponent<EatAnimator>();
+                // 用 wrapper 包住角色來處理旋轉（避免 pivot 偏移問題）
+                // 1. 記住角色的世界位置
+                Vector3 spawnPos = pc.transform.position;
+                // 2. 建立 wrapper 在 spawn 位置
+                GameObject wrapper = new GameObject($"PlayerWrapper_{idx}");
+                wrapper.transform.position = spawnPos;
+                // 3. 角色設為 wrapper 的子物件
+                pc.transform.SetParent(wrapper.transform);
+                // 4. 旋轉 wrapper（角色會繞 spawn 點旋轉）
+                wrapper.transform.Rotate(0f, 180f, 0f);
+                // 5. 放大 wrapper
+                wrapper.transform.localScale = Vector3.one * playerScale;
+
+                // 加上吃東西動畫元件（加在 wrapper 上，這樣動畫是繞 spawn 點）
+                EatAnimator eat = wrapper.AddComponent<EatAnimator>();
                 eatAnimators[idx] = eat;
             }
         }
@@ -102,6 +107,13 @@ public class TapEatGameManager : MonoBehaviour
             {
                 foodControllers[i].transform.parent.gameObject.SetActive(false);
             }
+        }
+
+        // 初始化分數 UI（跟 Toybox 一樣）
+        pointUiManager = FindFirstObjectByType<PlayerPointUiManager>();
+        if (pointUiManager != null)
+        {
+            pointUiManager.InitialPlayerPointUi();
         }
 
         // 開始 60 秒倒數
@@ -152,13 +164,16 @@ public class TapEatGameManager : MonoBehaviour
             }
         }
 
-        // 更新分數 UI（顯示盤數）
-        UpdateScoreUI(playerIndex, state.platesCompleted);
-
         // 更新 GameManager 的分數（盤數 = 最終得分）
         if (gameManager != null)
         {
             gameManager.playersInfo[playerIndex].point = state.platesCompleted;
+
+            // 更新分數 UI
+            if (pointUiManager != null)
+            {
+                pointUiManager.UpdatePlayerPointUi(playerIndex);
+            }
         }
     }
 
@@ -199,11 +214,4 @@ public class TapEatGameManager : MonoBehaviour
         }
     }
 
-    private void UpdateScoreUI(int playerIndex, int score)
-    {
-        if (playerScoreTexts != null && playerIndex < playerScoreTexts.Length && playerScoreTexts[playerIndex] != null)
-        {
-            playerScoreTexts[playerIndex].text = score.ToString();
-        }
-    }
 }

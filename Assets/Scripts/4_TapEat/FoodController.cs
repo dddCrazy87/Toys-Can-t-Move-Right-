@@ -74,10 +74,6 @@ public class FoodController : MonoBehaviour
             activeBiteMasks.Add(mask);
         }
 
-        // 食物縮小效果
-        float scaleRatio = 1f - (currentBiteCount * 0.04f);
-        foodSpriteRenderer.transform.localScale = Vector3.one * Mathf.Max(scaleRatio, 0.4f);
-
         if (currentBiteCount >= bitesPerFood)
         {
             return true;
