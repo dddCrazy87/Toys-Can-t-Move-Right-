@@ -7,7 +7,7 @@ public class CastleController : MonoBehaviour
         GameObject root = other.attachedRigidbody ? other.attachedRigidbody.gameObject : other.gameObject;
         if (!root.CompareTag("Player")) return;
 
-        var player = root.GetComponent<PlayerController>();
+        var player = root.GetComponent<ToyBoxPlayer>();
         if (player != null)
         {
             player.CompleteItemCollection();

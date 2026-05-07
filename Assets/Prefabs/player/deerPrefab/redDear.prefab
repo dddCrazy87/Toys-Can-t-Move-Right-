@@ -158,6 +158,7 @@ GameObject:
   - component: {fileID: 5425275877878908163}
   - component: {fileID: 8855400171632067188}
   - component: {fileID: -6497322980525981286}
+  - component: {fileID: 4820653929820949631}
   m_Layer: 0
   m_Name: redDear
   m_TagString: Player
@@ -229,14 +230,12 @@ MonoBehaviour:
   bounceForce: 35
   bounceDuration: 0.3
   knockbackSpinSpeed: 750
-  stealSkill: 3
-  defenceWeakness: 4
   rotateSpeed: 15
   brushTexture: {fileID: 2800000, guid: 9e25f5fd2f73a4a73ac44730845fa2c7, type: 3}
   isKnockback: 0
-  followPoint: {fileID: 5489425233601111319}
-  immunityStolenDuration: 0.3
-  isImmuneStolen: 0
+  enablePlayerCollision: 0
+  playerBounceForce: 80
+  collisionCooldown: 0.5
 --- !u!114 &8855400171632067188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,8 +267,20 @@ MonoBehaviour:
   maxBrushMultiplier: 3
   minSpeed: 8
   maxSpeed: 20
-  eraserDuration: 5
-  eraserEffectPrefab: {fileID: 6695134503712969535, guid: 6c15ae650a40941769a9057cb8cc08b9, type: 3}
-  eraserAnimatorTrigger: Eraser
-  erasingSound: {fileID: 8300000, guid: 299b63a29561940ccbb99f950c8e4b0c, type: 3}
-  erasingSoundVolume: 0.8
+--- !u!114 &4820653929820949631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5392670551590722871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35fa15692261dca4b9f6665aff324ddd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stealSkill: 3
+  defenceWeakness: 4
+  immunityStolenDuration: 0.3
+  isImmuneStolen: 0
+  followPoint: {fileID: 0}

@@ -158,6 +158,7 @@ GameObject:
   - component: {fileID: 7581524808959652356}
   - component: {fileID: 1484676508597445639}
   - component: {fileID: 471633437910969159}
+  - component: {fileID: 2724756611101537712}
   m_Layer: 0
   m_Name: greenMouse
   m_TagString: Player
@@ -229,14 +230,12 @@ MonoBehaviour:
   bounceForce: 50
   bounceDuration: 0.5
   knockbackSpinSpeed: 0
-  stealSkill: 10
-  defenceWeakness: 7
   rotateSpeed: 15
   brushTexture: {fileID: 2800000, guid: ba72855ed671646a4bf752cda4fa8dc3, type: 3}
   isKnockback: 0
-  followPoint: {fileID: 1349374800164865623}
-  immunityStolenDuration: 0.3
-  isImmuneStolen: 0
+  enablePlayerCollision: 0
+  playerBounceForce: 80
+  collisionCooldown: 0.5
 --- !u!114 &1484676508597445639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,8 +267,20 @@ MonoBehaviour:
   maxBrushMultiplier: 3
   minSpeed: 8
   maxSpeed: 20
-  eraserDuration: 5
-  eraserEffectPrefab: {fileID: 6695134503712969535, guid: 6c15ae650a40941769a9057cb8cc08b9, type: 3}
-  eraserAnimatorTrigger: Eraser
-  erasingSound: {fileID: 8300000, guid: 299b63a29561940ccbb99f950c8e4b0c, type: 3}
-  erasingSoundVolume: 0.8
+--- !u!114 &2724756611101537712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7367208696605853203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35fa15692261dca4b9f6665aff324ddd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stealSkill: 10
+  defenceWeakness: 7
+  immunityStolenDuration: 0.3
+  isImmuneStolen: 0
+  followPoint: {fileID: 0}

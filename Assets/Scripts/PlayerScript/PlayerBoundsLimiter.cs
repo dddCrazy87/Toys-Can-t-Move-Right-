@@ -21,12 +21,6 @@ public class PlayerBoundsLimiter : MonoBehaviour
             polygonPoints = new Transform[mb.childCount];
             for (int i = 0; i < mb.childCount; i++)
                 polygonPoints[i] = mb.GetChild(i);
-
-            Debug.Log($"[PlayerBoundsLimiter] 找到 MapBound，共 {polygonPoints.Length} 個邊界點");
-            for (int i = 0; i < polygonPoints.Length; i++)
-            {
-                Debug.Log($"  Point {i}: {polygonPoints[i].position}");
-            }
         }
         else
         {

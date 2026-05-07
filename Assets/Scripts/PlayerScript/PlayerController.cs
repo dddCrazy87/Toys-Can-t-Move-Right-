@@ -25,10 +25,6 @@ public class PlayerController : MonoBehaviour
     public float bounceForce = 100f;
     public float bounceDuration = 0.5f;
     public float knockbackSpinSpeed = 1.5f;
-    [Tooltip("1~10")]
-    public int stealSkill = 5;
-    [Tooltip("1~10")]
-    public int defenceWeakness = 5;
     [HideInInspector] public float rotateSpeed = 15f;
 
     [Header("筆刷設定")]
@@ -69,7 +65,7 @@ public class PlayerController : MonoBehaviour
     // 由手機 WebRTC 傳入（支援按壓狀態）
     public void SetNetworkInput(float x, float y, bool isPress)
     {
-        if (isKnockback) return;
+        if (isKnockback || isFrozen) return;
 
         Vector3 raw = new(x, 0f, y);
 
@@ -88,13 +84,13 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (isKnockback) return;
+        if (isKnockback || isFrozen) return;
         movement = networkMovement;
     }
 
     void FixedUpdate()
     {
-        if (isKnockback) return;
+        if (isKnockback || isFrozen) return;
 
         if (movement.sqrMagnitude > 0.001f)
         {
@@ -154,16 +150,6 @@ public class PlayerController : MonoBehaviour
         rb.WakeUp();
     }
 
-
-    [Header("道具跟隨點（掛在玩家身上的一個子物件）")]
-    public Transform followPoint;
-
-    [Header("被搶奪後的免疫時間")]
-    public float immunityStolenDuration = 0.3f;
-    [HideInInspector] public bool isImmuneStolen = false;
-
-    private Coroutine immunityRoutine;
-
     [Header("玩家互撞設定")]
     [Tooltip("啟用玩家互相碰撞彈開")]
     public bool enablePlayerCollision = false;  // 預設關閉，由各場景的 GameManager 啟用
@@ -173,14 +159,7 @@ public class PlayerController : MonoBehaviour
     public float collisionCooldown = 0.5f;
     private bool isCollisionCooldown = false;
 
-    // 玩家碰到道具
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Collectable"))
-        {
-            ItemManager.Instance.RequestCollect(transform, other.transform, stealSkill);
-        }
-    }
+
 
     // 玩家互相碰撞
     private void OnCollisionEnter(Collision collision)
@@ -248,43 +227,24 @@ public class PlayerController : MonoBehaviour
         isCollisionCooldown = false;
     }
 
-    // 被搶成功時，ItemManager 會叫這個
-    public void ActivateImmunityStolen()
+
+
+    [HideInInspector] public bool isFrozen = false; // 是否處於冰凍狀態
+
+    // ++ 新增：供外部呼叫的冰凍方法 ++
+    public void StartFrozen(float duration)
     {
-        if (isImmuneStolen) return;
-
-        isImmuneStolen = true;
-
-        if (immunityRoutine != null)
-            StopCoroutine(immunityRoutine);
-
-        immunityRoutine = StartCoroutine(ImmunityCountdown());
+        StartCoroutine(FrozenRoutine(duration));
     }
 
-    private IEnumerator ImmunityCountdown()
+    private IEnumerator FrozenRoutine(float duration)
     {
-        yield return new WaitForSeconds(immunityStolenDuration);
-        isImmuneStolen = false;
-        immunityRoutine = null;
+        isFrozen = true;
+        ForceStopMotion(); // 立即停止當前所有移動
+
+        yield return new WaitForSeconds(duration);
+
+        isFrozen = false;
     }
 
-    public void CompleteItemCollection()
-    {
-        var items = ItemManager.Instance.TakeAllItemsFromPlayer(transform);
-
-        int score = items.Count;
-        if (score <= 0) return;
-        FindFirstObjectByType<GameManager>().IncreasePlayerPoint(playerIndex, score);
-        FindFirstObjectByType<PlayerPointUiManager>().UpdatePlayerPointUi(playerIndex);
-        FindFirstObjectByType<GameSoundEffect>().PlayGetPointSound();
-
-        ItemSpawner spawner = FindFirstObjectByType<ItemSpawner>();
-        foreach (var t in items)
-        {
-            if (spawner != null)
-                spawner.ItemCollected(t.gameObject);
-
-            Destroy(t.gameObject);
-        }
-    }
 }

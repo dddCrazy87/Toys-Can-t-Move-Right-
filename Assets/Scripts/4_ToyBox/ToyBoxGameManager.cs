@@ -60,8 +60,26 @@ public class ToyBoxGameManager : MonoBehaviour
     {
         gameManager.StartGame();
 
-        // 倒數結束後才播放 BGM
+        // 在 ToyBoxGameManager.cs 的 OnCountDownFinished() 中：
+
+        // ++ 未來的完全自動化數值灌入方案 ++
+        foreach (var kvp in gameManager.playerControllers)
+        {
+            PlayerController player = kvp.Value;
+            if (player == null) continue;
+
+            ToyBoxPlayer toyBoxPlayer = player.gameObject.GetComponent<ToyBoxPlayer>();
+            toyBoxPlayer.Initialize();
+        }
+
         if (bgmPlayer) bgmPlayer.ChangeBgm();
+
+        ItemSpawner itemSpawner = FindFirstObjectByType<ItemSpawner>();
+        if (itemSpawner != null)
+        {
+            itemSpawner.StartSpawnItems();
+        }
+        // ++++++++++++++++++++++++++++++++++++++++++++++
 
         FindFirstObjectByType<PlayerPointUiManager>().InitialPlayerPointUi();
         countdownUI.StartCountdown(gameTimeLimit, OnCountdownFinished);

@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: -4302173298049108447}
   - component: {fileID: 72429787984180327}
   - component: {fileID: -4613090158434773976}
+  - component: {fileID: -3597434309547812576}
+  - component: {fileID: -4561685215241606625}
   m_Layer: 0
   m_Name: 8blocks
   m_TagString: Collectable
@@ -68,7 +70,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 43951157328f07c4195e642da26d9692, type: 2}
+  - {fileID: 2100000, guid: a27380e88bbd9814aad5baafc4cbdb89, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -167,3 +169,33 @@ MonoBehaviour:
   greenColor: {r: 0.1505874, g: 0.6792453, b: 0.4318996, a: 0}
   blueColor: {r: 0.22659309, g: 0.2865604, b: 0.7169812, a: 0}
   yellowColor: {r: 0.7625973, g: 0.7735849, b: 0.27367392, a: 0}
+--- !u!114 &-3597434309547812576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 214084071606413598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31cd77f3e772af241a7a04480f4e4ba3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeed: 60
+--- !u!114 &-4561685215241606625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 214084071606413598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 906d7afee5faa6b469002d684353c002, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnPointIndex: -1
+  extraScore: 4
+  owner: {fileID: 0}
+  index: -1
+  isBusy: 0
