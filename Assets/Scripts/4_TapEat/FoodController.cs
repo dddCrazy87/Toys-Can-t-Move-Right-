@@ -6,6 +6,7 @@ public class FoodController : MonoBehaviour
 {
     [Header("Settings")]
     public int bitesPerFood = 8;
+    public int playerIndex = 0;  // 由 TapEatGameManager 設定
 
     [Header("Food Sprites")]
     public Sprite[] foodSprites;
@@ -16,31 +17,34 @@ public class FoodController : MonoBehaviour
     public float foodRadius = 0.5f;
 
     [Header("References")]
-    public SpriteRenderer foodSpriteRenderer;  // 可手動拖，沒拖會自動找
+    public SpriteRenderer foodSpriteRenderer;
 
     private int currentBiteCount = 0;
     private List<GameObject> activeBiteMasks = new();
     private int currentFoodIndex = 0;
+    private Vector3 originalScale;
+
+    // 每個玩家用不同的 sortingOrder 範圍來隔離 SpriteMask
+    private int baseSortingOrder;
 
     void Start()
     {
-        // 自動找 SpriteRenderer（如果沒手動拖的話）
         if (foodSpriteRenderer == null)
-        {
             foodSpriteRenderer = GetComponent<SpriteRenderer>();
-        }
         if (foodSpriteRenderer == null)
-        {
             foodSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        }
 
         if (foodSpriteRenderer == null)
         {
-            Debug.LogError($"[FoodController] {gameObject.name}: 找不到 SpriteRenderer！請在 Food 物件上加 SpriteRenderer 元件。");
+            Debug.LogError($"[FoodController] {gameObject.name}: 找不到 SpriteRenderer！");
             return;
         }
 
-        // 設定 Mask Interaction 讓遮罩生效
+        originalScale = foodSpriteRenderer.transform.localScale;
+
+        // 每個玩家的食物用不同的 sortingOrder（間隔 20）
+        baseSortingOrder = playerIndex * 20;
+        foodSpriteRenderer.sortingOrder = baseSortingOrder;
         foodSpriteRenderer.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
 
         if (foodSprites != null && foodSprites.Length > 0)
@@ -56,7 +60,6 @@ public class FoodController : MonoBehaviour
 
         currentBiteCount++;
 
-        // 咬痕位置（均勻分佈在圓形邊緣）
         float angle = (currentBiteCount - 1) * (360f / bitesPerFood);
         float rad = angle * Mathf.Deg2Rad;
         Vector3 biteOffset = new Vector3(
@@ -65,12 +68,22 @@ public class FoodController : MonoBehaviour
             -0.01f
         );
 
-        // 生成咬痕遮罩
         if (biteMaskPrefab != null)
         {
             GameObject mask = Instantiate(biteMaskPrefab, transform);
             mask.transform.localPosition = biteOffset;
             mask.transform.localScale = Vector3.one * biteRadius * 2;
+
+            // 讓咬痕遮罩只影響同一 sortingOrder 範圍的食物
+            SpriteMask sm = mask.GetComponent<SpriteMask>();
+            if (sm == null) sm = mask.GetComponentInChildren<SpriteMask>();
+            if (sm != null)
+            {
+                sm.isCustomRangeActive = true;
+                sm.frontSortingOrder = baseSortingOrder + 1;
+                sm.backSortingOrder = baseSortingOrder - 1;
+            }
+
             activeBiteMasks.Add(mask);
         }
 
@@ -89,7 +102,6 @@ public class FoodController : MonoBehaviour
 
     private IEnumerator ServeNextFoodRoutine()
     {
-        // 舊食物淡出
         if (foodSpriteRenderer != null)
         {
             float fadeTime = 0.2f;
@@ -112,8 +124,8 @@ public class FoodController : MonoBehaviour
             activeBiteMasks.Clear();
             currentBiteCount = 0;
 
-            // 恢復大小
-            foodSpriteRenderer.transform.localScale = Vector3.one;
+            // 恢復原始大小
+            foodSpriteRenderer.transform.localScale = originalScale;
 
             // 換下一盤食物（照順序循環）
             if (foodSprites != null && foodSprites.Length > 0)

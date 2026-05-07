@@ -8,8 +8,8 @@ using UnityEngine;
 public class EatAnimator : MonoBehaviour
 {
     [Header("動畫參數")]
-    public float dipAngle = -25f;        // 往後低頭的角度（負值 = 朝食物方向撲）
-    public float dipDistance = 0.15f;    // 往食物方向移動的距離
+    public float dipAngle = 25f;          // 低頭角度（正值 = 繞 X 軸往前傾）
+    public float dipDistance = 0.3f;     // 往食物方向移動的距離
     public float dipDuration = 0.08f;   // 低頭時間
     public float returnDuration = 0.15f; // 回彈時間
 
@@ -51,7 +51,7 @@ public class EatAnimator : MonoBehaviour
     {
         // 往前撲：旋轉 + 位移
         Quaternion dipRotation = originalRotation * Quaternion.Euler(dipAngle, 0f, 0f);
-        // 角色已旋轉 180 度，forward 指向相機，所以用 -forward 指向食物
+        // 角色面朝相機，-forward = 朝食物方向
         Vector3 dipPosition = originalPosition - transform.forward * dipDistance;
 
         // 快速低頭

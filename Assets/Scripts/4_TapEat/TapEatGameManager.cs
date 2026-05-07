@@ -58,13 +58,14 @@ public class TapEatGameManager : MonoBehaviour
         {
             gameManager.StartGame();
 
-            // 放大角色 + 加上吃東西動畫 + 停用移動
+            // 放大角色 + 面朝相機 + 吃東西動畫 + 停用移動
+            Camera cam = Camera.main;
             foreach (var kvp in gameManager.playerControllers)
             {
                 int idx = kvp.Key;
                 PlayerController pc = kvp.Value;
 
-                // 停用移動（這關不需要走路）
+                // 停用移動和物理（這關不需要走路）
                 pc.moveSpeed = 0f;
                 Rigidbody rb = pc.GetComponent<Rigidbody>();
                 if (rb != null)
@@ -72,31 +73,45 @@ public class TapEatGameManager : MonoBehaviour
                     rb.isKinematic = true;
                 }
 
-                // 用 wrapper 包住角色來處理旋轉（避免 pivot 偏移問題）
-                // 1. 記住角色的世界位置
+                // 記住 SpawnPoint 位置
                 Vector3 spawnPos = pc.transform.position;
-                // 2. 建立 wrapper 在 spawn 位置
-                GameObject wrapper = new GameObject($"PlayerWrapper_{idx}");
-                wrapper.transform.position = spawnPos;
-                // 3. 角色設為 wrapper 的子物件
-                pc.transform.SetParent(wrapper.transform);
-                // 4. 旋轉 wrapper（角色會繞 spawn 點旋轉）
-                wrapper.transform.Rotate(0f, 180f, 0f);
-                // 5. 放大 wrapper
-                wrapper.transform.localScale = Vector3.one * playerScale;
 
-                // 加上吃東西動畫元件（加在 wrapper 上，這樣動畫是繞 spawn 點）
-                EatAnimator eat = wrapper.AddComponent<EatAnimator>();
+                // 放大角色
+                pc.transform.localScale *= playerScale;
+
+                // 讓角色面朝相機（只轉 Y 軸，保持站立）
+                if (cam != null)
+                {
+                    Vector3 lookDir = cam.transform.position - spawnPos;
+                    lookDir.y = 0; // 只在水平面旋轉
+                    if (lookDir.sqrMagnitude > 0.001f)
+                    {
+                        pc.transform.rotation = Quaternion.LookRotation(lookDir, Vector3.up);
+                    }
+                }
+
+                // 強制把角色放回 SpawnPoint 位置（防止 pivot 偏移）
+                pc.transform.position = spawnPos;
+
+                // 加上吃東西動畫
+                EatAnimator eat = pc.gameObject.AddComponent<EatAnimator>();
                 eatAnimators[idx] = eat;
             }
         }
 
-        // 初始化玩家吃東西狀態
+        // 初始化玩家吃東西狀態 + 設定 FoodController 的 playerIndex
         if (networkManager != null)
         {
             foreach (var kvp in networkManager.peerIdToPlayer)
             {
-                playerStates[kvp.Value.index] = new PlayerEatState();
+                int idx = kvp.Value.index;
+                playerStates[idx] = new PlayerEatState();
+
+                // 設定 FoodController 的 playerIndex（用於隔離 SpriteMask）
+                if (foodControllers != null && idx < foodControllers.Length && foodControllers[idx] != null)
+                {
+                    foodControllers[idx].playerIndex = idx;
+                }
             }
         }
 
