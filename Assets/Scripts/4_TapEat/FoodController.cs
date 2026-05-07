@@ -45,7 +45,7 @@ public class FoodController : MonoBehaviour
 
         if (foodSprites != null && foodSprites.Length > 0)
         {
-            currentFoodIndex = Random.Range(0, foodSprites.Length);
+            currentFoodIndex = 0;
             ServeFoodAtIndex(currentFoodIndex);
         }
     }
@@ -119,17 +119,10 @@ public class FoodController : MonoBehaviour
             // 恢復大小
             foodSpriteRenderer.transform.localScale = Vector3.one;
 
-            // 換新食物（隨機不同於上一個）
-            if (foodSprites != null && foodSprites.Length > 1)
+            // 換下一盤食物（照順序循環）
+            if (foodSprites != null && foodSprites.Length > 0)
             {
-                int newIndex;
-                do { newIndex = Random.Range(0, foodSprites.Length); }
-                while (newIndex == currentFoodIndex);
-                currentFoodIndex = newIndex;
-            }
-            else if (foodSprites != null && foodSprites.Length == 1)
-            {
-                currentFoodIndex = 0;
+                currentFoodIndex = (currentFoodIndex + 1) % foodSprites.Length;
             }
             ServeFoodAtIndex(currentFoodIndex);
 

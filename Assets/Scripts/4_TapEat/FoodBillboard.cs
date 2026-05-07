@@ -7,7 +7,7 @@ using UnityEngine;
 public class FoodBillboard : MonoBehaviour
 {
     [Header("傾斜角度")]
-    public float tiltAngle = 30f;  // 朝相機傾斜的角度（0=完全平躺，90=完全面朝相機）
+    public float tiltAngle = 60f;  // 朝相機傾斜的角度（0=完全平躺，90=完全面朝相機）
 
     void Start()
     {
