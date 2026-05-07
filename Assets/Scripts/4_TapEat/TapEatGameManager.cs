@@ -20,6 +20,15 @@ public class TapEatGameManager : MonoBehaviour
     public FoodController[] foodControllers;        // 每位玩家的食物控制器 (長度 4)
     public float playerScale = 2f;                  // 角色放大倍率
 
+    [Header("音效")]
+    public AudioClip biteSound;                     // 咬一口音效
+    public AudioClip plateCompleteSound;            // 吃完一盤音效
+    public AudioClip bgmClip;                       // 背景音樂
+    [Range(0f, 1f)] public float sfxVolume = 0.8f;
+    [Range(0f, 1f)] public float bgmVolume = 0.5f;
+
+    private AudioSource sfxSource;                  // 音效播放器
+    private AudioSource bgmSource;                  // 背景音樂播放器
     private NetworkManager networkManager;
     private GameManager gameManager;
     private Dictionary<int, PlayerEatState> playerStates = new();
@@ -38,6 +47,20 @@ public class TapEatGameManager : MonoBehaviour
     {
         networkManager = FindFirstObjectByType<NetworkManager>();
         gameManager = FindFirstObjectByType<GameManager>();
+
+        // 初始化音效播放器
+        sfxSource = gameObject.AddComponent<AudioSource>();
+        sfxSource.playOnAwake = false;
+        sfxSource.spatialBlend = 0f;
+
+        bgmSource = gameObject.AddComponent<AudioSource>();
+        bgmSource.playOnAwake = false;
+        bgmSource.spatialBlend = 0f;
+        bgmSource.loop = true;
+
+        // 暫停主 BGM（跟 ToyBox 一樣）
+        BgmPlayer mainBgm = FindFirstObjectByType<BgmPlayer>();
+        if (mainBgm != null) mainBgm.PauseBGM();
 
         // 先顯示 GameStartCountDown 3-2-1，然後開始遊戲
         var gameStartCountDown = FindFirstObjectByType<GameStartCountDown>();
@@ -137,6 +160,14 @@ public class TapEatGameManager : MonoBehaviour
             countdownUI.StartCountdown(gameDuration, OnTimerFinished);
         }
 
+        // 開始播放背景音樂
+        if (bgmClip != null && bgmSource != null)
+        {
+            bgmSource.clip = bgmClip;
+            bgmSource.volume = bgmVolume;
+            bgmSource.Play();
+        }
+
         isGameActive = true;
         Debug.Log("[TapEat] 遊戲開始！");
     }
@@ -159,6 +190,12 @@ public class TapEatGameManager : MonoBehaviour
         state.totalBites++;
         state.currentFoodBites++;
 
+        // 播放咬一口音效
+        if (biteSound != null && sfxSource != null)
+        {
+            sfxSource.PlayOneShot(biteSound, sfxVolume);
+        }
+
         // 播放吃東西動畫
         if (eatAnimators.ContainsKey(playerIndex) && eatAnimators[playerIndex] != null)
         {
@@ -172,6 +209,11 @@ public class TapEatGameManager : MonoBehaviour
 
             if (finished)
             {
+                // 播放吃完一盤音效
+                if (plateCompleteSound != null && sfxSource != null)
+                {
+                    sfxSource.PlayOneShot(plateCompleteSound, sfxVolume);
+                }
                 state.currentFoodBites = 0;
                 state.platesCompleted++;
                 foodControllers[playerIndex].ServeNextFood();
@@ -195,6 +237,13 @@ public class TapEatGameManager : MonoBehaviour
     private void OnGameEnd()
     {
         Debug.Log("[TapEat] 時間到！");
+
+        // 停止背景音樂
+        if (bgmSource != null && bgmSource.isPlaying)
+        {
+            bgmSource.Stop();
+        }
+
         StartCoroutine(EndGameRoutine());
     }
 
