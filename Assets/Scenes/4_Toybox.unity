@@ -4525,7 +4525,7 @@ MonoBehaviour:
   gameTimeLimit: 90
   gameOverAudio: {fileID: 1709939695}
   instructionUI: {fileID: 1757113899}
-  imgUploader: {fileID: 0}
+  imgUploader: {fileID: 817025212}
 --- !u!4 &1709939694
 Transform:
   m_ObjectHideFlags: 0
