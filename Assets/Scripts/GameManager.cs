@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour
     public List<Player> playersInfo = new();
     [Header("Player Prefab")]
     public List<SkinColorMapping> skinColorsMapping = new();
+    [Header("Postcard")]
+    public bool hasPostcard = false;
+
     [Header("Is testing game")]
     [SerializeField] bool isTesting = false;
     [SerializeField] string p1Skin, p2Skin;

@@ -109,7 +109,7 @@ MonoBehaviour:
   explosionBrushSize: 0.2
   eraseDensity: 30
   minPowerMultiplier: 0.7
-  maxPowerMultiplier: 1
+  maxPowerMultiplier: 0.9
   minBounceForce: 25
   maxBounceForce: 100
   explosionEffectPrefab: {fileID: 0}

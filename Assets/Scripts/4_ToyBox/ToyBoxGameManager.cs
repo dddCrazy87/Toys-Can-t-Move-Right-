@@ -108,6 +108,7 @@ public class ToyBoxGameManager : MonoBehaviour
             if (!string.IsNullOrEmpty(uploadedUrl))
             {
                 Debug.Log($"[ToyBoxGameManager] 圖片網址: {uploadedUrl}");
+                if (gameManager) gameManager.hasPostcard = true;
             }
             else
             {

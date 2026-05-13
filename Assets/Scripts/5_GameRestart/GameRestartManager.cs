@@ -11,6 +11,9 @@ public class GameRestartManager : MonoBehaviour
     [SerializeField] List<GameObject> podiumPrefabs = new();
     [SerializeField] List<Transform> podiumPrefabsPos = new();
     public List<SkinColorMapping> skinColorMapping = new();
+
+    [Header("明信片提示")]
+    [SerializeField] private ToastUI postcardToast;
     GameManager gameManager;
     NetworkManager networkManager;
     JsonScoreManager jsonScoreManager;
@@ -95,6 +98,11 @@ public class GameRestartManager : MonoBehaviour
             if (gameManager) jsonScoreManager.AddPlayerRecord(item.name, item.point, item.skin, item.color);
         }
 
+        // 顯示明信片 Toast 提示
+        if (postcardToast != null && gameManager != null && gameManager.hasPostcard)
+        {
+            postcardToast.Show();
+        }
     }
 
     [SerializeField] SceneFadeInFadeOut sceneFadeInFadeOut;

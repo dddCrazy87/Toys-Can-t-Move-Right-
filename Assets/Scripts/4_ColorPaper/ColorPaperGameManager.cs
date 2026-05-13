@@ -169,6 +169,7 @@ public class ColorPaperGameManager : MonoBehaviour
             if (!string.IsNullOrEmpty(uploadedUrl))
             {
                 Debug.Log($"圖片網址: {uploadedUrl}");
+                if (gameManager) gameManager.hasPostcard = true;
             }
             else
             {

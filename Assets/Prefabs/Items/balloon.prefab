@@ -85,7 +85,7 @@ MonoBehaviour:
   paintDensity: 30
   explosionOpacity: 1
   minPowerMultiplier: 0.7
-  maxPowerMultiplier: 1
+  maxPowerMultiplier: 0.9
   minBounceForce: 25
   maxBounceForce: 100
   materialIndex: 0
