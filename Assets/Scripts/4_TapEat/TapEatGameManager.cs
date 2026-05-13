@@ -33,6 +33,7 @@ public class TapEatGameManager : MonoBehaviour
     private GameManager gameManager;
     private Dictionary<int, PlayerEatState> playerStates = new();
     private Dictionary<int, EatAnimator> eatAnimators = new();
+    private Dictionary<int, BiteParticle> biteParticles = new();
     private PlayerPointUiManager pointUiManager;
     private bool isGameActive = false;
 
@@ -131,9 +132,13 @@ public class TapEatGameManager : MonoBehaviour
                 playerStates[idx] = new PlayerEatState();
 
                 // 設定 FoodController 的 playerIndex（用於隔離 SpriteMask）
+                // + 加上碎屑粒子效果
                 if (foodControllers != null && idx < foodControllers.Length && foodControllers[idx] != null)
                 {
                     foodControllers[idx].playerIndex = idx;
+
+                    BiteParticle bp = foodControllers[idx].gameObject.AddComponent<BiteParticle>();
+                    biteParticles[idx] = bp;
                 }
             }
         }
@@ -200,6 +205,12 @@ public class TapEatGameManager : MonoBehaviour
         if (eatAnimators.ContainsKey(playerIndex) && eatAnimators[playerIndex] != null)
         {
             eatAnimators[playerIndex].PlayEat();
+        }
+
+        // 噴出碎屑
+        if (biteParticles.ContainsKey(playerIndex) && biteParticles[playerIndex] != null)
+        {
+            biteParticles[playerIndex].Play();
         }
 
         // 食物被咬
