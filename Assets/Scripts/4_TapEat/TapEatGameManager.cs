@@ -300,6 +300,11 @@ public class TapEatGameManager : MonoBehaviour
             {
                 uploadedUrl = url;
             }));
+
+            if (!string.IsNullOrEmpty(uploadedUrl))
+            {
+                if (gameManager) gameManager.hasPostcard = true;
+            }
         }
         else
         {
