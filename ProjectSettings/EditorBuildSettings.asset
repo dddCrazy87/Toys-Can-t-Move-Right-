@@ -21,6 +21,9 @@ EditorBuildSettings:
     path: Assets/Scenes/4_ColorPaper.unity
     guid: 99ea9d10cdcdc4bceb727b7ab63f6c11
   - enabled: 1
+    path: Assets/Scenes/4_TapEat.unity
+    guid: dc10e78e71d6e4924840c75737450458
+  - enabled: 1
     path: Assets/Scenes/5_GameRestart.unity
     guid: db751fd1aa5486f44a475a5329e98328
   m_configObjects:

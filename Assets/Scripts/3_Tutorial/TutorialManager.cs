@@ -110,6 +110,9 @@ public class TutorialManager : MonoBehaviour
     [Tooltip("用來防止重複觸發延遲協程")]
     private bool isAdvancing = false;
 
+    // 非陀螺儀關卡的簡化教學模式
+    private bool isSimplifiedTutorial = false;
+
     void Start()
     {
         networkManager = FindFirstObjectByType<NetworkManager>();
@@ -140,6 +143,66 @@ public class TutorialManager : MonoBehaviour
         }
 
         InitializePlayerProgress();
+
+        // 非陀螺儀關卡走簡化教學
+        if (!IsGyroLevel())
+        {
+            StartCoroutine(RunSimplifiedTutorial());
+        }
+    }
+
+    /// <summary>
+    /// 判斷目前選擇的關卡是否為陀螺儀控制
+    /// </summary>
+    private bool IsGyroLevel()
+    {
+        string level = gameManager?.selectedLevel ?? "4_ColorPaper";
+        return level == "4_ColorPaper" || level == "4_Toybox";
+    }
+
+    /// <summary>
+    /// 非陀螺儀關卡的簡化教學流程（如 TapEat 點擊關卡）
+    /// </summary>
+    private IEnumerator RunSimplifiedTutorial()
+    {
+        isSimplifiedTutorial = true;
+
+        // 更新大螢幕 UI
+        instructionText.text = "請在手機上練習點擊";
+        if (demoImage != null) demoImage.gameObject.SetActive(false);
+
+        // 廣播教學步驟，觸發 Web 端顯示教學
+        BroadcastTutorialStep("calibrate", "請在手機上練習點擊");
+
+        // 等待所有玩家送回 tutorial_step_complete: calibrate
+        yield return new WaitUntil(() =>
+            playerProgressMap.Values.All(p => p.completedCalibration));
+
+        // 播放完成音效
+        if (stepAudioMap != null && audioSource != null)
+        {
+            StepAudioMapping mapping = stepAudioMap.FirstOrDefault(m => m.stepName == "complete");
+            if (mapping != null && mapping.soundEffect != null)
+            {
+                audioSource.PlayOneShot(mapping.soundEffect);
+            }
+        }
+
+        yield return new WaitForSeconds(1.0f);
+
+        // 完成
+        instructionText.text = "準備開始遊戲！";
+
+        yield return new WaitForSeconds(1.0f);
+
+        Debug.Log("[TutorialManager] 非陀螺儀關卡教學完成，準備進入遊戲...");
+        networkManager.BroadcastNavigateToPlaying();
+        gameManager.UpdatePlayerInfo(networkManager.playersInfo);
+
+        string selectedLevel = gameManager.selectedLevel;
+        Debug.Log($"[TutorialManager] 載入選擇的關卡: {selectedLevel}");
+        tutorialSceneFadeOut.SetNextScene(selectedLevel);
+        tutorialSceneFadeOut.LoadNextSceneWithFadeOut();
     }
 
     void OnDestroy()
@@ -425,7 +488,7 @@ public class TutorialManager : MonoBehaviour
     
     void CheckForStepAdvancement()
     {
-        if (isAdvancing) return; 
+        if (isAdvancing || isSimplifiedTutorial) return;
 
         if (currentTutorialPhase == "calibrate" && playerProgressMap.Values.All(p => p.completedCalibration))
         {
