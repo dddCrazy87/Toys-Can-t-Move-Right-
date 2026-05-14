@@ -40,7 +40,7 @@ public class TapEatGameManager : MonoBehaviour
     private bool isGameActive = false;
     private float gameTimer = 0f;
     [Header("最後 15 秒加速")]
-    [SerializeField] private float lastSecondsBgmPitch = 1.2f;
+    [SerializeField] private float lastSecondsBgmPitch = 1.1f;
 
     private class PlayerEatState
     {

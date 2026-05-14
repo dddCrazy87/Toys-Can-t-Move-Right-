@@ -18,7 +18,7 @@ public class CountDownUI : MonoBehaviour
     [SerializeField] private bool hideWhenFinished = true;  // 結束時是否隱藏
 
     [Header("最後 10 秒 BGM 加速")]
-    [SerializeField] private float lastSecondsBgmPitch = 1.2f; // 加速後的 pitch
+    [SerializeField] private float lastSecondsBgmPitch = 1.1f; // 加速後的 pitch
 
     private Coroutine countdownCoroutine;
     private Action onCountdownFinish;
