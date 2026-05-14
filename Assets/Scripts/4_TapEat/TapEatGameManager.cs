@@ -38,6 +38,9 @@ public class TapEatGameManager : MonoBehaviour
     private Dictionary<int, BiteParticle> biteParticles = new();
     private PlayerPointUiManager pointUiManager;
     private bool isGameActive = false;
+    private float gameTimer = 0f;
+    [Header("最後 15 秒加速")]
+    [SerializeField] private float lastSecondsBgmPitch = 1.2f;
 
     private class PlayerEatState
     {
@@ -196,7 +199,22 @@ public class TapEatGameManager : MonoBehaviour
         }
 
         isGameActive = true;
+        gameTimer = gameDuration;
         Debug.Log("[TapEat] 遊戲開始！");
+    }
+
+    void Update()
+    {
+        if (!isGameActive) return;
+
+        gameTimer -= Time.deltaTime;
+
+        // 最後 15 秒漸漸加速 BGM（從 1.0 慢慢升到 lastSecondsBgmPitch）
+        if (gameTimer <= 15f && bgmSource != null)
+        {
+            float t = 1f - (gameTimer / 15f); // 0 → 1
+            bgmSource.pitch = Mathf.Lerp(1f, lastSecondsBgmPitch, t);
+        }
     }
 
     void OnTimerFinished()

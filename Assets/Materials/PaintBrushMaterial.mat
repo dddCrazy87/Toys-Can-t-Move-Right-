@@ -140,7 +140,7 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BrushColor: {r: 0.44255075, g: 0.8018868, b: 0.5012658, a: 1}
-    - _BrushPos: {r: 0.5330244, g: 0.6260586, b: 0, a: 0}
+    - _BrushPos: {r: 0.10896859, g: 0.712748, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}

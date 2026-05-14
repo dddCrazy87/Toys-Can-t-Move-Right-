@@ -33,6 +33,11 @@ public class BgmPlayer : MonoBehaviour
     {
         bgm.Play();
     }
+    public void SetPitch(float pitch)
+    {
+        bgm.pitch = pitch;
+    }
+
     public void ChangeBgm()
     {
         PauseBGM();

@@ -1675,8 +1675,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: d514fc54498014eb28841db5a09efe26, type: 3}
   plateCompleteSound: {fileID: 8300000, guid: 043572a591c4644fb9415a2ad7f074f2, type: 3}
   bgmClip: {fileID: 8300000, guid: 38c70f7ba6e7c4d52947f94ee129ba5d, type: 3}
-  sfxVolume: 0.7
+  sfxVolume: 0.5
   bgmVolume: 0.6
+  lastSecondsBgmPitch: 1.25
 --- !u!4 &772695136
 Transform:
   m_ObjectHideFlags: 0
