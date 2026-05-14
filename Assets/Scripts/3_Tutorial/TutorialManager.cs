@@ -178,6 +178,16 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() =>
             playerProgressMap.Values.All(p => p.completedCalibration));
 
+        // 播放完成音效
+        if (stepAudioMap != null && audioSource != null)
+        {
+            StepAudioMapping mapping = stepAudioMap.FirstOrDefault(m => m.stepName == "complete");
+            if (mapping != null && mapping.soundEffect != null)
+            {
+                audioSource.PlayOneShot(mapping.soundEffect);
+            }
+        }
+
         yield return new WaitForSeconds(1.0f);
 
         // 完成

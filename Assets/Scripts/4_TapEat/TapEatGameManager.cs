@@ -12,6 +12,7 @@ public class TapEatGameManager : MonoBehaviour
     [Header("References")]
     public CountDownUI countdownUI;                // 遊戲中 60 秒倒數 UI
     public SceneFadeInFadeOut sceneFadeInFadeOut;   // 場景轉場（可選）
+    [SerializeField] private AudioClip gameOverSound;   // 遊戲結束音效
 
     [Header("上傳系統")]
     public ImgBBUploader imgUploader;               // 截圖上傳（可選）
@@ -19,9 +20,10 @@ public class TapEatGameManager : MonoBehaviour
     [Header("Players")]
     public FoodController[] foodControllers;        // 每位玩家的食物控制器 (長度 4)
     public float playerScale = 2f;                  // 角色放大倍率
+    public Transform[] playerPositions;              // 每位玩家的位置（在 Inspector 拖入）
 
     [Header("音效")]
-    public AudioClip biteSound;                     // 咬一口音效
+    public AudioClip[] biteSounds;                   // 咬一口音效（多個，隨機播放）
     public AudioClip plateCompleteSound;            // 吃完一盤音效
     public AudioClip bgmClip;                       // 背景音樂
     [Range(0f, 1f)] public float sfxVolume = 0.8f;
@@ -77,78 +79,98 @@ public class TapEatGameManager : MonoBehaviour
 
     void OnCountDownFinished()
     {
-        // 呼叫 GameManager.StartGame() 來生成玩家角色
-        if (gameManager != null)
+        if (gameManager == null || networkManager == null) return;
+
+        // TapEat 自己處理角色生成（不用 GameManager.StartGame 的隨機 SpawnPoint）
+        gameManager.isGameStart = true;
+
+        // 設定玩家 index
+        int playerIdx = 0;
+        foreach (var player in gameManager.playersInfo)
         {
-            gameManager.StartGame();
-
-            // 放大角色 + 面朝相機 + 吃東西動畫 + 停用移動
-            Camera cam = Camera.main;
-            foreach (var kvp in gameManager.playerControllers)
-            {
-                int idx = kvp.Key;
-                PlayerController pc = kvp.Value;
-
-                // 停用移動和物理（這關不需要走路）
-                pc.moveSpeed = 0f;
-                Rigidbody rb = pc.GetComponent<Rigidbody>();
-                if (rb != null)
-                {
-                    rb.isKinematic = true;
-                }
-
-                // 記住 SpawnPoint 位置
-                Vector3 spawnPos = pc.transform.position;
-
-                // 放大角色
-                pc.transform.localScale *= playerScale;
-
-                // 讓角色面朝相機（只轉 Y 軸，保持站立）
-                if (cam != null)
-                {
-                    Vector3 lookDir = cam.transform.position - spawnPos;
-                    lookDir.y = 0; // 只在水平面旋轉
-                    if (lookDir.sqrMagnitude > 0.001f)
-                    {
-                        pc.transform.rotation = Quaternion.LookRotation(lookDir, Vector3.up);
-                    }
-                }
-
-                // 強制把角色放回 SpawnPoint 位置（防止 pivot 偏移）
-                pc.transform.position = spawnPos;
-
-                // 加上吃東西動畫
-                EatAnimator eat = pc.gameObject.AddComponent<EatAnimator>();
-                eatAnimators[idx] = eat;
-            }
+            player.index = playerIdx++;
         }
 
-        // 初始化玩家吃東西狀態 + 設定 FoodController 的 playerIndex
-        if (networkManager != null)
+        // 根據玩家數量，把角色生成在對應的 FoodController 旁邊
+        Camera cam = Camera.main;
+        int i = 0;
+        foreach (var player in gameManager.playersInfo)
         {
-            foreach (var kvp in networkManager.peerIdToPlayer)
+            if (i >= foodControllers.Length || foodControllers[i] == null)
             {
-                int idx = kvp.Value.index;
-                playerStates[idx] = new PlayerEatState();
+                i++;
+                continue;
+            }
 
-                // 設定 FoodController 的 playerIndex（用於隔離 SpriteMask）
-                // + 加上碎屑粒子效果
-                if (foodControllers != null && idx < foodControllers.Length && foodControllers[idx] != null)
+            // 找到角色 prefab 並生成
+            var prefabMappingList = gameManager.skinColorsMapping
+                .Find(x => x.skin == player.skin)?.prefabMapping;
+            if (prefabMappingList == null) { i++; continue; }
+            var mapping = prefabMappingList.Find(x => x.color == player.color);
+            if (mapping == null) { i++; continue; }
+
+            // 生成位置：從 playerPositions 陣列取得（在 Inspector 手動設定）
+            Vector3 spawnPos = (playerPositions != null && i < playerPositions.Length && playerPositions[i] != null)
+                ? playerPositions[i].position
+                : foodControllers[i].transform.position;
+
+            GameObject go = Instantiate(mapping.prefab, spawnPos, Quaternion.identity);
+            PlayerController pc = go.GetComponent<PlayerController>();
+            pc.Initialize(player.name, player.index, player.color);
+            gameManager.playerControllers[player.index] = pc;
+
+            // 停用移動、物理和碰撞（這關不需要走路）
+            pc.moveSpeed = 0f;
+            Collider col = pc.GetComponent<Collider>();
+            if (col != null) col.enabled = false;
+            Rigidbody rb = pc.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.isKinematic = true;
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+
+            // 放大角色
+            pc.transform.localScale *= playerScale;
+
+            // 讓角色面朝相機
+            if (cam != null)
+            {
+                Vector3 lookDir = cam.transform.position - spawnPos;
+                lookDir.y = 0;
+                if (lookDir.sqrMagnitude > 0.001f)
                 {
-                    foodControllers[idx].playerIndex = idx;
-
-                    BiteParticle bp = foodControllers[idx].gameObject.AddComponent<BiteParticle>();
-                    biteParticles[idx] = bp;
+                    pc.transform.rotation = Quaternion.LookRotation(lookDir, Vector3.up);
                 }
             }
+
+            // 強制歸位（確保放大和旋轉沒有影響位置）
+            pc.transform.position = spawnPos;
+
+            // 加上吃東西動畫
+            EatAnimator eat = pc.gameObject.AddComponent<EatAnimator>();
+            eatAnimators[player.index] = eat;
+
+            // 初始化玩家吃東西狀態
+            playerStates[player.index] = new PlayerEatState();
+
+            // 設定 FoodController
+            foodControllers[i].playerIndex = player.index;
+
+            // 加上碎屑粒子效果
+            BiteParticle bp = foodControllers[i].gameObject.AddComponent<BiteParticle>();
+            biteParticles[player.index] = bp;
+
+            i++;
         }
 
         // 隱藏未使用的玩家位置（盤子 + 食物）
-        for (int i = 0; i < foodControllers.Length; i++)
+        for (int j = 0; j < foodControllers.Length; j++)
         {
-            if (!playerStates.ContainsKey(i) && foodControllers[i] != null)
+            if (!playerStates.ContainsKey(j) && foodControllers[j] != null)
             {
-                foodControllers[i].transform.parent.gameObject.SetActive(false);
+                foodControllers[j].transform.parent.gameObject.SetActive(false);
             }
         }
 
@@ -195,10 +217,11 @@ public class TapEatGameManager : MonoBehaviour
         state.totalBites++;
         state.currentFoodBites++;
 
-        // 播放咬一口音效
-        if (biteSound != null && sfxSource != null)
+        // 播放咬一口音效（隨機選一個）
+        if (biteSounds != null && biteSounds.Length > 0 && sfxSource != null)
         {
-            sfxSource.PlayOneShot(biteSound, sfxVolume);
+            AudioClip clip = biteSounds[Random.Range(0, biteSounds.Length)];
+            if (clip != null) sfxSource.PlayOneShot(clip, sfxVolume);
         }
 
         // 播放吃東西動畫
@@ -253,6 +276,12 @@ public class TapEatGameManager : MonoBehaviour
         if (bgmSource != null && bgmSource.isPlaying)
         {
             bgmSource.Stop();
+        }
+
+        // 播放遊戲結束音效
+        if (gameOverSound != null && sfxSource != null)
+        {
+            sfxSource.PlayOneShot(gameOverSound);
         }
 
         StartCoroutine(EndGameRoutine());
