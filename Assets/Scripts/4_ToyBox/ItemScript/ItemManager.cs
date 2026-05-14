@@ -49,7 +49,7 @@ public class ItemManager : MonoBehaviour
         }
         else if (data.owner != player)
         {
-            float dw = data.owner.GetComponent<PlayerController>().defenceWeakness;
+            float dw = data.owner.GetComponent<ToyBoxPlayer>().defenceWeakness;
             if (Random.value < GetStealProbability(stealSkill, dw))
             {
                 TrySteal(player, item, data);
@@ -110,9 +110,7 @@ public class ItemManager : MonoBehaviour
         if (!follow) follow = item.gameObject.AddComponent<ItemFollow>();
 
         // 決定要跟誰
-        follow.follow = chain.Count == 0
-            ? pc.followPoint
-            : GetAnchor(chain[^1]);
+        follow.follow = chain.Count == 0 ? player.GetComponent<ToyBoxPlayer>().followPoint : GetAnchor(chain[^1]);
 
         chain.Add(item);
 
@@ -128,10 +126,10 @@ public class ItemManager : MonoBehaviour
     {
         if (hitData.owner == stealer) return;
 
-        PlayerController victimPC = hitData.owner.GetComponent<PlayerController>();
-        if (victimPC.isImmuneStolen) return;
+        ToyBoxPlayer victimTB = hitData.owner.GetComponent<ToyBoxPlayer>();
+        if (victimTB.isImmuneStolen) return;
 
-        victimPC.ActivateImmunityStolen();
+        victimTB.ActivateImmunityStolen();
 
         List<Transform> victimChain = GetChain(hitData.owner);
         List<Transform> stealerChain = GetChain(stealer);
@@ -165,7 +163,7 @@ public class ItemManager : MonoBehaviour
             if (preceding != null)
                 f.follow = GetAnchor(preceding);
             else
-                f.follow = stealerPC.followPoint;
+                f.follow = stealer.GetComponent<ToyBoxPlayer>().followPoint;
 
             // 上色
             ItemController ic = t.GetComponent<ItemController>();

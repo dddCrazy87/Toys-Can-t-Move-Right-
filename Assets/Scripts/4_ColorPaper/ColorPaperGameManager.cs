@@ -125,7 +125,7 @@ public class ColorPaperGameManager : MonoBehaviour
         // 更新 GameManager 的分數（給結算畫面用）
         foreach (var kvp in playerScores)
         {
-            gameManager.playersInfo[kvp.Key].point = kvp.Value;
+            gameManager.SetPlayerPoint(kvp.Key, kvp.Value);
         }
 
         // 更新長條圖 UI
@@ -169,6 +169,7 @@ public class ColorPaperGameManager : MonoBehaviour
             if (!string.IsNullOrEmpty(uploadedUrl))
             {
                 Debug.Log($"圖片網址: {uploadedUrl}");
+                if (gameManager) gameManager.hasPostcard = true;
             }
             else
             {

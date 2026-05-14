@@ -13,8 +13,6 @@ public class GameManager : MonoBehaviour
 {
     public bool isGameStart = false;
     public Dictionary<int, PlayerController> playerControllers = new();
-    ItemSpawner itemSpawner;
-
     [Header("Level Selection")]
     public string selectedLevel = "4_ColorPaper";  // 預設關卡
     public static readonly string[] AvailableLevels = { "4_ColorPaper", "4_Toybox", "4_TapEat" };
@@ -23,6 +21,9 @@ public class GameManager : MonoBehaviour
     public List<Player> playersInfo = new();
     [Header("Player Prefab")]
     public List<SkinColorMapping> skinColorsMapping = new();
+    [Header("Postcard")]
+    public bool hasPostcard = false;
+
     [Header("Is testing game")]
     [SerializeField] bool isTesting = false;
     [SerializeField] string p1Skin, p2Skin;
@@ -46,23 +47,9 @@ public class GameManager : MonoBehaviour
         // {
         //     playersInfo[0].skin = playersInfo[0].name;
         // }
-        // 設定玩家Id
         AssignPlayerIndex();
-        // 分配出生點
         AssignSpawnPoints();
-        // 生成玩家
         SpawnPlayers();
-        // 生成道具
-        ;
-
-        if (itemSpawner = FindFirstObjectByType<ItemSpawner>())
-        {
-            itemSpawner.StartSpawnItems();
-        }
-        else
-        {
-            print("No Item Manager");
-        }
         isGameStart = true;
     }
 
@@ -97,9 +84,31 @@ public class GameManager : MonoBehaviour
         playersInfo[playerIndex].point += number;
     }
 
+    public void SetPlayerPoint(int playerIndex, int point)
+    {
+        playersInfo[playerIndex].point = point;
+    }
+
     public int GetPlayerPoint(int playerIndex)
     {
         return playersInfo[playerIndex].point;
+    }
+
+    public List<Player> GetNo1Player()
+    {
+        List<Player> ps = new();
+
+        if (playersInfo == null || !playersInfo.Any()) return ps;
+
+        foreach (var player in playersInfo)
+        {
+            if (ps.Count == 0) ps.Add(player);
+            else if (player.point < ps[0].point) continue;
+            else if (player.point == ps[0].point) ps.Add(player);
+            else { ps.Clear(); ps.Add(player); }
+        }
+
+        return ps;
     }
 
     // ------------- Reset -------------

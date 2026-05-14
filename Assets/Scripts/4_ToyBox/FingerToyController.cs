@@ -30,4 +30,44 @@ public class FingerToyController : MonoBehaviour
         }
     }
 
+
+
+    [Header("放大的倍率")]
+    public float scaleMultiplier = 2f;
+
+    [Header("持續時間")]
+    public float activeDuration = 5f;
+
+    private bool isScaled = false;
+    private Vector3 originalScale;
+
+    private void Start()
+    {
+        // 紀錄遊戲一開始的原始大小
+        originalScale = transform.localScale;
+    }
+
+    // 讓玩家呼叫的方法。回傳 true 代表成功觸發，回傳 false 代表正在忙
+    public bool TryActivate()
+    {
+        if (isScaled) return false; // 已經變大了，拒絕觸發
+
+        StartCoroutine(ActivateRoutine());
+        return true;
+    }
+
+    private IEnumerator ActivateRoutine()
+    {
+        isScaled = true;
+
+        // 瞬間變大 (如果你想要有漸變動畫，可以在這裡改用 Vector3.Lerp)
+        transform.localScale = originalScale * scaleMultiplier;
+
+        yield return new WaitForSeconds(activeDuration); // 等待秒數
+
+        // 恢復原狀
+        transform.localScale = originalScale;
+        isScaled = false;
+    }
+
 }

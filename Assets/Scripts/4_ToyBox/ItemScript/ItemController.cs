@@ -4,6 +4,7 @@ using UnityEngine;
 public class ItemController : MonoBehaviour
 {
     private new Renderer renderer;
+    private ItemData data;
 
     [Header("道具顏色設定")]
     public Color redColor;
@@ -14,12 +15,15 @@ public class ItemController : MonoBehaviour
     void Awake()
     {
         renderer = GetComponent<Renderer>();
+        data = GetComponent<ItemData>();
     }
 
     public void ChangeColor(string colorString)
     {
-        if (renderer == null)
-            renderer = GetComponent<Renderer>();
+        if (renderer == null) renderer = GetComponent<Renderer>();
+        if (data == null) data = GetComponent<ItemData>();
+
+        if (data != null && data.extraScore > 0) return;
 
         Color targetColor = colorString.ToLower() switch
         {
