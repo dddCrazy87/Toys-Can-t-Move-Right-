@@ -17,12 +17,8 @@ public class CountDownUI : MonoBehaviour
     [SerializeField] private float scaleAnimDuration = 0.25f; // 放大動畫時間
     [SerializeField] private bool hideWhenFinished = true;  // 結束時是否隱藏
 
-    [Header("最後 10 秒 BGM 加速")]
-    [SerializeField] private float lastSecondsBgmPitch = 1.1f; // 加速後的 pitch
-
     private Coroutine countdownCoroutine;
     private Action onCountdownFinish;
-    private BgmPlayer bgmPlayer;
 
     public void StartCountdown(float seconds, Action onFinish = null)
     {
@@ -49,7 +45,7 @@ public class CountDownUI : MonoBehaviour
     {
         float timeLeft = totalSeconds;
         Vector3 baseScale = countdownText.transform.localScale;
-        bgmPlayer = FindFirstObjectByType<BgmPlayer>();
+
 
         while (timeLeft > 0f)
         {
@@ -58,13 +54,6 @@ public class CountDownUI : MonoBehaviour
             countdownText.text = $"{minutes:00}:{seconds:00}";
 
             countdownText.color = timeLeft <= 10f ? lastSecondsColor : normalColor;
-
-            // 最後 15 秒漸漸加速 BGM
-            if (timeLeft <= 15f && bgmPlayer != null)
-            {
-                float t = 1f - (timeLeft / 15f); // 0 → 1
-                bgmPlayer.SetPitch(Mathf.Lerp(1f, lastSecondsBgmPitch, t));
-            }
 
             // 動畫：縮放效果
             StartCoroutine(ScaleText(countdownText.transform, baseScale * scaleUpFactor, scaleAnimDuration));
@@ -76,11 +65,6 @@ public class CountDownUI : MonoBehaviour
         countdownText.text = "00:00";
         countdownText.color = normalColor;
 
-        // 恢復 BGM 速度
-        if (bgmPlayer != null)
-        {
-            bgmPlayer.SetPitch(1f);
-        }
 
         // 最後一個縮放動畫
         StartCoroutine(ScaleText(countdownText.transform, baseScale * scaleUpFactor, scaleAnimDuration));
