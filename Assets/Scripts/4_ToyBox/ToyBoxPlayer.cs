@@ -21,7 +21,7 @@ public class ToyBoxPlayer : MonoBehaviour
     [Header("目前持有的特殊道具")]
     public SpecialItemType currentSpecialItem = SpecialItemType.None;
     [Header("冰凍持續時間")]
-    public float freezeDuration = 2f;
+    [SerializeField] private float freezeDuration = 5f;
 
     public void Initialize()
     {
@@ -107,7 +107,7 @@ public class ToyBoxPlayer : MonoBehaviour
                 foreach (var playerInfo in topPlayers)
                 {
                     // 2. 檢查：如果第一名是自己，就跳過
-                    if (playerInfo.index == playerController.playerIndex) continue;
+                    if (gm.playersInfo.Count != 1 && playerInfo.index == playerController.playerIndex) continue;
 
                     // 3. 從 GameManager 找到對應的 PlayerController 實體
                     if (gm.playerControllers.TryGetValue(playerInfo.index, out PlayerController targetPc))

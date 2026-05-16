@@ -51,9 +51,7 @@ public class PlayerController : MonoBehaviour
     private bool isPressing = false;
     public event Action<bool> OnPressStateChanged;
 
-    /// <summary>
-    /// 取得目前按壓狀態
-    /// </summary>
+    // 取得目前按壓狀態
     public bool IsPressing() => isPressing;
 
     // 由手機 WebRTC 傳入（不需要按壓的場景）
@@ -159,7 +157,8 @@ public class PlayerController : MonoBehaviour
     public float collisionCooldown = 0.5f;
     private bool isCollisionCooldown = false;
 
-
+    [Tooltip("冰凍特效")]
+    [SerializeField] private GameObject iceEffect;
 
     // 玩家互相碰撞
     private void OnCollisionEnter(Collision collision)
@@ -215,6 +214,7 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
 
+
         ForceStopMotion();
         isKnockback = false;
         knockbackCoroutine = null;
@@ -241,9 +241,12 @@ public class PlayerController : MonoBehaviour
     {
         isFrozen = true;
         ForceStopMotion(); // 立即停止當前所有移動
+        iceEffect.SetActive(true);
 
         yield return new WaitForSeconds(duration);
 
+
+        iceEffect.SetActive(false);
         isFrozen = false;
     }
 

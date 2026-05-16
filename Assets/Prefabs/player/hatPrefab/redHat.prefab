@@ -236,6 +236,7 @@ MonoBehaviour:
   enablePlayerCollision: 0
   playerBounceForce: 80
   collisionCooldown: 0.5
+  iceEffect: {fileID: 6534572119564614373}
   isFrozen: 0
 --- !u!114 &2250493732931514296
 MonoBehaviour:
@@ -286,7 +287,7 @@ MonoBehaviour:
   isImmuneStolen: 0
   followPoint: {fileID: 0}
   currentSpecialItem: 0
-  freezeDuration: 2
+  freezeDuration: 5
 --- !u!1001 &1723450121359314126
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -344,6 +345,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ed8fee6fd97b9b418227e8ed95dca07, type: 3}
+--- !u!1 &6534572119564614373 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5568026361318618667, guid: 7ed8fee6fd97b9b418227e8ed95dca07, type: 3}
+  m_PrefabInstance: {fileID: 1723450121359314126}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8833981963898367022 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7886496789323800800, guid: 7ed8fee6fd97b9b418227e8ed95dca07, type: 3}

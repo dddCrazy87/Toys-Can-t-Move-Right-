@@ -12,6 +12,9 @@ public class Blocker : MonoBehaviour
     [Header("停留持續時間")]
     public float activeDuration = 5f;
 
+    [Header("得分感應物件")]
+    public GameObject pointTrigger;
+
     private bool isActive = false;
     private Vector3 initialPosition; // 用來記錄遊戲開始時的初始位置
 
@@ -35,6 +38,8 @@ public class Blocker : MonoBehaviour
     {
         isActive = true;
 
+        pointTrigger.SetActive(false);
+
         // 1. 從初始位置移動到指定位置
         yield return StartCoroutine(MoveToPosition(targetPosition));
 
@@ -45,6 +50,8 @@ public class Blocker : MonoBehaviour
         yield return StartCoroutine(MoveToPosition(initialPosition));
 
         isActive = false; // 恢復可觸發狀態
+
+        pointTrigger.SetActive(true);
     }
 
     // 負責處理平滑移動的協程
