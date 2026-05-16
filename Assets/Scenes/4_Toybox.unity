@@ -1187,7 +1187,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5657321441746767712, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8844811526203915789, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3306,6 +3306,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CountDownUI
       objectReference: {fileID: 0}
+    - target: {fileID: 817622672497361128, guid: 8764a5120dfb5894ca2d6901d666e1c1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8022356728904042351, guid: 8764a5120dfb5894ca2d6901d666e1c1, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -4412,7 +4416,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   countdownUI: {fileID: 1409068719}
   sceneFadeInFadeOut: {fileID: 1476519531}
-  gameTimeLimit: 1000
+  gameTimeLimit: 90
   gameOverAudio: {fileID: 1709939695}
   instructionUI: {fileID: 1757113899}
   imgUploader: {fileID: 817025212}

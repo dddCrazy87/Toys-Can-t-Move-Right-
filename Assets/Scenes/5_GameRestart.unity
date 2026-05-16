@@ -1127,7 +1127,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3903868515546033671, guid: 44ca7d063f664fd4a8e9927babee086f, type: 3}
       propertyPath: nextSceneName
-      value: 1_GameStart
+      value: 2_Setting
       objectReference: {fileID: 0}
     - target: {fileID: 6738786760476302363, guid: 44ca7d063f664fd4a8e9927babee086f, type: 3}
       propertyPath: m_SortingOrder

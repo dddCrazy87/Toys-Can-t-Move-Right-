@@ -171,13 +171,21 @@ public class GameManager : MonoBehaviour
             ColorPrefabMapping mapping = prefabMappingList.FirstOrDefault(x => x.color == player.color);
             if (mapping == null) continue;
 
-            Vector3 spawnPosition = new(
+            GameObject go;
+            if (SceneManager.GetActiveScene().name != "4_Toybox")
+            {
+                go = Instantiate(mapping.prefab, player.spawnPoint, Quaternion.identity);
+            }
+            else
+            {
+                Vector3 spawnPosition = new(
                 player.spawnPoint.x,
                 mapping.prefab.transform.position.y,
                 player.spawnPoint.z
-            );
+                );
 
-            GameObject go = Instantiate(mapping.prefab, spawnPosition, Quaternion.identity);
+                go = Instantiate(mapping.prefab, spawnPosition, Quaternion.identity);
+            }
 
             PlayerController pc = go.GetComponent<PlayerController>();
             pc.Initialize(player.name, player.index, player.color);
