@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2c067cc9ce78a764cb798eb95c0a2e72
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/Materials/CloudVFX.mat
+  uploadId: 751822

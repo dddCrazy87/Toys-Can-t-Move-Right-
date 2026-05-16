@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 0844054557e068d4fadd5014e3c7875d
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 13804, guid: 0000000000000000e000000000000000, type: 0}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Shared/Editor/UXML/StatusEffectVisualTree.uxml
+  uploadId: 751822

@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: b03d169c3ff563b4aa0570bb1bf1394f
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Entities/Runtime/Scripts/Structs/Internal/IndexedStatusEffectComparer.cs
+  uploadId: 751822

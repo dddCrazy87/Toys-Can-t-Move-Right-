@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: b9bb507d747b7084da692397a0347a5c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/ScriptableObjects/StatusEffectData/SimpleEffectExample/Basic
+    Stun.asset
+  uploadId: 751822

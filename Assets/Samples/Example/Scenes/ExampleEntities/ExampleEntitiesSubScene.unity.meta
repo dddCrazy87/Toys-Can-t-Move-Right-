@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9ecf3736431935d4d993eceac3f0e235
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/Scenes/ExampleEntities/ExampleEntitiesSubScene.unity
+  uploadId: 751822

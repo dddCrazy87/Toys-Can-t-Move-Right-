@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c76cfc18aefa2ae4e9309cd7e1ea0e6e
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/Materials/BubbleVFX.mat
+  uploadId: 751822

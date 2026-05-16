@@ -170,7 +170,15 @@ public class GameManager : MonoBehaviour
             if (prefabMappingList == null) continue;
             ColorPrefabMapping mapping = prefabMappingList.FirstOrDefault(x => x.color == player.color);
             if (mapping == null) continue;
-            GameObject go = Instantiate(mapping.prefab, player.spawnPoint, Quaternion.identity);
+
+            Vector3 spawnPosition = new(
+                player.spawnPoint.x,
+                mapping.prefab.transform.position.y,
+                player.spawnPoint.z
+            );
+
+            GameObject go = Instantiate(mapping.prefab, spawnPosition, Quaternion.identity);
+
             PlayerController pc = go.GetComponent<PlayerController>();
             pc.Initialize(player.name, player.index, player.color);
             playerControllers[player.index] = pc;

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: f073edcb1b2964b44b0b642b3eadbd6c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/ScriptableObjects/StatusEffectData/ModuleEffectExample/Weak
+    Poison.asset
+  uploadId: 751822

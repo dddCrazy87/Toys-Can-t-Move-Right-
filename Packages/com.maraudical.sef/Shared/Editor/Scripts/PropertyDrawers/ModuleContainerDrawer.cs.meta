@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 365b895f8b1933f4e9044cfa688a8bf6
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Shared/Editor/Scripts/PropertyDrawers/ModuleContainerDrawer.cs
+  uploadId: 751822

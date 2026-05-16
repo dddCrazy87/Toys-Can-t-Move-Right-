@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6bc415f16326079488fb961736cc3133
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/Materials/StunnedVFX.mat
+  uploadId: 751822

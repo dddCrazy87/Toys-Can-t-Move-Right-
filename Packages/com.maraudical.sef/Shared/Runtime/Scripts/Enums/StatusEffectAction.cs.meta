@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: e769cbe07a1d4dc4e87a0ee4dfa1edff
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Shared/Runtime/Scripts/Enums/StatusEffectAction.cs
+  uploadId: 751822

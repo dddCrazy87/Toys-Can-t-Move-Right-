@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: 785fcf8c7a6eadb43b71c7b6fd90272b
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/Scripts/Entities/Runtime/ExamplePlayer.cs
+  uploadId: 751822

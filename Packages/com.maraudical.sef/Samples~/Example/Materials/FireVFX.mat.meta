@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5fe41baa44bccab4f8ce11a41bb6de01
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/Materials/FireVFX.mat
+  uploadId: 751822

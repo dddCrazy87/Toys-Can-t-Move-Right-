@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 76332f37e31809c4fa5357025d2deae3
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/CHANGELOG.md
+  uploadId: 751822

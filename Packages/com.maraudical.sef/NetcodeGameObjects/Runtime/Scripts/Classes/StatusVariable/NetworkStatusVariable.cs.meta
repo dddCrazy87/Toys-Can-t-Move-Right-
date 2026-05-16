@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 67063a831cc31e74ba0a1f81b3dc55c4
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/NetcodeGameObjects/Runtime/Scripts/Classes/StatusVariable/NetworkStatusVariable.cs
+  uploadId: 751822

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: dc3716ccea4950e4ab047e75efb9f4c1
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Shared/Editor/Scripts/Processor/StatusEffectDataPostProcessor.cs
+  uploadId: 751822

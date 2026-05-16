@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 7597d7862e7a5b04a923fffbe59908a4
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/ScriptableObjects/ComparableNames/Ice.asset
+  uploadId: 751822

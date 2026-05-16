@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: fa6d04fc069e4be49a5e002999f2fd02
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/Prefabs/UI/StatusEffectUI.prefab
+  uploadId: 751822

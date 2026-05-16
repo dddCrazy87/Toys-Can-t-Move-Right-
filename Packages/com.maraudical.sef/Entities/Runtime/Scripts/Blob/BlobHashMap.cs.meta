@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: c5ed41ddbc4b7df44b0bcccbee12fcdb
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Entities/Runtime/Scripts/Blob/BlobHashMap.cs
+  uploadId: 751822

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 6e11d871ef82b8a4f80faf307336686b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/Scripts/Editor/ExamplePlayerEditor.cs
+  uploadId: 751822

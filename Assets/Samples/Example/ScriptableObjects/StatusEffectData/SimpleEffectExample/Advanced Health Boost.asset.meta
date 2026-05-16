@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 591a04ae4706a484db079a6920cb0c77
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/ScriptableObjects/StatusEffectData/SimpleEffectExample/Advanced
+    Health Boost.asset
+  uploadId: 751822

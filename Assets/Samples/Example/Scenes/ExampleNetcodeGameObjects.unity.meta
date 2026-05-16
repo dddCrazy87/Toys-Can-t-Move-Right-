@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 99f930e930d8d2144826ae616a46d06d
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/Scenes/ExampleNetcodeGameObjects.unity
+  uploadId: 751822

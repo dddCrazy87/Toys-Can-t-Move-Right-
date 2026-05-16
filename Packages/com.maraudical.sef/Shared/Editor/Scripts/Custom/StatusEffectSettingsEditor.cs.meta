@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: b343c070b13ea9946b5197d0e89c49cc
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - VisualTree: {fileID: 9197481963319205126, guid: d57de6634b7cee7418ed66ffda5849c5,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Shared/Editor/Scripts/Custom/StatusEffectSettingsEditor.cs
+  uploadId: 751822

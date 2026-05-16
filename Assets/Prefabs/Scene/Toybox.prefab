@@ -16193,6 +16193,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sound: {fileID: 6723168590668775110}
   rotationSpeed: 100
+  scaleMultiplier: 1.65
+  activeDuration: 5
 --- !u!82 &6723168590668775110
 AudioSource:
   m_ObjectHideFlags: 0
@@ -21544,6 +21546,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sound: {fileID: 5840492824082821422}
   rotationSpeed: 100
+  scaleMultiplier: 1.65
+  activeDuration: 5
 --- !u!82 &5840492824082821422
 AudioSource:
   m_ObjectHideFlags: 0

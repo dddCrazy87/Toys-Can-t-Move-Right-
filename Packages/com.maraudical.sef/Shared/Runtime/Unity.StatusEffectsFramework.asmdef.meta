@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c1d753aaef5f86c4488844bae8cb6730
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Shared/Runtime/Unity.StatusEffectsFramework.asmdef
+  uploadId: 751822

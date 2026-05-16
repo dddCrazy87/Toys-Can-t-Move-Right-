@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 08774a401d39714429b8691a9aa31282
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/ScriptableObjects/StatusNames/Speed.asset
+  uploadId: 751822

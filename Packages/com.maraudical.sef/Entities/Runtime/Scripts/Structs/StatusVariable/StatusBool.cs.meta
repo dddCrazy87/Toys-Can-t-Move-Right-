@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: 3354c312937d2fc468fd78e96dcf09ea
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Entities/Runtime/Scripts/Structs/StatusVariable/StatusBool.cs
+  uploadId: 751822

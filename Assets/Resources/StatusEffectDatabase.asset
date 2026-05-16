@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b3bce9e8ff97714b901b8cd3e55e8b9, type: 3}
+  m_Name: StatusEffectDatabase
+  m_EditorClassIdentifier: 
+  Values:
+    m_Keys:
+    - serializedVersion: 2
+      Hash: 903b34f82dd785280f660433834f877b
+    - serializedVersion: 2
+      Hash: 503ef0c8a24d70f88d630e255f74673f
+    - serializedVersion: 2
+      Hash: 10cd6ec33f8c166c8a63df9f4c4a05c0
+    - serializedVersion: 2
+      Hash: b3f1d6cd55ebbdcd8a0a7294576c3166
+    - serializedVersion: 2
+      Hash: fdc72c7430acafb11a845813f04a3413
+    - serializedVersion: 2
+      Hash: 93c7f7f5b9b598e100121e7f3da325df
+    - serializedVersion: 2
+      Hash: 959b0abcb4cdccaee85735b84f62585f
+    - serializedVersion: 2
+      Hash: df7d9052e5e72f736d7a69cbd220e7bf
+    - serializedVersion: 2
+      Hash: d08f848566ac649a485832f3e1b5aa34
+    - serializedVersion: 2
+      Hash: a2070a02334a07a1b03d41fc4510ee52
+    - serializedVersion: 2
+      Hash: 435f015a82c4672bac1ce8e12f3bdbca
+    - serializedVersion: 2
+      Hash: 8c2c79779fb0adeeb18d373a2e667ab4
+    m_Values:
+    - {fileID: 11400000, guid: f073edcb1b2964b44b0b642b3eadbd6c, type: 2}
+    - {fileID: 11400000, guid: 363977dc1bae2b64dbfa64ba8ffa2e4e, type: 2}
+    - {fileID: 11400000, guid: 591969f3c8c8d584aa4439f14851f307, type: 2}
+    - {fileID: 11400000, guid: b9bb507d747b7084da692397a0347a5c, type: 2}
+    - {fileID: 11400000, guid: 591a04ae4706a484db079a6920cb0c77, type: 2}
+    - {fileID: 11400000, guid: 578af44cd2c054d41a5d07b10c0e6c46, type: 2}
+    - {fileID: 11400000, guid: a8a4a465308f3b84db05326b14956299, type: 2}
+    - {fileID: 11400000, guid: 264e7056bd762f5429a3bf88a78a1ac9, type: 2}
+    - {fileID: 11400000, guid: cd8dff560a8ec0f42bba9df522186f42, type: 2}
+    - {fileID: 11400000, guid: 18a263726b5153148a6fa7009499b560, type: 2}
+    - {fileID: 11400000, guid: e4a5e155861971143b3ec5973cc553fa, type: 2}
+    - {fileID: 11400000, guid: 56d927ea90df83d498e37cfd7daba43b, type: 2}
+  HiddenValues:
+    m_Keys:
+    - serializedVersion: 2
+      Hash: 903b34f82dd785280f660433834f877b
+    - serializedVersion: 2
+      Hash: 503ef0c8a24d70f88d630e255f74673f
+    - serializedVersion: 2
+      Hash: 10cd6ec33f8c166c8a63df9f4c4a05c0
+    - serializedVersion: 2
+      Hash: b3f1d6cd55ebbdcd8a0a7294576c3166
+    - serializedVersion: 2
+      Hash: fdc72c7430acafb11a845813f04a3413
+    - serializedVersion: 2
+      Hash: 93c7f7f5b9b598e100121e7f3da325df
+    - serializedVersion: 2
+      Hash: 959b0abcb4cdccaee85735b84f62585f
+    - serializedVersion: 2
+      Hash: df7d9052e5e72f736d7a69cbd220e7bf
+    - serializedVersion: 2
+      Hash: d08f848566ac649a485832f3e1b5aa34
+    - serializedVersion: 2
+      Hash: a2070a02334a07a1b03d41fc4510ee52
+    - serializedVersion: 2
+      Hash: 435f015a82c4672bac1ce8e12f3bdbca
+    - serializedVersion: 2
+      Hash: 8c2c79779fb0adeeb18d373a2e667ab4
+    m_Values:
+    - {fileID: 11400000, guid: f073edcb1b2964b44b0b642b3eadbd6c, type: 2}
+    - {fileID: 11400000, guid: 363977dc1bae2b64dbfa64ba8ffa2e4e, type: 2}
+    - {fileID: 11400000, guid: 591969f3c8c8d584aa4439f14851f307, type: 2}
+    - {fileID: 11400000, guid: b9bb507d747b7084da692397a0347a5c, type: 2}
+    - {fileID: 11400000, guid: 591a04ae4706a484db079a6920cb0c77, type: 2}
+    - {fileID: 11400000, guid: 578af44cd2c054d41a5d07b10c0e6c46, type: 2}
+    - {fileID: 11400000, guid: a8a4a465308f3b84db05326b14956299, type: 2}
+    - {fileID: 11400000, guid: 264e7056bd762f5429a3bf88a78a1ac9, type: 2}
+    - {fileID: 11400000, guid: cd8dff560a8ec0f42bba9df522186f42, type: 2}
+    - {fileID: 11400000, guid: 18a263726b5153148a6fa7009499b560, type: 2}
+    - {fileID: 11400000, guid: e4a5e155861971143b3ec5973cc553fa, type: 2}
+    - {fileID: 11400000, guid: 56d927ea90df83d498e37cfd7daba43b, type: 2}

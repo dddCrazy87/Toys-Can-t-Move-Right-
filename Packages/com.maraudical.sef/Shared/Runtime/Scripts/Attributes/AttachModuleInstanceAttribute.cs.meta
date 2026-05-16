@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 65f94072e6aa04c4ba05881149e03eab
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Shared/Runtime/Scripts/Attributes/AttachModuleInstanceAttribute.cs
+  uploadId: 751822

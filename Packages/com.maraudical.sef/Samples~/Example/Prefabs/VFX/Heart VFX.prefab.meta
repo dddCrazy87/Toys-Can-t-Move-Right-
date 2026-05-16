@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 596723451463a6443aff5842e68ee3c3
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/Prefabs/VFX/Heart VFX.prefab
+  uploadId: 751822

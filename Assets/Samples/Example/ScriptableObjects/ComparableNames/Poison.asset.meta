@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b343dd2374330dd40bfadc3bd9490190
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/ScriptableObjects/ComparableNames/Poison.asset
+  uploadId: 751822

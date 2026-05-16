@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: c497828addce0c04891c0c55bcad5c81
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Shared/Editor/Scripts/Processor/DrawWithUnityProcessor.cs
+  uploadId: 751822

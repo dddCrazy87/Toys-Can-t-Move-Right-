@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5d59c617e9e27c645b4a95c856dc345e
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/ScriptableObjects/ComparableNames/Health.asset
+  uploadId: 751822

@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: c46507d690a7ae242a68b58efcf274f4
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/Scripts/NetcodeGameObjects/Runtime/ConnectionManager.cs
+  uploadId: 751822

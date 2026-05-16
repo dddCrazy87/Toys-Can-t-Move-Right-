@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: 4fb537b716de94840946b6823b7652a8
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Entities/Runtime/Scripts/Structs/StatusVariable/StatusFloat.cs
+  uploadId: 751822

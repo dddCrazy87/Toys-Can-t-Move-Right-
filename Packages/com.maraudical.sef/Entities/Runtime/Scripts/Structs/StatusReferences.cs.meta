@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: 2e71a770f9933834e8cdbc27df6c24a2
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Entities/Runtime/Scripts/Structs/StatusReferences.cs
+  uploadId: 751822

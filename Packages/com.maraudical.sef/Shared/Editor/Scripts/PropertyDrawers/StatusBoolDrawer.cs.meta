@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 795811d986a5fb24489f85e2c22180bb
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - VisualTree: {fileID: 9197481963319205126, guid: 23f878164c34ebf4fb3f47ed40025bfb,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Shared/Editor/Scripts/PropertyDrawers/StatusBoolDrawer.cs
+  uploadId: 751822

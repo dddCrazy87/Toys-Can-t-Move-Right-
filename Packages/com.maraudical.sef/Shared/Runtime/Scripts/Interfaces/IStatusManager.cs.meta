@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 9922cf5b85ee4074cbc197f52940b83c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Shared/Runtime/Scripts/Interfaces/IStatusManager.cs
+  uploadId: 751822

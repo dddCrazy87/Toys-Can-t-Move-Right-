@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ff4c2e5985a52234a9a42c642800f49c
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 277938
+  packageName: Status Effects Framework
+  packageVersion: 4.0.0
+  assetPath: Packages/com.maraudical.sef/Samples~/Example/Prefabs/VFX/Ice VFX.prefab
+  uploadId: 751822
