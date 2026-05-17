@@ -256,7 +256,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f43761ba9555e6340bda83f3a5b0c885, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPosition: {x: 12.445, y: 8.8, z: 7.958}
+  targetPosition: {x: 12.445, y: 8.22, z: 7.958}
   moveDuration: 0.5
   activeDuration: 5
   pointTrigger: {fileID: 184924437}
@@ -1193,7 +1193,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5657321441746767712, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8844811526203915789, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1237,11 +1237,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8993618840842759961, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
       propertyPath: p1Skin
-      value: deer
+      value: mouse
       objectReference: {fileID: 0}
     - target: {fileID: 8993618840842759961, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
       propertyPath: p2Skin
-      value: dog
+      value: wind-up
       objectReference: {fileID: 0}
     - target: {fileID: 8993618840842759961, guid: f37900ce86c78864d9a680d385f79b20, type: 3}
       propertyPath: isTesting
@@ -1579,7 +1579,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 663445696}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 5de5df0535c6852448ae9e4988b18cb3, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1591,8 +1591,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 7.9620504, y: 4.2482433, z: 1.334896}
-  m_Center: {x: 0.057981458, y: 2.19368, z: -0.14505461}
+  m_Size: {x: 7.9620504, y: 4.263861, z: 1.334896}
+  m_Center: {x: 0.057981312, y: 2.201586, z: -0.14505461}
 --- !u!1 &721383024
 GameObject:
   m_ObjectHideFlags: 0
@@ -5038,7 +5038,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 09b6bad20c43043b2a16aedf92734860, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.56
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 09b6bad20c43043b2a16aedf92734860, type: 3}
       propertyPath: m_LocalPosition.z

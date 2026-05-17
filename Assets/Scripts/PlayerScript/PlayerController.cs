@@ -101,6 +101,9 @@ public class PlayerController : MonoBehaviour
                 Quaternion.Slerp(rb.rotation, targetRot, rotateSpeed * Time.fixedDeltaTime)
             );
         }
+
+        rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
+        rb.angularVelocity = Vector3.zero;
     }
 
     public void StartKnockback(Vector3 direction)

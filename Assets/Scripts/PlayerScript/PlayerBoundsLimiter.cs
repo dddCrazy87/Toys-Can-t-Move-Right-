@@ -3,8 +3,11 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerBoundsLimiter : MonoBehaviour
 {
-    public Transform[] polygonPoints;   // 五邊形的點，按順序
+    public Transform[] polygonPoints;
     private Rigidbody rb;
+
+    // 用於記錄多邊形的中心點，作為往內推的參考方向
+    private Vector3 polygonCenter;
 
     private void Awake()
     {
@@ -13,51 +16,37 @@ public class PlayerBoundsLimiter : MonoBehaviour
 
     private void Start()
     {
-        // 自動抓取 MapBound 的點
         GameObject mbObj = GameObject.Find("MapBound");
         if (mbObj != null)
         {
             Transform mb = mbObj.transform;
             polygonPoints = new Transform[mb.childCount];
             for (int i = 0; i < mb.childCount; i++)
+            {
                 polygonPoints[i] = mb.GetChild(i);
+                polygonCenter += polygonPoints[i].position; // 累加座標
+            }
+
+            // 計算多邊形中心點
+            if (mb.childCount > 0)
+            {
+                polygonCenter /= mb.childCount;
+            }
         }
         else
         {
-            // 如果沒有 MapBound，使用空陣列（依賴牆壁 Collider 來限制邊界）
             polygonPoints = new Transform[0];
-            Debug.LogWarning("[PlayerBoundsLimiter] 找不到 MapBound！邊界限制將不會生效。");
+            Debug.LogWarning("[PlayerBoundsLimiter] 找不到 MapBound！");
         }
     }
 
-    // private void FixedUpdate()
-    // {
-    //     Vector3 pos = transform.position;
-
-    //     // 如果在外面 → 投影到最近邊界
-    //     if (IsOutsidePolygon(pos))
-    //     {
-    //         Vector3 clamped = GetClosestPointOnPolygon(pos);
-
-    //         // 強制造成"黏著牆壁"效果（永遠不可能穿出去）
-    //         transform.position = clamped;
-    //         rb.linearVelocity = Vector3.zero;
-    //         rb.angularVelocity = Vector3.zero;
-    //     }
-    // }
-
-    // ======================
-    // 判斷是否在多邊形外
-    // ======================
+    // 判斷是否在多邊形外 (保持不變)
     private bool IsOutsidePolygon(Vector3 pos)
     {
         int count = polygonPoints.Length;
-
-        // 如果沒有邊界點，永遠返回 false（不限制）
         if (count < 3) return false;
 
         int crossings = 0;
-
         Vector2 p = new Vector2(pos.x, pos.z);
 
         for (int i = 0; i < count; i++)
@@ -70,12 +59,10 @@ public class PlayerBoundsLimiter : MonoBehaviour
                 crossings++;
         }
 
-        return (crossings % 2 == 0); // 偶數 → 外面
+        return (crossings % 2 == 0);
     }
 
-    // ======================
-    // 計算位置被 clamp 在多邊形邊上
-    // ======================
+    // 計算最近點 (保持不變)
     private Vector3 GetClosestPointOnPolygon(Vector3 pos)
     {
         Vector3 bestPoint = Vector3.zero;
@@ -95,11 +82,9 @@ public class PlayerBoundsLimiter : MonoBehaviour
                 bestPoint = candidate;
             }
         }
-
         return bestPoint;
     }
 
-    // 線段最近點
     private Vector3 ClosestPointOnSegment(Vector3 a, Vector3 b, Vector3 p)
     {
         Vector3 ap = p - a;
@@ -111,17 +96,27 @@ public class PlayerBoundsLimiter : MonoBehaviour
 
     public void ClampPositionImmediately()
     {
-        Vector3 pos = transform.position;
+        // 取得即將移動到的位置 (使用 rb.position 而不是 transform.position)
+        Vector3 pos = rb.position;
 
         if (IsOutsidePolygon(pos))
         {
             Vector3 clamped = GetClosestPointOnPolygon(pos);
-            clamped.y = pos.y;  // 保持原本的 Y 位置
-            transform.position = clamped;
+            clamped.y = pos.y;
 
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
+            // 【關鍵修復 1】加入緩衝區：將角色稍微往地圖中心推一點點 (0.05單位)
+            // 避免下一幀浮點數計算又判定在線上/線外
+            Vector3 pushToCenterDir = (polygonCenter - clamped).normalized;
+            pushToCenterDir.y = 0; // 確保只在水平推
+            clamped += pushToCenterDir * 0.05f;
+
+            // 【關鍵修復 2】統一使用 Rigidbody API，不要用 transform.position
+            rb.position = clamped;
+
+            // 【關鍵修復 3】移除暴力的動量清除！
+            // 註解掉下面這兩行，避免角色碰到牆壁就失去所有速度跟擊退力
+            // rb.linearVelocity = Vector3.zero;
+            // rb.angularVelocity = Vector3.zero;
         }
     }
-
 }

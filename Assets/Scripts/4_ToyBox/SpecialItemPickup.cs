@@ -15,9 +15,10 @@ public class SpecialItemPickup : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // 確保碰到的是 ToyBox 模式下的玩家
-        if (other.transform.parent == null) return;
-        ToyBoxPlayer player = other.transform.parent.GetComponent<ToyBoxPlayer>();
+        GameObject root = other.attachedRigidbody ? other.attachedRigidbody.gameObject : other.gameObject;
+        if (!root.CompareTag("Player")) return;
+
+        var player = root.GetComponent<ToyBoxPlayer>();
 
         if (player != null)
         {
