@@ -44,6 +44,7 @@ public class NetworkManager : MonoBehaviour
     private List<string> selectedSkinColor = new();
 
     private static string hostPeerId = null;
+    public string unityPeerId { get; private set; }
     private Dictionary<string, float> lastIdentifyTime = new();  // 防止重複 identify
     private const float IDENTIFY_COOLDOWN = 1f;  // 1 秒內不重複處理
 
@@ -62,9 +63,10 @@ public class NetworkManager : MonoBehaviour
         WebRTCManager.OnDataMessageReceived_Static -= OnDataReceived;
         WebRTCManager.OnPeerDisconnected_Static -= OnPeerDisconnected;
     }
-    public void SetwebRTCConnection(string unityPeerId)
+    public void SetwebRTCConnection(string peerId)
     {
-        webRTCConnection.SetUniquePlayerName(unityPeerId);
+        unityPeerId = peerId;
+        webRTCConnection.SetUniquePlayerName(peerId);
         webRTCConnection.Connect();
     }
 
@@ -340,6 +342,15 @@ public class NetworkManager : MonoBehaviour
             if (!receivedAcks[target].Contains(peerId)) return false;
         }
         return true;
+    }
+
+    // ------------- BroadcastNavigateToLobby -------------
+
+    public void BroadcastNavigateToLobby()
+    {
+        BaseMessage message = new() { type = "navigate_to_lobby" };
+        string jsonMessage = JsonUtility.ToJson(message);
+        StartCoroutine(BroadcastMessageWithRetry(jsonMessage, 3, 0.3f));
     }
 
     // ------------- BroadcastNavigateToGame -------------

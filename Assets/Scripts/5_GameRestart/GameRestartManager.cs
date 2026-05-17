@@ -108,8 +108,24 @@ public class GameRestartManager : MonoBehaviour
     [SerializeField] SceneFadeInFadeOut sceneFadeInFadeOut;
     public void RestartGame()
     {
-        // if (gameManager) Destroy(gameManager.gameObject);
-        // if (networkManager) Destroy(networkManager.gameObject);
+        // 通知 Web 端跳轉到選關頁面
+        if (networkManager != null)
+        {
+            networkManager.BroadcastNavigateToLobby();
+        }
+
+        // 重置 GameManager（清分數等，但不銷毀）
+        if (gameManager != null)
+        {
+            gameManager.isGameStart = false;
+            gameManager.hasPostcard = false;
+            gameManager.playerControllers.Clear();
+            foreach (var p in gameManager.playersInfo)
+            {
+                p.point = 0;
+            }
+        }
+
         sceneFadeInFadeOut.LoadNextSceneWithFadeOut();
     }
 
