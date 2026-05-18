@@ -119,8 +119,10 @@ public class TapEatGameManager : MonoBehaviour
             pc.Initialize(player.name, player.index, player.color);
             gameManager.playerControllers[player.index] = pc;
 
-            // 停用移動、物理和碰撞（這關不需要走路）
+            // 停用移動、旋轉、物理和碰撞（這關不需要走路）
             pc.moveSpeed = 0f;
+            pc.rotateSpeed = 0f;
+            pc.enabled = false; // 停用 PlayerController 的 Update/FixedUpdate
             Collider col = pc.GetComponent<Collider>();
             if (col != null) col.enabled = false;
             Rigidbody rb = pc.GetComponent<Rigidbody>();
