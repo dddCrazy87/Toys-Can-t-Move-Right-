@@ -246,11 +246,6 @@ public class GameManager : MonoBehaviour
         if (!check) { warnMsg.SetActive(false); return; }
 
         NetworkManager networkManager = FindFirstObjectByType<NetworkManager>();
-        // if (networkManager != null)
-        // {
-        //     networkManager.BroadcastTerminate("??");
-        //     networkManager.BroadcastNavigateToLobby();
-        // }
 
         isGameStart = false;
         hasPostcard = false;
@@ -260,23 +255,30 @@ public class GameManager : MonoBehaviour
         warnMsg.SetActive(false);
         escMenu.SetActive(false);
 
+        Time.timeScale = 1f;
 
         switch (curOp)
         {
             case ESCMenuOp.BackToHome:
+                if (networkManager != null)
+                {
+                    networkManager.webRTCConnection.Disconnect();
+                    Destroy(networkManager.gameObject);
+                }
                 playersInfo.Clear();
                 SceneManager.LoadScene("1_GameStart");
                 break;
             case ESCMenuOp.BackToLobby:
                 foreach (var p in playersInfo) p.point = 0;
+                if (networkManager != null) networkManager.BroadcastNavigateToLobby();
                 SceneManager.LoadScene("2_Setting");
                 break;
             case ESCMenuOp.BackToLobbyAndReset:
-                // if (networkManager != null)
-                // {
-                //     networkManager.webRTCConnection.Disconnect();
-                //     Destroy(networkManager.gameObject);
-                // }
+                if (networkManager != null)
+                {
+                    networkManager.webRTCConnection.Disconnect();
+                    Destroy(networkManager.gameObject);
+                }
                 playersInfo.Clear();
                 SceneManager.LoadScene("2_Setting");
                 break;
