@@ -1107,7 +1107,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   qrCodeGenerator: {fileID: 5179933609882761806}
-  networkManager: {fileID: 694765016}
+  networkManagerRef: {fileID: 0}
 --- !u!4 &1250821341
 Transform:
   m_ObjectHideFlags: 0
@@ -1946,6 +1946,10 @@ PrefabInstance:
     - target: {fileID: 4668803755021651777, guid: 9eb861df13e250d48b4a6868ae846807, type: 3}
       propertyPath: m_Name
       value: TransitionBgCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 4668803755021651777, guid: 9eb861df13e250d48b4a6868ae846807, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8286869820306617913, guid: 9eb861df13e250d48b4a6868ae846807, type: 3}
       propertyPath: m_Pivot.x

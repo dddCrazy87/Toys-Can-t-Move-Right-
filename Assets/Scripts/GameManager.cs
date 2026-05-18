@@ -199,6 +199,96 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // -------------------- ESC Menu ------------------
+
+    private bool isGamePause = false;
+    [Header("ESC Menu")]
+    [SerializeField] private GameObject escMenu;
+    [SerializeField] private GameObject warnMsg;
+    [SerializeField] private TextMeshProUGUI warnMsgTxt;
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            isGamePause = !isGamePause;
+            escMenu.SetActive(isGamePause);
+            if (isGamePause) Time.timeScale = 0f;
+            if (!isGamePause) Time.timeScale = 1f;
+        }
+    }
+
+    public enum ESCMenuOp { BackToHome, BackToLobby, BackToLobbyAndReset, CloseGame }
+    ESCMenuOp curOp = ESCMenuOp.BackToHome;
+    public void ESCMenuAction(string op)
+    {
+        curOp = op switch
+        {
+            "回到首頁" => ESCMenuOp.BackToHome,
+            "修改成員" => ESCMenuOp.BackToLobby,
+            "重置隊伍" => ESCMenuOp.BackToLobbyAndReset,
+            "結束遊戲" => ESCMenuOp.CloseGame,
+            _ => ESCMenuOp.BackToHome
+        };
+
+        warnMsgTxt.text = curOp switch
+        {
+            ESCMenuOp.BackToHome => "回到首頁",
+            ESCMenuOp.BackToLobby => "修改成員",
+            ESCMenuOp.BackToLobbyAndReset => "重置隊伍",
+            ESCMenuOp.CloseGame => "結束遊戲",
+            _ => "非法操作"
+        };
+        warnMsg.SetActive(true);
+    }
+
+    public void ComfirmESCMenuAction(bool check)
+    {
+        if (!check) { warnMsg.SetActive(false); return; }
+
+        NetworkManager networkManager = FindFirstObjectByType<NetworkManager>();
+        // if (networkManager != null)
+        // {
+        //     networkManager.BroadcastTerminate("??");
+        //     networkManager.BroadcastNavigateToLobby();
+        // }
+
+        isGameStart = false;
+        hasPostcard = false;
+        playerControllers.Clear();
+
+        isGamePause = false;
+        warnMsg.SetActive(false);
+        escMenu.SetActive(false);
+
+
+        switch (curOp)
+        {
+            case ESCMenuOp.BackToHome:
+                playersInfo.Clear();
+                SceneManager.LoadScene("1_GameStart");
+                break;
+            case ESCMenuOp.BackToLobby:
+                foreach (var p in playersInfo) p.point = 0;
+                SceneManager.LoadScene("2_Setting");
+                break;
+            case ESCMenuOp.BackToLobbyAndReset:
+                // if (networkManager != null)
+                // {
+                //     networkManager.webRTCConnection.Disconnect();
+                //     Destroy(networkManager.gameObject);
+                // }
+                playersInfo.Clear();
+                SceneManager.LoadScene("2_Setting");
+                break;
+            case ESCMenuOp.CloseGame:
+                Application.Quit();
+                break;
+            default: break;
+        }
+    }
+
+
+
     // ------------- Dont Destroy On Load -------------
 
     private static GameManager instance;
