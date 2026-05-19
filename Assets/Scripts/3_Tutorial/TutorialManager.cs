@@ -173,13 +173,14 @@ public class TutorialManager : MonoBehaviour
         if (demoImage != null) demoImage.gameObject.SetActive(false);
 
         // === 步驟一：點擊練習 ===
+        currentTutorialPhase = "right";
         instructionText.text = "請在手機上練習點擊";
         if (tapTutorialVideo != null) PlayStepVideo("tap");
-        BroadcastTutorialStep("calibrate", "請在手機上練習點擊");
+        BroadcastTutorialStep("right", "請在手機上練習點擊");
 
-        // 等待所有玩家送回 tutorial_step_complete: calibrate
+        // 等待所有玩家送回 tutorial_step_complete: right
         yield return new WaitUntil(() =>
-            playerProgressMap.Values.All(p => p.completedCalibration));
+            playerProgressMap.Values.All(p => p.completedRight));
 
         // 播放步驟完成音效
         PlayStepSound("forward");
@@ -193,13 +194,14 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // === 步驟二：滑動練習 ===
+        currentTutorialPhase = "backward";
         instructionText.text = "請在手機上練習滑動丟棄";
         if (swipeTutorialVideo != null) PlayStepVideo("swipe");
-        BroadcastTutorialStep("forward", "請在手機上練習滑動丟棄");
+        BroadcastTutorialStep("backward", "請在手機上練習滑動丟棄");
 
-        // 等待所有玩家送回 tutorial_step_complete: forward
+        // 等待所有玩家送回 tutorial_step_complete: backward
         yield return new WaitUntil(() =>
-            playerProgressMap.Values.All(p => p.completedForward));
+            playerProgressMap.Values.All(p => p.completedBackward));
 
         // 播放完成音效
         PlayStepSound("complete");
