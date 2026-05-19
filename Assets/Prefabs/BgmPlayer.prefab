@@ -46,8 +46,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bgm: {fileID: 1652820354960105657}
-  toyboxBgm: {fileID: 8300000, guid: f3af29349bc71014cb2ca07ec69715ec, type: 3}
   gameStartBgm: {fileID: 8300000, guid: 81060ca1e0e48a645908bfb71d1c76c5, type: 3}
+  toyboxBgm: {fileID: 8300000, guid: f3af29349bc71014cb2ca07ec69715ec, type: 3}
+  colorPaperBgm: {fileID: 8300000, guid: 4971c9a10dcdf44f0b379f093476c879, type: 3}
   leaderboardBgm: {fileID: 8300000, guid: eb12d5dd0a73de6408d350912699d73a, type: 3}
 --- !u!82 &1652820354960105657
 AudioSource:
@@ -61,7 +62,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 81060ca1e0e48a645908bfb71d1c76c5, type: 3}
   m_Resource: {fileID: 8300000, guid: 81060ca1e0e48a645908bfb71d1c76c5, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.5
   m_Pitch: 1
   Loop: 1
