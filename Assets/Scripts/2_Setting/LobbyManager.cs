@@ -35,4 +35,10 @@ public class LobbyManager : MonoBehaviour
         // qrCodeGenerator.EncodeTextToQrCode("https://toys-dont-move-right.vercel.app/enter-name?peerId=" + unityPeerId + "&debug=true");
         networkManager.SetwebRTCConnection(unityPeerId);
     }
+
+    private void Start()
+    {
+        BgmPlayer bgmPlayer = FindFirstObjectByType<BgmPlayer>();
+        if (bgmPlayer) bgmPlayer.ChangeBgm();
+    }
 }

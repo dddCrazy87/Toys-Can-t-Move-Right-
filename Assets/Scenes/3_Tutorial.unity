@@ -760,8 +760,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u8ACB"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0e2efbc7ef72545e8beeb024932219f9, type: 2}
-  m_sharedMaterial: {fileID: 711735941748332599, guid: 0e2efbc7ef72545e8beeb024932219f9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 6f9285ee9609846edaa057d3811938a6, type: 2}
+  m_sharedMaterial: {fileID: -2150730345847515237, guid: 6f9285ee9609846edaa057d3811938a6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1423,18 +1423,6 @@ PrefabInstance:
     - target: {fileID: 1911257808381229059, guid: 379d8be3489e24bc0bf463df1b423f68, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6126866842053589869, guid: 379d8be3489e24bc0bf463df1b423f68, type: 3}
-      propertyPath: m_Type
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6126866842053589869, guid: 379d8be3489e24bc0bf463df1b423f68, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 4c81def70350a49a985a48b2c8a4f19e, type: 3}
-    - target: {fileID: 6126866842053589869, guid: 379d8be3489e24bc0bf463df1b423f68, type: 3}
-      propertyPath: m_Color.a
-      value: 0.36078432
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
