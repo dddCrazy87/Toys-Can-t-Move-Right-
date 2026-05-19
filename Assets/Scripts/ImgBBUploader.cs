@@ -7,6 +7,9 @@ public class ImgBBUploader : MonoBehaviour
 {
     private string imgbbApiKey = "dae12b6a166fb68a99ff5f77b519ae4a";
 
+    // 定義一個預設的錯誤提示圖片網址 (建議事先上傳一張「圖片無法顯示」的圖到 ImgBB 並將網址貼在這邊)
+    private string fallbackImageUrl = "https://placehold.co/600x400/png?text=Upload+Failed";
+
     public IEnumerator UploadToImgBB(Action<string> onComplete)
     {
         yield return new WaitForEndOfFrame();
@@ -27,8 +30,11 @@ public class ImgBBUploader : MonoBehaviour
 
             if (www.result != UnityWebRequest.Result.Success)
             {
-                Debug.LogError("上傳失敗: " + www.error);
-                onComplete?.Invoke(null);
+                // 將 LogError 改為 LogWarning，並提示正在使用預設圖片
+                Debug.LogWarning("上傳失敗: " + www.error + "，將使用預設圖片繼續進行。");
+
+                // 傳送預設圖片網址，讓後續程式可以順利繼續
+                onComplete?.Invoke(fallbackImageUrl);
             }
             else
             {
