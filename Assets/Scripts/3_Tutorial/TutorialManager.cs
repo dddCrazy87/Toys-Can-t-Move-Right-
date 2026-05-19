@@ -69,12 +69,16 @@ public class TutorialManager : MonoBehaviour
     [Tooltip("拖入顯示影片的 RawImage")]
     public RawImage videoRawImage;
 
-    [Tooltip("各步驟的示範影片")]
+    [Tooltip("各步驟的示範影片（陀螺儀）")]
     public VideoClip calibrateVideo;
     public VideoClip forwardVideo;
     public VideoClip leftVideo;
     public VideoClip rightVideo;
     public VideoClip backwardVideo;
+
+    [Tooltip("非陀螺儀教學影片")]
+    public VideoClip tapTutorialVideo;      // 點擊教學影片
+    public VideoClip swipeTutorialVideo;    // 滑動教學影片
 
 
     [Header("Tutorial Settings")]
@@ -166,27 +170,41 @@ public class TutorialManager : MonoBehaviour
     private IEnumerator RunSimplifiedTutorial()
     {
         isSimplifiedTutorial = true;
-
-        // 更新大螢幕 UI
-        instructionText.text = "請在手機上練習點擊";
         if (demoImage != null) demoImage.gameObject.SetActive(false);
 
-        // 廣播教學步驟，觸發 Web 端顯示教學
-        BroadcastTutorialStep("calibrate", "請在手機上練習點擊");
+        // === 步驟一：點擊練習 ===
+        currentTutorialPhase = "right";
+        instructionText.text = "請在手機上練習點擊";
+        if (tapTutorialVideo != null) PlayStepVideo("tap");
+        BroadcastTutorialStep("right", "請在手機上練習點擊");
 
-        // 等待所有玩家送回 tutorial_step_complete: calibrate
+        // 等待所有玩家送回 tutorial_step_complete: right
         yield return new WaitUntil(() =>
-            playerProgressMap.Values.All(p => p.completedCalibration));
+            playerProgressMap.Values.All(p => p.completedRight));
+
+        // 播放步驟完成音效
+        PlayStepSound("forward");
+
+        // 更新玩家卡片
+        foreach (PlayerCardUI card in playerCardUIMap.Values)
+        {
+            card.SetStepStatus(false);
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        // === 步驟二：滑動練習 ===
+        currentTutorialPhase = "backward";
+        instructionText.text = "請在手機上練習滑動丟棄";
+        if (swipeTutorialVideo != null) PlayStepVideo("swipe");
+        BroadcastTutorialStep("backward", "請在手機上練習滑動丟棄");
+
+        // 等待所有玩家送回 tutorial_step_complete: backward
+        yield return new WaitUntil(() =>
+            playerProgressMap.Values.All(p => p.completedBackward));
 
         // 播放完成音效
-        if (stepAudioMap != null && audioSource != null)
-        {
-            StepAudioMapping mapping = stepAudioMap.FirstOrDefault(m => m.stepName == "complete");
-            if (mapping != null && mapping.soundEffect != null)
-            {
-                audioSource.PlayOneShot(mapping.soundEffect);
-            }
-        }
+        PlayStepSound("complete");
 
         yield return new WaitForSeconds(1.0f);
 
@@ -457,6 +475,12 @@ public class TutorialManager : MonoBehaviour
             case "backward":
                 clipToPlay = backwardVideo;
                 break;
+            case "tap":
+                clipToPlay = tapTutorialVideo;
+                break;
+            case "swipe":
+                clipToPlay = swipeTutorialVideo;
+                break;
         }
 
         if (clipToPlay != null)
@@ -486,6 +510,16 @@ public class TutorialManager : MonoBehaviour
         Debug.Log("影片播放完畢");
     }
     
+    private void PlayStepSound(string stepName)
+    {
+        if (stepAudioMap == null || audioSource == null) return;
+        StepAudioMapping mapping = stepAudioMap.FirstOrDefault(m => m.stepName == stepName);
+        if (mapping != null && mapping.soundEffect != null)
+        {
+            audioSource.PlayOneShot(mapping.soundEffect);
+        }
+    }
+
     void CheckForStepAdvancement()
     {
         if (isAdvancing || isSimplifiedTutorial) return;
