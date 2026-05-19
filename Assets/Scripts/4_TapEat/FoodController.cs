@@ -299,20 +299,20 @@ public class FoodController : MonoBehaviour
 
         if (currentFood.type == FoodType.Trash)
         {
-            bitesText.text = "✕";
+            bitesText.text = "X";
             bitesText.color = Color.red;
-            bitesText.fontSize = 5;
+            bitesText.fontSize = 6;
         }
         else
         {
             int remaining = currentFood.bites - currentBiteCount;
-            bitesText.text = $"×{remaining}";
-            bitesText.fontSize = 4;
+            bitesText.text = $"x{remaining}";
+            bitesText.fontSize = 5;
             bitesText.color = currentFood.type == FoodType.Golden ? new Color(1f, 0.84f, 0f) : Color.white;
         }
 
-        // 文字加描邊讓它更清楚
-        bitesText.outlineWidth = 0.2f;
-        bitesText.outlineColor = new Color32(0, 0, 0, 200);
+        // 文字加粗描邊
+        bitesText.outlineWidth = 0.4f;
+        bitesText.outlineColor = new Color32(0, 0, 0, 255);
     }
 }

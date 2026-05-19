@@ -223,13 +223,18 @@ public class TapEatGameManager : MonoBehaviour
         var state = playerStates[playerIndex];
         var fc = foodControllers[playerIndex];
 
-        // 如果點到不能吃的食物 → 扣分
+        // 如果點到不能吃的食物 → 扣分 + 播放垃圾完成音效
         if (fc.IsTrash())
         {
             state.score += fc.GetCurrentScore(); // 負分
             if (trashEatSound != null && sfxSource != null)
                 sfxSource.PlayOneShot(trashEatSound, sfxVolume);
             Debug.Log($"[TapEat] Player {playerIndex} 吃到垃圾！扣分！");
+
+            // 播放吃東西動畫（表示吃了）
+            if (eatAnimators.ContainsKey(playerIndex) && eatAnimators[playerIndex] != null)
+                eatAnimators[playerIndex].PlayEat();
+
             fc.ServeNextFood();
             UpdateScore(playerIndex, state);
             return;

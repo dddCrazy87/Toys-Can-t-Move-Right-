@@ -612,8 +612,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5177e71a5ee0a8641b5ff8c779c6180f, type: 2}
+  m_sharedMaterial: {fileID: 4610204303908902107, guid: 5177e71a5ee0a8641b5ff8c779c6180f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -707,7 +707,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 4610204303908902107, guid: 5177e71a5ee0a8641b5ff8c779c6180f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -783,11 +783,11 @@ MonoBehaviour:
     score: 1
   - sprite: {fileID: 21300000, guid: c4b3381520a20406fb11ebd2db8207c6, type: 3}
     type: 0
-    bites: 3
+    bites: 5
     score: 1
   - sprite: {fileID: 21300000, guid: 30491d00cb5c042bda10bcfe672c5acb, type: 3}
     type: 0
-    bites: 3
+    bites: 5
     score: 1
   - sprite: {fileID: 21300000, guid: 36cbbd5f8dffd42839f33087e5fc20e9, type: 3}
     type: 0
@@ -849,10 +849,10 @@ MonoBehaviour:
     type: 0
     bites: 5
     score: 1
-  - sprite: {fileID: 21300000, guid: 9f64faefd1d114ce88d9ad7931784970, type: 3}
-    type: 1
-    bites: 3
-    score: -1
+  - sprite: {fileID: 21300000, guid: 40fa807eea35f40dfaf61a24282c7f5e, type: 3}
+    type: 0
+    bites: 5
+    score: 1
   - sprite: {fileID: 21300000, guid: e33d9cdf49f664a5c8c5c8623008666c, type: 3}
     type: 1
     bites: 28
@@ -902,12 +902,12 @@ MonoBehaviour:
     bites: 1
     score: -3
   - sprite: {fileID: 21300000, guid: 9f64faefd1d114ce88d9ad7931784970, type: 3}
-    type: 1
+    type: 2
     bites: 3
     score: -1
   biteMaskPrefab: {fileID: 8270487571825665342, guid: 02908214832ad4cd6b83b28cd623f19c, type: 3}
-  biteRadius: 3
-  foodRadius: 0.8
+  biteRadius: 2.8
+  foodRadius: 0.9
   foodSpriteRenderer: {fileID: 300024964}
   bitesText: {fileID: 284262856}
   currentFood:
@@ -1044,8 +1044,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5177e71a5ee0a8641b5ff8c779c6180f, type: 2}
+  m_sharedMaterial: {fileID: 4610204303908902107, guid: 5177e71a5ee0a8641b5ff8c779c6180f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1139,7 +1139,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 4610204303908902107, guid: 5177e71a5ee0a8641b5ff8c779c6180f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1792,8 +1792,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5177e71a5ee0a8641b5ff8c779c6180f, type: 2}
+  m_sharedMaterial: {fileID: 4610204303908902107, guid: 5177e71a5ee0a8641b5ff8c779c6180f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1887,7 +1887,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 4610204303908902107, guid: 5177e71a5ee0a8641b5ff8c779c6180f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2406,6 +2406,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 996e4b34384f74912b5e3402270839da, type: 3}
   - {fileID: 8300000, guid: d514fc54498014eb28841db5a09efe26, type: 3}
   plateCompleteSound: {fileID: 8300000, guid: 043572a591c4644fb9415a2ad7f074f2, type: 3}
+  goldenCompleteSound: {fileID: 8300000, guid: 45b0252271e0442ebbafcbd04698b9fe, type: 3}
+  trashEatSound: {fileID: 8300000, guid: 8c66c8175631641b088cc74482684c23, type: 3}
+  discardSound: {fileID: 8300000, guid: 4c9dab80141a94af8844f9b9f7884cae, type: 3}
   bgmClip: {fileID: 8300000, guid: 38c70f7ba6e7c4d52947f94ee129ba5d, type: 3}
   sfxVolume: 0.5
   bgmVolume: 0.6
@@ -2636,11 +2639,11 @@ MonoBehaviour:
     score: 1
   - sprite: {fileID: 21300000, guid: c4b3381520a20406fb11ebd2db8207c6, type: 3}
     type: 0
-    bites: 3
+    bites: 5
     score: 1
   - sprite: {fileID: 21300000, guid: 30491d00cb5c042bda10bcfe672c5acb, type: 3}
     type: 0
-    bites: 3
+    bites: 5
     score: 1
   - sprite: {fileID: 21300000, guid: 36cbbd5f8dffd42839f33087e5fc20e9, type: 3}
     type: 0
@@ -2702,10 +2705,10 @@ MonoBehaviour:
     type: 0
     bites: 5
     score: 1
-  - sprite: {fileID: 21300000, guid: 9f64faefd1d114ce88d9ad7931784970, type: 3}
-    type: 1
-    bites: 3
-    score: -1
+  - sprite: {fileID: 21300000, guid: 40fa807eea35f40dfaf61a24282c7f5e, type: 3}
+    type: 0
+    bites: 5
+    score: 1
   - sprite: {fileID: 21300000, guid: e33d9cdf49f664a5c8c5c8623008666c, type: 3}
     type: 1
     bites: 28
@@ -2755,12 +2758,12 @@ MonoBehaviour:
     bites: 1
     score: -3
   - sprite: {fileID: 21300000, guid: 9f64faefd1d114ce88d9ad7931784970, type: 3}
-    type: 1
+    type: 2
     bites: 3
     score: -1
   biteMaskPrefab: {fileID: 8270487571825665342, guid: 02908214832ad4cd6b83b28cd623f19c, type: 3}
-  biteRadius: 3
-  foodRadius: 0.8
+  biteRadius: 2.8
+  foodRadius: 0.9
   foodSpriteRenderer: {fileID: 971069368}
   bitesText: {fileID: 461263079}
   currentFood:
@@ -3279,11 +3282,11 @@ MonoBehaviour:
     score: 1
   - sprite: {fileID: 21300000, guid: c4b3381520a20406fb11ebd2db8207c6, type: 3}
     type: 0
-    bites: 3
+    bites: 5
     score: 1
   - sprite: {fileID: 21300000, guid: 30491d00cb5c042bda10bcfe672c5acb, type: 3}
     type: 0
-    bites: 3
+    bites: 5
     score: 1
   - sprite: {fileID: 21300000, guid: 36cbbd5f8dffd42839f33087e5fc20e9, type: 3}
     type: 0
@@ -3345,10 +3348,10 @@ MonoBehaviour:
     type: 0
     bites: 5
     score: 1
-  - sprite: {fileID: 21300000, guid: 9f64faefd1d114ce88d9ad7931784970, type: 3}
-    type: 1
-    bites: 3
-    score: -1
+  - sprite: {fileID: 21300000, guid: 40fa807eea35f40dfaf61a24282c7f5e, type: 3}
+    type: 0
+    bites: 5
+    score: 1
   - sprite: {fileID: 21300000, guid: e33d9cdf49f664a5c8c5c8623008666c, type: 3}
     type: 1
     bites: 28
@@ -3398,12 +3401,12 @@ MonoBehaviour:
     bites: 1
     score: -3
   - sprite: {fileID: 21300000, guid: 9f64faefd1d114ce88d9ad7931784970, type: 3}
-    type: 1
+    type: 2
     bites: 3
     score: -1
   biteMaskPrefab: {fileID: 8270487571825665342, guid: 02908214832ad4cd6b83b28cd623f19c, type: 3}
-  biteRadius: 3
-  foodRadius: 0.8
+  biteRadius: 2.8
+  foodRadius: 0.9
   foodSpriteRenderer: {fileID: 1059361991}
   bitesText: {fileID: 1592333482}
   currentFood:
@@ -3881,11 +3884,11 @@ MonoBehaviour:
     score: 1
   - sprite: {fileID: 21300000, guid: c4b3381520a20406fb11ebd2db8207c6, type: 3}
     type: 0
-    bites: 3
+    bites: 5
     score: 1
   - sprite: {fileID: 21300000, guid: 30491d00cb5c042bda10bcfe672c5acb, type: 3}
     type: 0
-    bites: 3
+    bites: 5
     score: 1
   - sprite: {fileID: 21300000, guid: 36cbbd5f8dffd42839f33087e5fc20e9, type: 3}
     type: 0
@@ -3947,10 +3950,10 @@ MonoBehaviour:
     type: 0
     bites: 5
     score: 1
-  - sprite: {fileID: 21300000, guid: 9f64faefd1d114ce88d9ad7931784970, type: 3}
-    type: 1
-    bites: 3
-    score: -1
+  - sprite: {fileID: 21300000, guid: 40fa807eea35f40dfaf61a24282c7f5e, type: 3}
+    type: 0
+    bites: 5
+    score: 1
   - sprite: {fileID: 21300000, guid: e33d9cdf49f664a5c8c5c8623008666c, type: 3}
     type: 1
     bites: 28
@@ -4000,12 +4003,12 @@ MonoBehaviour:
     bites: 1
     score: -3
   - sprite: {fileID: 21300000, guid: 9f64faefd1d114ce88d9ad7931784970, type: 3}
-    type: 1
+    type: 2
     bites: 3
     score: -1
   biteMaskPrefab: {fileID: 8270487571825665342, guid: 02908214832ad4cd6b83b28cd623f19c, type: 3}
-  biteRadius: 3
-  foodRadius: 0.8
+  biteRadius: 2.8
+  foodRadius: 0.9
   foodSpriteRenderer: {fileID: 1171037356}
   bitesText: {fileID: 323404143}
   currentFood:
@@ -5157,8 +5160,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5177e71a5ee0a8641b5ff8c779c6180f, type: 2}
+  m_sharedMaterial: {fileID: 4610204303908902107, guid: 5177e71a5ee0a8641b5ff8c779c6180f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5252,7 +5255,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 4610204303908902107, guid: 5177e71a5ee0a8641b5ff8c779c6180f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
