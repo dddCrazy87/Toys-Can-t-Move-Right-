@@ -69,12 +69,16 @@ public class TutorialManager : MonoBehaviour
     [Tooltip("拖入顯示影片的 RawImage")]
     public RawImage videoRawImage;
 
-    [Tooltip("各步驟的示範影片")]
+    [Tooltip("各步驟的示範影片（陀螺儀）")]
     public VideoClip calibrateVideo;
     public VideoClip forwardVideo;
     public VideoClip leftVideo;
     public VideoClip rightVideo;
     public VideoClip backwardVideo;
+
+    [Tooltip("非陀螺儀教學影片")]
+    public VideoClip tapTutorialVideo;      // 點擊教學影片
+    public VideoClip swipeTutorialVideo;    // 滑動教學影片
 
 
     [Header("Tutorial Settings")]
@@ -170,6 +174,7 @@ public class TutorialManager : MonoBehaviour
 
         // === 步驟一：點擊練習 ===
         instructionText.text = "請在手機上練習點擊";
+        if (tapTutorialVideo != null) PlayStepVideo("tap");
         BroadcastTutorialStep("calibrate", "請在手機上練習點擊");
 
         // 等待所有玩家送回 tutorial_step_complete: calibrate
@@ -189,6 +194,7 @@ public class TutorialManager : MonoBehaviour
 
         // === 步驟二：滑動練習 ===
         instructionText.text = "請在手機上練習滑動丟棄";
+        if (swipeTutorialVideo != null) PlayStepVideo("swipe");
         BroadcastTutorialStep("forward", "請在手機上練習滑動丟棄");
 
         // 等待所有玩家送回 tutorial_step_complete: forward
@@ -466,6 +472,12 @@ public class TutorialManager : MonoBehaviour
                 break;
             case "backward":
                 clipToPlay = backwardVideo;
+                break;
+            case "tap":
+                clipToPlay = tapTutorialVideo;
+                break;
+            case "swipe":
+                clipToPlay = swipeTutorialVideo;
                 break;
         }
 
