@@ -42,8 +42,8 @@ public class TapEatGameManager : MonoBehaviour
     private class PlayerEatState
     {
         public int totalBites = 0;
-        public int currentFoodBites = 0;
         public int platesCompleted = 0;
+        public int score = 0;
     }
 
     void Start()
@@ -215,10 +215,22 @@ public class TapEatGameManager : MonoBehaviour
     {
         if (!isGameActive) return;
         if (!playerStates.ContainsKey(playerIndex)) return;
+        if (foodControllers == null || playerIndex >= foodControllers.Length || foodControllers[playerIndex] == null) return;
 
         var state = playerStates[playerIndex];
+        var fc = foodControllers[playerIndex];
+
+        // 如果點到不能吃的食物 → 扣分
+        if (fc.IsTrash())
+        {
+            state.score += fc.GetCurrentScore(); // 負分
+            Debug.Log($"[TapEat] Player {playerIndex} 吃到垃圾！扣分！");
+            fc.ServeNextFood();
+            UpdateScore(playerIndex, state);
+            return;
+        }
+
         state.totalBites++;
-        state.currentFoodBites++;
 
         // 播放咬一口音效（隨機選一個）
         if (biteSounds != null && biteSounds.Length > 0 && sfxSource != null)
@@ -240,30 +252,44 @@ public class TapEatGameManager : MonoBehaviour
         }
 
         // 食物被咬
-        if (foodControllers != null && playerIndex < foodControllers.Length && foodControllers[playerIndex] != null)
-        {
-            bool finished = foodControllers[playerIndex].Bite();
+        bool finished = fc.Bite();
 
-            if (finished)
+        if (finished)
+        {
+            // 播放吃完一盤音效
+            if (plateCompleteSound != null && sfxSource != null)
             {
-                // 播放吃完一盤音效
-                if (plateCompleteSound != null && sfxSource != null)
-                {
-                    sfxSource.PlayOneShot(plateCompleteSound, sfxVolume);
-                }
-                state.currentFoodBites = 0;
-                state.platesCompleted++;
-                foodControllers[playerIndex].ServeNextFood();
-                Debug.Log($"[TapEat] Player {playerIndex} 吃完第 {state.platesCompleted} 盤！");
+                sfxSource.PlayOneShot(plateCompleteSound, sfxVolume);
             }
+            state.platesCompleted++;
+            state.score += fc.GetCurrentScore();
+            fc.ServeNextFood();
+            Debug.Log($"[TapEat] Player {playerIndex} 吃完第 {state.platesCompleted} 盤！得 {fc.GetCurrentScore()} 分");
         }
 
-        // 更新 GameManager 的分數（盤數 = 最終得分）
+        UpdateScore(playerIndex, state);
+    }
+
+    /// <summary>
+    /// 收到玩家的滑動丟棄動作（由 NetworkManager 呼叫）
+    /// </summary>
+    public void OnDiscardAction(int playerIndex)
+    {
+        if (!isGameActive) return;
+        if (!playerStates.ContainsKey(playerIndex)) return;
+        if (foodControllers == null || playerIndex >= foodControllers.Length || foodControllers[playerIndex] == null) return;
+
+        var fc = foodControllers[playerIndex];
+        Debug.Log($"[TapEat] Player {playerIndex} 丟棄了食物（{fc.currentFood?.type}）");
+        fc.Discard();
+    }
+
+    private void UpdateScore(int playerIndex, PlayerEatState state)
+    {
         if (gameManager != null)
         {
-            gameManager.playersInfo[playerIndex].point = state.platesCompleted;
+            gameManager.playersInfo[playerIndex].point = Mathf.Max(0, state.score);
 
-            // 更新分數 UI
             if (pointUiManager != null)
             {
                 pointUiManager.UpdatePlayerPointUi(playerIndex);

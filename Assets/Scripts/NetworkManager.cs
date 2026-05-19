@@ -149,6 +149,10 @@ public class NetworkManager : MonoBehaviour
                     HandleTapAction(senderPeerId);
                     break;
 
+                case "discard_action":
+                    HandleDiscardAction(senderPeerId);
+                    break;
+
                 default:
                     break;
             }
@@ -265,6 +269,21 @@ public class NetworkManager : MonoBehaviour
             if (tapManager != null)
             {
                 tapManager.OnTapAction(player.index);
+            }
+        }
+    }
+
+    // ------------- HandleDiscardAction -------------
+
+    private void HandleDiscardAction(string senderPeerId)
+    {
+        if (peerIdToPlayer.ContainsKey(senderPeerId))
+        {
+            Player player = peerIdToPlayer[senderPeerId];
+            var tapManager = FindFirstObjectByType<TapEatGameManager>();
+            if (tapManager != null)
+            {
+                tapManager.OnDiscardAction(player.index);
             }
         }
     }

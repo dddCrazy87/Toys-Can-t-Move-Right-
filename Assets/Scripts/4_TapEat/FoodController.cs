@@ -1,15 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+
+public enum FoodType
+{
+    Normal,     // 普通食物，吃了得分
+    Golden,     // 金色食物，吃了高分
+    Trash       // 不能吃的，吃了扣分，要滑動丟棄
+}
+
+[System.Serializable]
+public class FoodEntry
+{
+    public Sprite sprite;
+    public FoodType type = FoodType.Normal;
+    [Tooltip("咬幾口吃完（Trash 類型無效）")]
+    public int bites = 5;
+    [Tooltip("得分（Trash 為負分）")]
+    public int score = 1;
+}
 
 public class FoodController : MonoBehaviour
 {
     [Header("Settings")]
-    public int bitesPerFood = 8;
-    public int playerIndex = 0;  // 由 TapEatGameManager 設定
+    public int playerIndex = 0;
 
-    [Header("Food Sprites")]
-    public Sprite[] foodSprites;
+    [Header("Food Pool")]
+    public FoodEntry[] foodPool;
 
     [Header("Bite Mask")]
     public GameObject biteMaskPrefab;
@@ -18,13 +36,14 @@ public class FoodController : MonoBehaviour
 
     [Header("References")]
     public SpriteRenderer foodSpriteRenderer;
+    public TextMeshPro bitesText;  // 顯示剩餘咬口數
 
+    // 當前食物狀態
+    [HideInInspector] public FoodEntry currentFood;
     private int currentBiteCount = 0;
-    private List<GameObject> activeBiteMasks = new();
     private int currentFoodIndex = 0;
+    private List<GameObject> activeBiteMasks = new();
     private Vector3 originalScale;
-
-    // 每個玩家用不同的 sortingOrder 範圍來隔離 SpriteMask
     private int baseSortingOrder;
 
     void Start()
@@ -42,25 +61,34 @@ public class FoodController : MonoBehaviour
 
         originalScale = foodSpriteRenderer.transform.localScale;
 
-        // 每個玩家的食物用不同的 sortingOrder（間隔 20）
         baseSortingOrder = playerIndex * 20;
         foodSpriteRenderer.sortingOrder = baseSortingOrder;
         foodSpriteRenderer.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
 
-        if (foodSprites != null && foodSprites.Length > 0)
+        if (foodPool != null && foodPool.Length > 0)
         {
             currentFoodIndex = 0;
-            ServeFoodAtIndex(currentFoodIndex);
+            ServeFood(currentFoodIndex);
         }
     }
 
+    /// <summary>
+    /// 咬一口。回傳 true 表示吃完了。
+    /// </summary>
     public bool Bite()
     {
-        if (foodSpriteRenderer == null) return false;
+        if (foodSpriteRenderer == null || currentFood == null) return false;
+
+        // 不能吃的食物被點擊 → 扣分但不算吃完
+        if (currentFood.type == FoodType.Trash)
+        {
+            return false; // TapEatGameManager 會處理扣分
+        }
 
         currentBiteCount++;
+        UpdateBitesText();
 
-        float angle = (currentBiteCount - 1) * (360f / bitesPerFood);
+        float angle = (currentBiteCount - 1) * (360f / currentFood.bites);
         float rad = angle * Mathf.Deg2Rad;
         Vector3 biteOffset = new Vector3(
             Mathf.Cos(rad) * foodRadius,
@@ -74,7 +102,6 @@ public class FoodController : MonoBehaviour
             mask.transform.localPosition = biteOffset;
             mask.transform.localScale = Vector3.one * biteRadius * 2;
 
-            // 讓咬痕遮罩只影響同一 sortingOrder 範圍的食物
             SpriteMask sm = mask.GetComponent<SpriteMask>();
             if (sm == null) sm = mask.GetComponentInChildren<SpriteMask>();
             if (sm != null)
@@ -87,12 +114,36 @@ public class FoodController : MonoBehaviour
             activeBiteMasks.Add(mask);
         }
 
-        if (currentBiteCount >= bitesPerFood)
+        if (currentBiteCount >= currentFood.bites)
         {
             return true;
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// 丟棄當前食物，上下一道
+    /// </summary>
+    public void Discard()
+    {
+        ServeNextFood();
+    }
+
+    /// <summary>
+    /// 取得當前食物的得分
+    /// </summary>
+    public int GetCurrentScore()
+    {
+        return currentFood?.score ?? 0;
+    }
+
+    /// <summary>
+    /// 當前食物是否為不能吃的
+    /// </summary>
+    public bool IsTrash()
+    {
+        return currentFood != null && currentFood.type == FoodType.Trash;
     }
 
     public void ServeNextFood()
@@ -127,12 +178,12 @@ public class FoodController : MonoBehaviour
             // 恢復原始大小
             foodSpriteRenderer.transform.localScale = originalScale;
 
-            // 換下一盤食物（照順序循環）
-            if (foodSprites != null && foodSprites.Length > 0)
+            // 下一道食物（隨機從 pool 裡選）
+            if (foodPool != null && foodPool.Length > 0)
             {
-                currentFoodIndex = (currentFoodIndex + 1) % foodSprites.Length;
+                currentFoodIndex = Random.Range(0, foodPool.Length);
             }
-            ServeFoodAtIndex(currentFoodIndex);
+            ServeFood(currentFoodIndex);
 
             // 新食物掉落動畫
             foodSpriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 1f);
@@ -154,11 +205,36 @@ public class FoodController : MonoBehaviour
         }
     }
 
-    private void ServeFoodAtIndex(int index)
+    private void ServeFood(int index)
     {
-        if (foodSprites != null && index < foodSprites.Length && foodSpriteRenderer != null)
+        if (foodPool == null || index >= foodPool.Length || foodSpriteRenderer == null) return;
+
+        currentFood = foodPool[index];
+        foodSpriteRenderer.sprite = currentFood.sprite;
+        currentBiteCount = 0;
+        UpdateBitesText();
+    }
+
+    private void UpdateBitesText()
+    {
+        if (bitesText == null) return;
+
+        if (currentFood == null)
         {
-            foodSpriteRenderer.sprite = foodSprites[index];
+            bitesText.text = "";
+            return;
+        }
+
+        if (currentFood.type == FoodType.Trash)
+        {
+            bitesText.text = "✕";
+            bitesText.color = Color.red;
+        }
+        else
+        {
+            int remaining = currentFood.bites - currentBiteCount;
+            bitesText.text = $"×{remaining}";
+            bitesText.color = currentFood.type == FoodType.Golden ? new Color(1f, 0.84f, 0f) : Color.white;
         }
     }
 }
