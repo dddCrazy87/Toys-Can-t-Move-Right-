@@ -74,7 +74,6 @@ public class ItemManager : MonoBehaviour
         float pRaw = 1f / (1f + Mathf.Exp(-k * t));
         float p = 0.15f + 0.7f * pRaw;
         p = Mathf.Clamp(p, 0.15f, 0.85f);
-        print(stealSkill + " " + defenceWeakness + " " + p);
         return p;
     }
 

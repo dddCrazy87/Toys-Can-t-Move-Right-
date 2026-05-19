@@ -176,13 +176,6 @@ public class PlayerController : MonoBehaviour
         Vector3 bounceDirection = (transform.position - otherPlayer.transform.position).normalized;
         bounceDirection.y = 0f;  // 只在水平面彈開
 
-        // 播放碰撞音效（只有一方播放，避免重複）
-        if (playerIndex < otherPlayer.playerIndex)
-        {
-            GameSoundEffect sfx = FindFirstObjectByType<GameSoundEffect>();
-            if (sfx != null) sfx.PlayPlayerCollisionSound();
-        }
-
         // 對自己施加彈開
         StartPlayerBounce(bounceDirection);
     }
@@ -243,6 +236,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator FrozenRoutine(float duration)
     {
         isFrozen = true;
+        FindFirstObjectByType<GameSoundEffect>()?.PlayFreezerSound();
         ForceStopMotion(); // 立即停止當前所有移動
         iceEffect.SetActive(true);
 

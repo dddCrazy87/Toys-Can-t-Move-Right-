@@ -147,10 +147,7 @@ public class ItemSpawner : MonoBehaviour
 
             // 視覺區分：只有基本道具 (extraScore == 0) 才隨機給中立色
             // 加分道具建議你在 Prefab 就設好一個特別的顏色 (例如金色/發光)，讓玩家一眼認出
-            if (data.extraScore == 0)
-            {
-                ic.SetRandomColor();
-            }
+            if (data.extraScore == 0) ic.SetRandomColor();
 
             StartCoroutine(SpawnProtection(data));
         }
@@ -171,7 +168,8 @@ public class ItemSpawner : MonoBehaviour
 
     public void ItemCollected(GameObject item)
     {
-        // 為了相容沒有 ItemData 的特殊道具，我們直接遍歷 Dictionary 來反查這個物件佔用的是哪個生成點
+        if (!item) return;
+
         int foundIndex = -1;
         foreach (var kv in spawnedItems)
         {
@@ -182,10 +180,7 @@ public class ItemSpawner : MonoBehaviour
             }
         }
 
-        if (foundIndex != -1)
-        {
-            spawnedItems.Remove(foundIndex);
-        }
+        if (foundIndex != -1) spawnedItems.Remove(foundIndex);
 
         Destroy(item);
 
@@ -197,8 +192,7 @@ public class ItemSpawner : MonoBehaviour
         List<int> unused = new();
         for (int i = 0; i < spawnPoints.Length; i++)
         {
-            if (!spawnedItems.ContainsKey(i))
-                unused.Add(i);
+            if (!spawnedItems.ContainsKey(i)) unused.Add(i);
         }
 
         if (unused.Count > 0)
@@ -210,10 +204,7 @@ public class ItemSpawner : MonoBehaviour
 
     public void ClearAllItems()
     {
-        foreach (var kv in spawnedItems)
-        {
-            if (kv.Value) Destroy(kv.Value);
-        }
+        foreach (var kv in spawnedItems) if (kv.Value) Destroy(kv.Value);
         spawnedItems.Clear();
     }
 }

@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ToyBoxPlayer : MonoBehaviour
@@ -20,122 +22,206 @@ public class ToyBoxPlayer : MonoBehaviour
 
     [Header("目前持有的特殊道具")]
     public SpecialItemType currentSpecialItem = SpecialItemType.None;
+    [Header("裝備中的特殊道具")]
+    public GameObject iceItem; public GameObject fingerItem; public GameObject blockerItem;
+    public Transform eqvPos;
+    private GameObject curEqvItemGo;
+
+    [Header("使用特效")]
+    public GameObject useVFX;
+
+    // ++ 新增：讓你可以從 Inspector 自由調整特效要播多久才觸發效果 ++
+    [Header("特效等待時間 (秒)")]
+    public float vfxWaitTime = 1.0f;
+
     [Header("冰凍持續時間")]
     [SerializeField] private float freezeDuration = 5f;
+
+    // ++ 新增：防止玩家在等待特效播完時重複點擊觸發 ++
+    private bool isUsingItem = false;
 
     public void Initialize()
     {
         playerController = GetComponent<PlayerController>();
-        // 嘗試自動尋找原本掛在 Player 上的 FollowPoint
-        if (followPoint == null)
-        {
-            followPoint = transform.Find("follow point");
-        }
 
-        if (playerController != null)
-        {
-            playerController.OnPressStateChanged += HandlePressState;
-        }
+        if (followPoint == null) followPoint = transform.Find("follow point");
+        if (playerController != null) playerController.OnPressStateChanged += HandlePressState;
     }
 
     private void OnDestroy()
     {
-        // ++ 新增：腳本銷毀時務必解除訂閱，避免記憶體流失 (Memory Leak) ++
-        if (playerController != null)
-        {
-            playerController.OnPressStateChanged -= HandlePressState;
-        }
+        if (playerController != null) playerController.OnPressStateChanged -= HandlePressState;
     }
 
     public void EquipSpecialItem(SpecialItemType newItemType)
     {
         currentSpecialItem = newItemType;
-        Debug.Log($"[ToyBoxPlayer] {playerController.playerName} 獲得了特殊道具: {newItemType}！(舊道具已被覆蓋)");
+        Debug.Log($"[ToyBoxPlayer] {playerController.playerName} 獲得特殊道具: {newItemType}");
 
-        // 這裡未來可以加上 UI 更新，例如在玩家頭上顯示一個道具小圖示
+        if (curEqvItemGo) Destroy(curEqvItemGo);
+        switch (newItemType)
+        {
+            case SpecialItemType.None: break;
+            case SpecialItemType.Blocker:
+                curEqvItemGo = Instantiate(blockerItem, eqvPos); break;
+            case SpecialItemType.FingerToyBuffer:
+                curEqvItemGo = Instantiate(fingerItem, eqvPos); break;
+            case SpecialItemType.Freezer:
+                curEqvItemGo = Instantiate(iceItem, eqvPos); break;
+            default: break;
+        }
     }
 
-    // ++ 新增：接收輸入，轉換為單擊邏輯 ++
     private void HandlePressState(bool isPressed)
     {
-        // 因為 ToyBox 需要的是「單擊」(按下那一刻)，所以只在 isPressed 為 true 時觸發
-        if (isPressed)
-        {
-            TriggerToyBoxSkill();
-        }
+        if (isPressed) TriggerToyBoxSkill();
     }
 
     private void TriggerToyBoxSkill()
     {
-        // 如果身上沒有特殊道具，就不做任何事
-        if (currentSpecialItem == SpecialItemType.None) return;
+        // 如果身上沒有特殊道具，或者「正在使用道具中（等特效）」，就不做任何事
+        if (currentSpecialItem == SpecialItemType.None || isUsingItem) return;
 
-        bool isItemConsumed = false; // 用來判定這次發動有沒有成功
+        bool canConsume = false;
+        Action triggerEffectAction = null;
 
+        // --- 階段 1：事前判定與收集目標 ---
         switch (currentSpecialItem)
         {
             case SpecialItemType.Blocker:
-                // 尋找場景中的生成機關
-                var spawnableObj = FindFirstObjectByType<Blocker>();
-                if (spawnableObj != null)
+                var blocker = FindFirstObjectByType<Blocker>();
+                if (blocker != null && blocker.CanActivate())
                 {
-                    // 嘗試觸發。如果機關沒在忙，就會回傳 true 讓我們消耗道具
-                    isItemConsumed = spawnableObj.TryActivate();
+                    canConsume = true;
+                    triggerEffectAction = () =>
+                    {
+                        // 加上 null 檢查以防等待期間機關被意外刪除
+                        if (blocker != null) blocker.Activate();
+                    };
                 }
                 break;
 
             case SpecialItemType.FingerToyBuffer:
-                // 找出場景中所有的變大機關
                 var allScalableObjs = FindObjectsByType<FingerToyController>(FindObjectsSortMode.None);
+                List<FingerToyController> validToys = new List<FingerToyController>();
 
                 foreach (var obj in allScalableObjs)
                 {
-                    // 嘗試觸發每一個機關。只要有任何一個成功，就標記為消耗道具
-                    if (obj.TryActivate())
+                    if (obj.CanActivate()) validToys.Add(obj);
+                }
+
+                if (validToys.Count > 0)
+                {
+                    canConsume = true;
+                    triggerEffectAction = () =>
                     {
-                        isItemConsumed = true;
-                    }
+                        foreach (var obj in validToys)
+                        {
+                            if (obj != null) obj.Activate();
+                        }
+                    };
                 }
                 break;
+
             case SpecialItemType.Freezer:
-
                 GameManager gm = FindFirstObjectByType<GameManager>();
-
-                // 1. 取得目前分數第一名的玩家清單 (可能有多人並列第一)
                 var topPlayers = gm.GetNo1Player();
+                List<PlayerController> targets = new List<PlayerController>();
 
                 foreach (var playerInfo in topPlayers)
                 {
-                    // 2. 檢查：如果第一名是自己，就跳過
                     if (gm.playersInfo.Count != 1 && playerInfo.index == playerController.playerIndex) continue;
 
-                    // 3. 從 GameManager 找到對應的 PlayerController 實體
                     if (gm.playerControllers.TryGetValue(playerInfo.index, out PlayerController targetPc))
                     {
-                        targetPc.StartFrozen(freezeDuration);
-                        isItemConsumed = true; // 只要有冰到至少一個「別人」，就標記為成功消耗
-                        Debug.Log($"[ToyBoxPlayer] 成功冰凍了第一名玩家: {playerInfo.name}");
+                        targets.Add(targetPc);
                     }
+                }
+
+                if (targets.Count > 0)
+                {
+                    canConsume = true;
+                    triggerEffectAction = () =>
+                    {
+                        foreach (var target in targets)
+                        {
+                            // 加上 null 檢查，防止等待特效的期間玩家斷線離開遊戲
+                            if (target != null)
+                            {
+                                target.StartFrozen(freezeDuration);
+                                Debug.Log($"[ToyBoxPlayer] 成功冰凍了第一名玩家: {target.playerName}");
+                            }
+                        }
+                    };
+                }
+                else
+                {
+                    Debug.Log("[ToyBoxPlayer] 第一名是自己或沒找到目標，不消耗冰凍道具");
                 }
                 break;
         }
 
-        if (isItemConsumed)
+        // --- 階段 2：啟動協程來處理有時間差的步驟 ---
+        if (canConsume)
         {
-            currentSpecialItem = SpecialItemType.None;
+            StartCoroutine(ExecuteSkillSequence(triggerEffectAction));
         }
-        else if (currentSpecialItem == SpecialItemType.Freezer)
+        else if (currentSpecialItem != SpecialItemType.Freezer)
         {
-            Debug.Log("[ToyBoxPlayer] 第一名是自己或沒找到目標，不消耗冰凍道具");
-        }
-        else
-        {
-            // 如果 isItemConsumed 是 false，代表機關正在啟動中，道具會保留在玩家身上
             Debug.Log($"[ToyBoxPlayer] 機關冷卻中，不消耗道具！");
         }
     }
 
-    // 玩家碰到道具
+    // ++ 新增：處理時間延遲的協程 ++
+    private IEnumerator ExecuteSkillSequence(Action effectAction)
+    {
+        // 標記正在使用道具，鎖定輸入
+        isUsingItem = true;
+
+        // 順序 1: 先施放粒子效果一次
+        PlayVFX();
+        FindFirstObjectByType<GameSoundEffect>()?.PlayUseSpecialSound();
+
+        // 順序 2: 等待特效播放 (可從 Inspector 調整 vfxWaitTime)
+        yield return new WaitForSeconds(vfxWaitTime);
+
+        // 順序 3: 將特殊道具刪除
+        currentSpecialItem = SpecialItemType.None;
+        if (curEqvItemGo) Destroy(curEqvItemGo);
+
+        // 順序 4: 觸發道具效果
+        effectAction?.Invoke();
+
+        // 解除鎖定
+        isUsingItem = false;
+    }
+
+    private void PlayVFX()
+    {
+        if (useVFX == null || eqvPos == null) return;
+
+        GameObject vfx = Instantiate(useVFX, eqvPos);
+        for (int i = 0; i < vfx.transform.childCount; i++)
+        {
+            ParticleSystem ps = vfx.transform.GetChild(i).GetComponent<ParticleSystem>();
+
+            if (ps)
+            {
+                ps.Stop();
+                // var mainModule = ps.main;
+                // mainModule.startColor = playerController.playerColor switch
+                // {
+                //     "blue" => Color.blue,
+                //     "yellow" => Color.yellow,
+                //     "green" => Color.green,
+                //     "red" => Color.red,
+                //     _ => Color.yellow
+                // };
+                ps.Play();
+            }
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Collectable"))
@@ -174,10 +260,7 @@ public class ToyBoxPlayer : MonoBehaviour
             totalScore += 1;
 
             ItemData data = t.GetComponent<ItemData>();
-            if (data != null)
-            {
-                totalScore += data.extraScore;
-            }
+            if (data != null) totalScore += data.extraScore;
         }
 
         FindFirstObjectByType<GameManager>().IncreasePlayerPoint(playerController.playerIndex, totalScore);

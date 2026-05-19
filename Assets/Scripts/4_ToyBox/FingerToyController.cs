@@ -43,8 +43,20 @@ public class FingerToyController : MonoBehaviour
 
     private void Start()
     {
-        // 紀錄遊戲一開始的原始大小
         originalScale = transform.localScale;
+    }
+
+    // ++ 新增：讓外部事前檢查是否可觸發 ++
+    public bool CanActivate()
+    {
+        return !isScaled;
+    }
+
+    // ++ 新增：純粹負責觸發效果 ++
+    public void Activate()
+    {
+        if (isScaled) return;
+        StartCoroutine(ActivateRoutine());
     }
 
     // 讓玩家呼叫的方法。回傳 true 代表成功觸發，回傳 false 代表正在忙
@@ -59,6 +71,7 @@ public class FingerToyController : MonoBehaviour
     private IEnumerator ActivateRoutine()
     {
         isScaled = true;
+        FindFirstObjectByType<GameSoundEffect>()?.PlayFingerSound();
 
         // 瞬間變大 (如果你想要有漸變動畫，可以在這裡改用 Vector3.Lerp)
         transform.localScale = originalScale * scaleMultiplier;

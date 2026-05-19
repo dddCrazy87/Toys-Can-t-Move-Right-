@@ -20,16 +20,26 @@ public class Blocker : MonoBehaviour
 
     private void Start()
     {
-        // 遊戲一開始先記錄該物件的初始位置
         initialPosition = transform.position;
     }
 
-    // 讓玩家呼叫的方法。回傳 true 代表成功觸發，回傳 false 代表正在忙
+    // ++ 新增：讓外部事前檢查是否可觸發 ++
+    public bool CanActivate()
+    {
+        return !isActive;
+    }
+
+    // ++ 新增：純粹負責觸發效果 ++
+    public void Activate()
+    {
+        if (isActive) return;
+        StartCoroutine(ActivateRoutine());
+    }
+
+    // (為了相容性保留原本的方法，如果你其他腳本沒有呼叫到這個，也可以刪除)
     public bool TryActivate()
     {
-        // 如果已經在發動中，或是根本沒設定目標物件，就拒絕觸發
         if (isActive) return false;
-
         StartCoroutine(ActivateRoutine());
         return true;
     }
@@ -39,6 +49,7 @@ public class Blocker : MonoBehaviour
         isActive = true;
 
         pointTrigger.SetActive(false);
+        FindFirstObjectByType<GameSoundEffect>()?.PlayBlockerSound();
 
         // 1. 從初始位置移動到指定位置
         yield return StartCoroutine(MoveToPosition(targetPosition));
