@@ -214,6 +214,10 @@ public class GameManager : MonoBehaviour
             escMenu.SetActive(isGamePause);
             if (isGamePause) Time.timeScale = 0f;
             if (!isGamePause) Time.timeScale = 1f;
+
+            BgmPlayer bgmPlayer = FindFirstObjectByType<BgmPlayer>();
+            if (isGamePause && bgmPlayer) bgmPlayer.PauseBGM();
+            if (!isGamePause && bgmPlayer) bgmPlayer.PlayBGM();
         }
     }
 
@@ -287,6 +291,14 @@ public class GameManager : MonoBehaviour
                 break;
             default: break;
         }
+
+        Invoke(nameof(ToChangeBGM), 0.5f);
+    }
+
+    private void ToChangeBGM()
+    {
+        BgmPlayer bgmPlayer = FindFirstObjectByType<BgmPlayer>();
+        if (bgmPlayer) bgmPlayer.ChangeBgm();
     }
 
 
