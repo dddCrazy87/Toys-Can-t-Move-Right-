@@ -261,7 +261,24 @@ public class GameManager : MonoBehaviour
 
         Time.timeScale = 1f;
 
-        switch (curOp)
+        StartCoroutine(ExecuteESCAction(curOp, networkManager));
+
+        Invoke(nameof(ToChangeBGM), 0.5f);
+    }
+
+    private IEnumerator ExecuteESCAction(ESCMenuOp op, NetworkManager networkManager)
+    {
+        if (networkManager != null)
+        {
+            if (op == ESCMenuOp.BackToLobby || op == ESCMenuOp.BackToHome || op == ESCMenuOp.BackToLobbyAndReset)
+            {
+                networkManager.BroadcastNavigateToLobby();
+            }
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        switch (op)
         {
             case ESCMenuOp.BackToHome:
                 if (networkManager != null)
@@ -272,11 +289,12 @@ public class GameManager : MonoBehaviour
                 playersInfo.Clear();
                 SceneManager.LoadScene("1_GameStart");
                 break;
+
             case ESCMenuOp.BackToLobby:
                 foreach (var p in playersInfo) p.point = 0;
-                if (networkManager != null) networkManager.BroadcastNavigateToLobby();
                 SceneManager.LoadScene("2_Setting");
                 break;
+
             case ESCMenuOp.BackToLobbyAndReset:
                 if (networkManager != null)
                 {
@@ -286,13 +304,18 @@ public class GameManager : MonoBehaviour
                 playersInfo.Clear();
                 SceneManager.LoadScene("2_Setting");
                 break;
+
             case ESCMenuOp.CloseGame:
+                if (networkManager != null)
+                {
+                    networkManager.webRTCConnection.Disconnect();
+                }
                 Application.Quit();
                 break;
-            default: break;
-        }
 
-        Invoke(nameof(ToChangeBGM), 0.5f);
+            default:
+                break;
+        }
     }
 
     private void ToChangeBGM()
@@ -320,3 +343,6 @@ public class GameManager : MonoBehaviour
         }
     }
 }
+
+
+
