@@ -10,6 +10,11 @@ public class PlayerPointUiManager : MonoBehaviour
 
     [Header("Player Prefab")]
     public List<SkinColorMapping> skinColorsMapping = new();
+
+    [Header("道具圖示")]
+    public Sprite blockerIcon;
+    public Sprite freezerIcon;
+    public Sprite fingerToyIcon;
     GameManager gameManager;
     Transform curPointUiType;
     void Start()
@@ -43,5 +48,38 @@ public class PlayerPointUiManager : MonoBehaviour
     {
         int point = gameManager.GetPlayerPoint(playerId);
         curPointUiType.GetChild(playerId).GetChild(1).GetComponent<TextMeshProUGUI>().text = point.ToString();
+    }
+
+    /// <summary>
+    /// 更新玩家的道具 icon（在分數旁邊顯示）
+    /// 需要在每個玩家 UI 區塊的第 3 個子物件放一個 Image
+    /// </summary>
+    public void UpdatePlayerItemIcon(int playerId, SpecialItemType itemType)
+    {
+        if (curPointUiType == null) return;
+        Transform playerUi = curPointUiType.GetChild(playerId);
+        if (playerUi.childCount < 3) return;
+
+        Image itemIcon = playerUi.GetChild(2).GetComponent<Image>();
+        if (itemIcon == null) return;
+
+        switch (itemType)
+        {
+            case SpecialItemType.Blocker:
+                itemIcon.sprite = blockerIcon;
+                itemIcon.gameObject.SetActive(true);
+                break;
+            case SpecialItemType.FingerToyBuffer:
+                itemIcon.sprite = fingerToyIcon;
+                itemIcon.gameObject.SetActive(true);
+                break;
+            case SpecialItemType.Freezer:
+                itemIcon.sprite = freezerIcon;
+                itemIcon.gameObject.SetActive(true);
+                break;
+            default:
+                itemIcon.gameObject.SetActive(false);
+                break;
+        }
     }
 }

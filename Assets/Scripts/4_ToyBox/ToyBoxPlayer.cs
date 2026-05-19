@@ -70,6 +70,13 @@ public class ToyBoxPlayer : MonoBehaviour
                 curEqvItemGo = Instantiate(iceItem, eqvPos); break;
             default: break;
         }
+
+        // 更新分數旁邊的道具 icon
+        var pointUiManager = FindFirstObjectByType<PlayerPointUiManager>();
+        if (pointUiManager != null)
+        {
+            pointUiManager.UpdatePlayerItemIcon(playerController.playerIndex, newItemType);
+        }
     }
 
     private void HandlePressState(bool isPressed)
@@ -188,6 +195,13 @@ public class ToyBoxPlayer : MonoBehaviour
         // 順序 3: 將特殊道具刪除
         currentSpecialItem = SpecialItemType.None;
         if (curEqvItemGo) Destroy(curEqvItemGo);
+
+        // 清除分數旁邊的道具 icon
+        var pointUiManager = FindFirstObjectByType<PlayerPointUiManager>();
+        if (pointUiManager != null)
+        {
+            pointUiManager.UpdatePlayerItemIcon(playerController.playerIndex, SpecialItemType.None);
+        }
 
         // 順序 4: 觸發道具效果
         effectAction?.Invoke();
