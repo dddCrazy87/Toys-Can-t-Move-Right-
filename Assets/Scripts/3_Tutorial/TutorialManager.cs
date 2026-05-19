@@ -166,27 +166,37 @@ public class TutorialManager : MonoBehaviour
     private IEnumerator RunSimplifiedTutorial()
     {
         isSimplifiedTutorial = true;
-
-        // 更新大螢幕 UI
-        instructionText.text = "請在手機上練習點擊";
         if (demoImage != null) demoImage.gameObject.SetActive(false);
 
-        // 廣播教學步驟，觸發 Web 端顯示教學
+        // === 步驟一：點擊練習 ===
+        instructionText.text = "請在手機上練習點擊";
         BroadcastTutorialStep("calibrate", "請在手機上練習點擊");
 
         // 等待所有玩家送回 tutorial_step_complete: calibrate
         yield return new WaitUntil(() =>
             playerProgressMap.Values.All(p => p.completedCalibration));
 
-        // 播放完成音效
-        if (stepAudioMap != null && audioSource != null)
+        // 播放步驟完成音效
+        PlayStepSound("forward");
+
+        // 更新玩家卡片
+        foreach (PlayerCardUI card in playerCardUIMap.Values)
         {
-            StepAudioMapping mapping = stepAudioMap.FirstOrDefault(m => m.stepName == "complete");
-            if (mapping != null && mapping.soundEffect != null)
-            {
-                audioSource.PlayOneShot(mapping.soundEffect);
-            }
+            card.SetStepStatus(false);
         }
+
+        yield return new WaitForSeconds(0.5f);
+
+        // === 步驟二：滑動練習 ===
+        instructionText.text = "請在手機上練習滑動丟棄";
+        BroadcastTutorialStep("forward", "請在手機上練習滑動丟棄");
+
+        // 等待所有玩家送回 tutorial_step_complete: forward
+        yield return new WaitUntil(() =>
+            playerProgressMap.Values.All(p => p.completedForward));
+
+        // 播放完成音效
+        PlayStepSound("complete");
 
         yield return new WaitForSeconds(1.0f);
 
@@ -486,6 +496,16 @@ public class TutorialManager : MonoBehaviour
         Debug.Log("影片播放完畢");
     }
     
+    private void PlayStepSound(string stepName)
+    {
+        if (stepAudioMap == null || audioSource == null) return;
+        StepAudioMapping mapping = stepAudioMap.FirstOrDefault(m => m.stepName == stepName);
+        if (mapping != null && mapping.soundEffect != null)
+        {
+            audioSource.PlayOneShot(mapping.soundEffect);
+        }
+    }
+
     void CheckForStepAdvancement()
     {
         if (isAdvancing || isSimplifiedTutorial) return;
