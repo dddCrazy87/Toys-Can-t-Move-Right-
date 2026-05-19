@@ -220,8 +220,10 @@ public class TapEatGameManager : MonoBehaviour
         if (!playerStates.ContainsKey(playerIndex)) return;
         if (foodControllers == null || playerIndex >= foodControllers.Length || foodControllers[playerIndex] == null) return;
 
-        var state = playerStates[playerIndex];
         var fc = foodControllers[playerIndex];
+        if (fc.isServing) return; // 換菜動畫中，忽略點擊
+
+        var state = playerStates[playerIndex];
 
         // 如果點到不能吃的食物 → 扣分 + 播放垃圾完成音效
         if (fc.IsTrash())
@@ -294,6 +296,8 @@ public class TapEatGameManager : MonoBehaviour
         if (foodControllers == null || playerIndex >= foodControllers.Length || foodControllers[playerIndex] == null) return;
 
         var fc = foodControllers[playerIndex];
+        if (fc.isServing) return; // 換菜動畫中，忽略滑動
+
         Debug.Log($"[TapEat] Player {playerIndex} 丟棄了食物（{fc.currentFood?.type}）");
         if (discardSound != null && sfxSource != null)
             sfxSource.PlayOneShot(discardSound, sfxVolume);

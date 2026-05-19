@@ -40,6 +40,7 @@ public class FoodController : MonoBehaviour
 
     // 當前食物狀態
     [HideInInspector] public FoodEntry currentFood;
+    [HideInInspector] public bool isServing = false;  // 換菜動畫中
     private int currentBiteCount = 0;
     private int currentFoodIndex = 0;
     private List<GameObject> activeBiteMasks = new();
@@ -133,6 +134,7 @@ public class FoodController : MonoBehaviour
     private IEnumerator DiscardRoutine()
     {
         if (foodSpriteRenderer == null) yield break;
+        isServing = true;
 
         // 隱藏咬口數
         if (bitesText != null) bitesText.text = "";
@@ -206,6 +208,7 @@ public class FoodController : MonoBehaviour
     private IEnumerator ServeNextFoodRoutine(bool skipFadeOut)
     {
         if (foodSpriteRenderer == null) yield break;
+        isServing = true;
 
         Color originalColor = foodSpriteRenderer.color;
 
@@ -268,6 +271,7 @@ public class FoodController : MonoBehaviour
         }
         foodSpriteRenderer.transform.localPosition = endPos;
         foodSpriteRenderer.transform.localScale = originalScale;
+        isServing = false;
     }
 
     private void ServeFood(int index)
