@@ -123,11 +123,58 @@ public class FoodController : MonoBehaviour
     }
 
     /// <summary>
-    /// 丟棄當前食物，上下一道
+    /// 丟棄當前食物（滑走動畫），上下一道
     /// </summary>
     public void Discard()
     {
-        ServeNextFood();
+        StartCoroutine(DiscardRoutine());
+    }
+
+    private IEnumerator DiscardRoutine()
+    {
+        if (foodSpriteRenderer == null) yield break;
+
+        // 隱藏咬口數
+        if (bitesText != null) bitesText.text = "";
+
+        Vector3 startPos = foodSpriteRenderer.transform.localPosition;
+        // 隨機往左或右滑出
+        float dir = Random.value > 0.5f ? 1f : -1f;
+        Vector3 endPos = startPos + new Vector3(dir * 2f, 0.3f, 0f);
+        Quaternion startRot = foodSpriteRenderer.transform.localRotation;
+        Quaternion endRot = startRot * Quaternion.Euler(0f, 0f, dir * -30f);
+
+        float duration = 0.25f;
+        float elapsed = 0f;
+        Color originalColor = foodSpriteRenderer.color;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            float ease = t * t; // 加速曲線
+            foodSpriteRenderer.transform.localPosition = Vector3.Lerp(startPos, endPos, ease);
+            foodSpriteRenderer.transform.localRotation = Quaternion.Slerp(startRot, endRot, ease);
+            foodSpriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 1f - ease);
+            yield return null;
+        }
+
+        // 清除咬痕
+        foreach (var mask in activeBiteMasks)
+        {
+            if (mask != null) Destroy(mask);
+        }
+        activeBiteMasks.Clear();
+        currentBiteCount = 0;
+
+        // 恢復位置和旋轉
+        foodSpriteRenderer.transform.localPosition = startPos;
+        foodSpriteRenderer.transform.localRotation = startRot;
+        foodSpriteRenderer.transform.localScale = originalScale;
+        foodSpriteRenderer.color = originalColor;
+
+        // 上下一道（帶轉場）
+        ServeNextWithTransition();
     }
 
     /// <summary>
@@ -148,16 +195,27 @@ public class FoodController : MonoBehaviour
 
     public void ServeNextFood()
     {
-        StartCoroutine(ServeNextFoodRoutine());
+        StartCoroutine(ServeNextFoodRoutine(false));
     }
 
-    private IEnumerator ServeNextFoodRoutine()
+    private void ServeNextWithTransition()
     {
-        if (foodSpriteRenderer != null)
+        StartCoroutine(ServeNextFoodRoutine(true));
+    }
+
+    private IEnumerator ServeNextFoodRoutine(bool skipFadeOut)
+    {
+        if (foodSpriteRenderer == null) yield break;
+
+        Color originalColor = foodSpriteRenderer.color;
+
+        // 淡出舊食物（丟棄時已經滑走了，跳過）
+        if (!skipFadeOut)
         {
+            if (bitesText != null) bitesText.text = "";
+
             float fadeTime = 0.2f;
             float elapsed = 0f;
-            Color originalColor = foodSpriteRenderer.color;
 
             while (elapsed < fadeTime)
             {
@@ -174,35 +232,42 @@ public class FoodController : MonoBehaviour
             }
             activeBiteMasks.Clear();
             currentBiteCount = 0;
-
-            // 恢復原始大小
-            foodSpriteRenderer.transform.localScale = originalScale;
-
-            // 下一道食物（隨機從 pool 裡選）
-            if (foodPool != null && foodPool.Length > 0)
-            {
-                currentFoodIndex = Random.Range(0, foodPool.Length);
-            }
-            ServeFood(currentFoodIndex);
-
-            // 新食物掉落動畫
-            foodSpriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 1f);
-            Vector3 endPos = foodSpriteRenderer.transform.localPosition;
-            Vector3 startPos = endPos + Vector3.up * 0.5f;
-            foodSpriteRenderer.transform.localPosition = startPos;
-
-            float bounceTime = 0.3f;
-            elapsed = 0f;
-            while (elapsed < bounceTime)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / bounceTime;
-                float bounce = 1f - Mathf.Pow(1f - t, 3f);
-                foodSpriteRenderer.transform.localPosition = Vector3.Lerp(startPos, endPos, bounce);
-                yield return null;
-            }
-            foodSpriteRenderer.transform.localPosition = endPos;
         }
+
+        // 恢復原始大小
+        foodSpriteRenderer.transform.localScale = originalScale;
+
+        // 下一道食物（隨機從 pool 裡選）
+        if (foodPool != null && foodPool.Length > 0)
+        {
+            currentFoodIndex = Random.Range(0, foodPool.Length);
+        }
+        ServeFood(currentFoodIndex);
+
+        // 短暫停頓讓玩家看清食物類型
+        foodSpriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 1f);
+
+        // 新食物從上方掉落 + 放大縮小彈跳
+        Vector3 endPos = foodSpriteRenderer.transform.localPosition;
+        Vector3 startPos = endPos + Vector3.up * 0.8f;
+        foodSpriteRenderer.transform.localPosition = startPos;
+        foodSpriteRenderer.transform.localScale = originalScale * 0.5f;
+
+        float bounceTime = 0.35f;
+        float elapsed2 = 0f;
+        while (elapsed2 < bounceTime)
+        {
+            elapsed2 += Time.deltaTime;
+            float t = elapsed2 / bounceTime;
+            // 彈性曲線
+            float bounce = 1f - Mathf.Pow(1f - t, 3f);
+            float scaleOvershoot = 1f + Mathf.Sin(t * Mathf.PI) * 0.15f;
+            foodSpriteRenderer.transform.localPosition = Vector3.Lerp(startPos, endPos, bounce);
+            foodSpriteRenderer.transform.localScale = Vector3.Lerp(originalScale * 0.5f, originalScale * scaleOvershoot, bounce);
+            yield return null;
+        }
+        foodSpriteRenderer.transform.localPosition = endPos;
+        foodSpriteRenderer.transform.localScale = originalScale;
     }
 
     private void ServeFood(int index)
@@ -219,6 +284,13 @@ public class FoodController : MonoBehaviour
     {
         if (bitesText == null) return;
 
+        // 確保文字在食物上方顯示
+        var textRenderer = bitesText.GetComponent<MeshRenderer>();
+        if (textRenderer != null)
+        {
+            textRenderer.sortingOrder = baseSortingOrder + 10;
+        }
+
         if (currentFood == null)
         {
             bitesText.text = "";
@@ -229,12 +301,18 @@ public class FoodController : MonoBehaviour
         {
             bitesText.text = "✕";
             bitesText.color = Color.red;
+            bitesText.fontSize = 5;
         }
         else
         {
             int remaining = currentFood.bites - currentBiteCount;
             bitesText.text = $"×{remaining}";
+            bitesText.fontSize = 4;
             bitesText.color = currentFood.type == FoodType.Golden ? new Color(1f, 0.84f, 0f) : Color.white;
         }
+
+        // 文字加描邊讓它更清楚
+        bitesText.outlineWidth = 0.2f;
+        bitesText.outlineColor = new Color32(0, 0, 0, 200);
     }
 }

@@ -25,6 +25,9 @@ public class TapEatGameManager : MonoBehaviour
     [Header("音效")]
     public AudioClip[] biteSounds;                   // 咬一口音效（多個，隨機播放）
     public AudioClip plateCompleteSound;            // 吃完一盤音效
+    public AudioClip goldenCompleteSound;           // 吃完金色食物音效
+    public AudioClip trashEatSound;                 // 吃到垃圾音效
+    public AudioClip discardSound;                  // 丟棄食物音效
     public AudioClip bgmClip;                       // 背景音樂
     [Range(0f, 1f)] public float sfxVolume = 0.8f;
     [Range(0f, 1f)] public float bgmVolume = 0.5f;
@@ -224,6 +227,8 @@ public class TapEatGameManager : MonoBehaviour
         if (fc.IsTrash())
         {
             state.score += fc.GetCurrentScore(); // 負分
+            if (trashEatSound != null && sfxSource != null)
+                sfxSource.PlayOneShot(trashEatSound, sfxVolume);
             Debug.Log($"[TapEat] Player {playerIndex} 吃到垃圾！扣分！");
             fc.ServeNextFood();
             UpdateScore(playerIndex, state);
@@ -256,8 +261,12 @@ public class TapEatGameManager : MonoBehaviour
 
         if (finished)
         {
-            // 播放吃完一盤音效
-            if (plateCompleteSound != null && sfxSource != null)
+            // 播放吃完音效（金色食物用不同音效）
+            if (fc.currentFood.type == FoodType.Golden && goldenCompleteSound != null && sfxSource != null)
+            {
+                sfxSource.PlayOneShot(goldenCompleteSound, sfxVolume);
+            }
+            else if (plateCompleteSound != null && sfxSource != null)
             {
                 sfxSource.PlayOneShot(plateCompleteSound, sfxVolume);
             }
@@ -281,6 +290,8 @@ public class TapEatGameManager : MonoBehaviour
 
         var fc = foodControllers[playerIndex];
         Debug.Log($"[TapEat] Player {playerIndex} 丟棄了食物（{fc.currentFood?.type}）");
+        if (discardSound != null && sfxSource != null)
+            sfxSource.PlayOneShot(discardSound, sfxVolume);
         fc.Discard();
     }
 
