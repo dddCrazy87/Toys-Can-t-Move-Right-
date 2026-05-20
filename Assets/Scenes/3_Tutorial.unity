@@ -878,6 +878,8 @@ MonoBehaviour:
   leftVideo: {fileID: 32900000, guid: 3c695d4d6931242de93bb74f37e942e7, type: 3}
   rightVideo: {fileID: 32900000, guid: 22d9cbafa7d8a46a49fc726073070549, type: 3}
   backwardVideo: {fileID: 32900000, guid: 57359ada0b06b4d2fb051b81440952e6, type: 3}
+  tapTutorialVideo: {fileID: 32900000, guid: 489530af28e124550937fc01bce828f9, type: 3}
+  swipeTutorialVideo: {fileID: 32900000, guid: e1fb16d6ee13e42a5b3d6c64bd030be5, type: 3}
   tiltThreshold: 0.7
   stepDemoImages: []
   stepAudioMap:
