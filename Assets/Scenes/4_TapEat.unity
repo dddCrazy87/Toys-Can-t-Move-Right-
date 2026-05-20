@@ -877,6 +877,10 @@ MonoBehaviour:
     type: 1
     bites: 24
     score: 5
+  - sprite: {fileID: 21300000, guid: 9ebc12b2cfccc4fe5972f4acee455019, type: 3}
+    type: 1
+    bites: 24
+    score: 5
   - sprite: {fileID: 21300000, guid: 18200871c39c2469ca99177744888120, type: 3}
     type: 2
     bites: 3
@@ -915,6 +919,7 @@ MonoBehaviour:
     type: 0
     bites: 5
     score: 1
+  isServing: 0
 --- !u!212 &300024964
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2733,6 +2738,10 @@ MonoBehaviour:
     type: 1
     bites: 24
     score: 5
+  - sprite: {fileID: 21300000, guid: 9ebc12b2cfccc4fe5972f4acee455019, type: 3}
+    type: 1
+    bites: 24
+    score: 5
   - sprite: {fileID: 21300000, guid: 18200871c39c2469ca99177744888120, type: 3}
     type: 2
     bites: 3
@@ -2771,6 +2780,7 @@ MonoBehaviour:
     type: 0
     bites: 5
     score: 1
+  isServing: 0
 --- !u!212 &971069368
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3376,6 +3386,10 @@ MonoBehaviour:
     type: 1
     bites: 24
     score: 5
+  - sprite: {fileID: 21300000, guid: 9ebc12b2cfccc4fe5972f4acee455019, type: 3}
+    type: 1
+    bites: 24
+    score: 5
   - sprite: {fileID: 21300000, guid: 18200871c39c2469ca99177744888120, type: 3}
     type: 2
     bites: 3
@@ -3414,6 +3428,7 @@ MonoBehaviour:
     type: 0
     bites: 5
     score: 1
+  isServing: 0
 --- !u!212 &1059361991
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3978,6 +3993,10 @@ MonoBehaviour:
     type: 1
     bites: 24
     score: 5
+  - sprite: {fileID: 21300000, guid: 9ebc12b2cfccc4fe5972f4acee455019, type: 3}
+    type: 1
+    bites: 24
+    score: 5
   - sprite: {fileID: 21300000, guid: 18200871c39c2469ca99177744888120, type: 3}
     type: 2
     bites: 3
@@ -4016,6 +4035,7 @@ MonoBehaviour:
     type: 0
     bites: 5
     score: 1
+  isServing: 0
 --- !u!212 &1171037356
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4209,6 +4229,9 @@ MonoBehaviour:
       avatarSprite: {fileID: 21300000, guid: 82701331d4548b54fb114bbde1c570b2, type: 3}
     - color: yellow
       avatarSprite: {fileID: 21300000, guid: 2bb340e4daf2d944d947f0f18452837a, type: 3}
+  blockerIcon: {fileID: 0}
+  freezerIcon: {fileID: 0}
+  fingerToyIcon: {fileID: 0}
 --- !u!4 &1238190364
 Transform:
   m_ObjectHideFlags: 0
