@@ -120,6 +120,11 @@ MonoBehaviour:
   countDown3: {fileID: 1506898291112793540}
   countDown2: {fileID: 4361076973038274769}
   countDown1: {fileID: 9125388822867388106}
+  beep3Sound: {fileID: 8300000, guid: fbb3e08b5341942a0a396efa8647b984, type: 3}
+  beep2Sound: {fileID: 8300000, guid: fbb3e08b5341942a0a396efa8647b984, type: 3}
+  beep1Sound: {fileID: 8300000, guid: fbb3e08b5341942a0a396efa8647b984, type: 3}
+  startSound: {fileID: 8300000, guid: 88d70af4763ab431487677ca6f4b1d19, type: 3}
+  countdownVolume: 1
 --- !u!1 &3958311553932958094
 GameObject:
   m_ObjectHideFlags: 0

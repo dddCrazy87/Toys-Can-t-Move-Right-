@@ -36,9 +36,36 @@ public class LobbyManager : MonoBehaviour
         networkManager.SetwebRTCConnection(unityPeerId);
     }
 
+    private int lastPlayerCount = 0;
+
+    [System.Serializable]
+    public class PlayerCountMessage
+    {
+        public string type = "player_count_update";
+        public int count;
+    }
+
     private void Start()
     {
         BgmPlayer bgmPlayer = FindFirstObjectByType<BgmPlayer>();
         if (bgmPlayer) bgmPlayer.ChangeBgm();
+    }
+
+    void Update()
+    {
+        if (networkManager != null && networkManager.playersInfo.Count != lastPlayerCount)
+        {
+            lastPlayerCount = networkManager.playersInfo.Count;
+            BroadcastPlayerCount(lastPlayerCount);
+        }
+    }
+
+    private void BroadcastPlayerCount(int count)
+    {
+        PlayerCountMessage msg = new() { count = count };
+        string json = JsonUtility.ToJson(msg);
+
+        // 傳 null 代表廣播給所有已連線的 WebRTC 節點 (所有手機)
+        networkManager.webRTCConnection.SendDataChannelMessage(json);
     }
 }

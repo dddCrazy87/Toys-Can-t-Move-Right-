@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     public Dictionary<int, PlayerController> playerControllers = new();
     [Header("Level Selection")]
     public string selectedLevel = "4_ColorPaper";  // 預設關卡
-    public static readonly string[] AvailableLevels = { "4_ColorPaper", "4_Toybox", "4_TapEat" };
+    public static readonly string[] AvailableLevels = { "4_ColorPaper", "4_Toybox", "4_TapEat", "4_SpyGame" };
 
     [Header("Player Data")]
     public List<Player> playersInfo = new();

@@ -172,6 +172,28 @@ public class TutorialManager : MonoBehaviour
         isSimplifiedTutorial = true;
         if (demoImage != null) demoImage.gameObject.SetActive(false);
 
+        string selectedLevel = gameManager.selectedLevel;
+
+        // ▼ 新增這段：針對抓內鬼等不需要練習的關卡，只等待倒數 ▼
+        if (selectedLevel == "4_SpyGame")
+        {
+            instructionText.text = "請看手機畫面指示！";
+
+            // 等待前端網頁 3 秒倒數後自動發送的 calibrate (完成) 訊號
+            yield return new WaitUntil(() => playerProgressMap.Values.All(p => p.completedCalibration));
+
+            instructionText.text = "準備開始遊戲！";
+            yield return new WaitForSeconds(1.0f);
+
+            Debug.Log("[TutorialManager] 抓內鬼教學結束，準備進入遊戲...");
+            networkManager.BroadcastNavigateToPlaying();
+            gameManager.UpdatePlayerInfo(networkManager.playersInfo);
+            tutorialSceneFadeOut.SetNextScene(selectedLevel);
+            tutorialSceneFadeOut.LoadNextSceneWithFadeOut();
+
+            yield break; // 結束協程，不要往下跑 TapEat 的練習
+        }
+
         // === 步驟一：點擊練習 ===
         currentTutorialPhase = "right";
         instructionText.text = "請在手機上練習點擊";
@@ -217,7 +239,6 @@ public class TutorialManager : MonoBehaviour
         networkManager.BroadcastNavigateToPlaying();
         gameManager.UpdatePlayerInfo(networkManager.playersInfo);
 
-        string selectedLevel = gameManager.selectedLevel;
         Debug.Log($"[TutorialManager] 載入選擇的關卡: {selectedLevel}");
         tutorialSceneFadeOut.SetNextScene(selectedLevel);
         tutorialSceneFadeOut.LoadNextSceneWithFadeOut();
@@ -417,7 +438,7 @@ public class TutorialManager : MonoBehaviour
         }
 
         instructionText.text = text;
-        
+
         if (demoImage != null && stepDemoImages != null && animatorIndex >= 0 && animatorIndex < stepDemoImages.Length)
         {
             demoImage.sprite = stepDemoImages[animatorIndex];
@@ -509,7 +530,7 @@ public class TutorialManager : MonoBehaviour
     {
         Debug.Log("影片播放完畢");
     }
-    
+
     private void PlayStepSound(string stepName)
     {
         if (stepAudioMap == null || audioSource == null) return;
@@ -585,7 +606,7 @@ public class TutorialManager : MonoBehaviour
         }
         else
         {
-            
+
             foreach (PlayerCardUI card in playerCardUIMap.Values)
             {
                 card.SetStepStatus(false);

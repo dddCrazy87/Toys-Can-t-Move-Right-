@@ -31,6 +31,18 @@ public class LevelSelectedMessage { public string type; public string level; }
 public class NavigateAckMessage : BaseMessage { public string target; }
 [System.Serializable]
 public class TapActionMessage : BaseMessage { }
+
+// spy game
+[System.Serializable]
+public class SpyGameInitMessage : BaseMessage { public int myPlayerId; public string role; public List<string> playerNames; }
+[System.Serializable]
+public class SpyRoundStartMessage : BaseMessage { public int roundIndex; public int minTarget; public int maxTarget; }
+[System.Serializable]
+public class SpyVotingStartMessage : BaseMessage { public string message; }
+[System.Serializable]
+public class NumberSelectMessage : BaseMessage { public int number; }
+[System.Serializable]
+public class VoteSubmitMessage : BaseMessage { public int votedTargetId; }
 #endregion
 
 public class NetworkManager : MonoBehaviour
@@ -126,6 +138,8 @@ public class NetworkManager : MonoBehaviour
                     if (senderPeerId == hostPeerId)
                     {
                         Debug.Log("Host Requested Start Game！");
+                        if (gameManager != null) BroadcastLevelSelected(gameManager.selectedLevel);
+
                         BroadcastNavigateToGame();
                         gameManager.UpdatePlayerInfo(playersInfo);
                         SceneManager.LoadScene("3_Tutorial");
@@ -151,6 +165,25 @@ public class NetworkManager : MonoBehaviour
 
                 case "discard_action":
                     HandleDiscardAction(senderPeerId);
+                    break;
+
+                case "submit_number":
+                    if (peerIdToPlayer.ContainsKey(senderPeerId))
+                    {
+                        NumberSelectMessage numMsg = JsonUtility.FromJson<NumberSelectMessage>(message);
+                        int pIndex = peerIdToPlayer[senderPeerId].index;
+                        // 呼叫我們抓內鬼的 GameManager (注意：這裡用 SpyGameManager 避免跟你原本的 GameManager 撞名，稍後會說明)
+                        SpyGameManager.Instance?.SubmitNumber(pIndex, numMsg.number);
+                    }
+                    break;
+
+                case "submit_vote":
+                    if (peerIdToPlayer.ContainsKey(senderPeerId))
+                    {
+                        VoteSubmitMessage voteMsg = JsonUtility.FromJson<VoteSubmitMessage>(message);
+                        int pIndex = peerIdToPlayer[senderPeerId].index;
+                        SpyGameManager.Instance?.SubmitVote(pIndex, voteMsg.votedTargetId);
+                    }
                     break;
 
                 default:
@@ -216,7 +249,11 @@ public class NetworkManager : MonoBehaviour
             Debug.Log($"{senderPeerId} ({identity.nickname}) is now the host.");
             BroadcastHostUpdate();
         }
-        // 如果是已存在的 host 重連，不需要重新廣播
+
+        if (gameManager != null && !string.IsNullOrEmpty(gameManager.selectedLevel))
+        {
+            BroadcastLevelSelected(gameManager.selectedLevel);
+        }
     }
 
     private void HandleMoveMessage(string message, string senderPeerId)
@@ -435,6 +472,65 @@ public class NetworkManager : MonoBehaviour
 
         receivedAcks.Remove("terminate");
         StartCoroutine(BroadcastMessageWithAckRetry(jsonMessage, "terminate", 5, 2f));
+    }
+
+
+    //------------------------Spy Game-------------------
+
+    public void BroadcastSpyGameInit(Dictionary<int, string> playerRoles)
+    {
+        if (webRTCConnection == null) return;
+
+        // 🌟 1. 建立一份所有人暱稱的清單（根據 p.index 確保順序是 0, 1, 2, 3）
+        List<string> allNicknames = new List<string>();
+
+        // 使用 playersInfo 來取得所有人的名字，並照 index 排序
+        // (確保有引用 using System.Linq;)
+        foreach (var p in playersInfo.OrderBy(player => player.index))
+        {
+            allNicknames.Add(p.name);
+        }
+
+        foreach (var kvp in peerIdToPlayer)
+        {
+            string peerId = kvp.Key;
+            Player p = kvp.Value;
+
+            if (playerRoles.ContainsKey(p.index))
+            {
+                SpyGameInitMessage msg = new SpyGameInitMessage
+                {
+                    type = "spy_game_init",
+                    myPlayerId = p.index,
+                    role = playerRoles[p.index],
+                    playerNames = allNicknames
+                };
+
+                webRTCConnection.SendDataChannelMessageToPeer(peerId, JsonUtility.ToJson(msg));
+            }
+        }
+    }
+
+    public void BroadcastSpyRoundStart(int roundIndex, int min, int max)
+    {
+        SpyRoundStartMessage msg = new SpyRoundStartMessage
+        {
+            type = "spy_round_start",
+            roundIndex = roundIndex,
+            minTarget = min,
+            maxTarget = max
+        };
+        StartCoroutine(BroadcastMessageWithRetry(JsonUtility.ToJson(msg), 3, 0.3f));
+    }
+
+    public void BroadcastSpyVotingStart()
+    {
+        SpyVotingStartMessage msg = new SpyVotingStartMessage
+        {
+            type = "spy_voting_start",
+            message = "請投票抓出內鬼！"
+        };
+        StartCoroutine(BroadcastMessageWithRetry(JsonUtility.ToJson(msg), 3, 0.3f));
     }
 
     // ------------- ACK 重試機制 Coroutines -------------

@@ -23,6 +23,7 @@ public class BgmPlayer : MonoBehaviour
     public AudioClip gameStartBgm;      // 預設（大廳、設定、教學等）
     public AudioClip toyboxBgm;         // 4_Toybox
     public AudioClip colorPaperBgm;     // 4_ColorPaper
+    public AudioClip SpyGameBgm;        // 4_SpyGame
     public AudioClip leaderboardBgm;    // 5_GameRestart（頒獎）
 
     public void PauseBGM()
@@ -46,6 +47,7 @@ public class BgmPlayer : MonoBehaviour
         {
             "4_Toybox" => toyboxBgm,
             "4_ColorPaper" => colorPaperBgm,
+            "4_SpyGame" => SpyGameBgm,
             "5_GameRestart" => leaderboardBgm,
             _ => gameStartBgm  // 預設（大廳、設定、教學等）
         };
