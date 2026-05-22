@@ -267,24 +267,20 @@ public class TutorialManager : MonoBehaviour
     {
         if (!playerProgressMap.ContainsKey(peerId)) return;
 
-        Debug.Log($"[TutorialManager] 玩家 {peerId} 在教學中斷線，移除進度追蹤");
+        Debug.Log($"[TutorialManager] 玩家 {peerId} 在教學中斷線，自動完成所有步驟（保留玩家資料等待重連）");
 
-        // 移除進度追蹤
-        playerProgressMap.Remove(peerId);
+        // 自動完成所有教學步驟，避免 WaitUntil 卡住
+        PlayerTutorialProgress progress = playerProgressMap[peerId];
+        progress.completedCalibration = true;
+        progress.completedForward = true;
+        progress.completedLeft = true;
+        progress.completedRight = true;
+        progress.completedBackward = true;
 
-        // 移除 UI 卡片
+        // UI 卡片標記為完成
         if (playerCardUIMap.ContainsKey(peerId))
         {
-            Destroy(playerCardUIMap[peerId].gameObject);
-            playerCardUIMap.Remove(peerId);
-        }
-
-        // 同步移除 NetworkManager 的玩家資料
-        if (networkManager != null && networkManager.peerIdToPlayer.ContainsKey(peerId))
-        {
-            Player leavingPlayer = networkManager.peerIdToPlayer[peerId];
-            networkManager.playersInfo.Remove(leavingPlayer);
-            networkManager.peerIdToPlayer.Remove(peerId);
+            playerCardUIMap[peerId].SetStepStatus(true);
         }
     }
 
