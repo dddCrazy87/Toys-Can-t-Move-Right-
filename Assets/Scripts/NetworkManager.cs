@@ -242,13 +242,15 @@ public class NetworkManager : MonoBehaviour
             BroadcastInitialToPeer(senderPeerId, chosenColor);
         }
 
-        // 若無 Host 則指定（只在 host 真的改變時才廣播）
+        // 若無 Host 則指定第一個玩家為 Host
         if (hostPeerId == null)
         {
             hostPeerId = senderPeerId;
             Debug.Log($"{senderPeerId} ({identity.nickname}) is now the host.");
-            BroadcastHostUpdate();
         }
+
+        // 每次有玩家 identify（含重連）都廣播 host_update，確保重玩時 Web 端能收到房主資訊
+        BroadcastHostUpdate();
 
         if (gameManager != null && !string.IsNullOrEmpty(gameManager.selectedLevel))
         {
