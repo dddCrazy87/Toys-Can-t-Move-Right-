@@ -118,6 +118,7 @@ public class TutorialManager : MonoBehaviour
         }
 
         WebRTCManager.OnDataMessageReceived_Static += OnDataReceived;
+        WebRTCManager.OnPeerDisconnected_Static += OnPeerDisconnectedInTutorial;
 
         if (videoPlayer != null)
         {
@@ -262,8 +263,34 @@ public class TutorialManager : MonoBehaviour
         tutorialSceneFadeOut.LoadNextSceneWithFadeOut();
     }
 
+    private void OnPeerDisconnectedInTutorial(string peerId)
+    {
+        if (!playerProgressMap.ContainsKey(peerId)) return;
+
+        Debug.Log($"[TutorialManager] 玩家 {peerId} 在教學中斷線，移除進度追蹤");
+
+        // 移除進度追蹤
+        playerProgressMap.Remove(peerId);
+
+        // 移除 UI 卡片
+        if (playerCardUIMap.ContainsKey(peerId))
+        {
+            Destroy(playerCardUIMap[peerId].gameObject);
+            playerCardUIMap.Remove(peerId);
+        }
+
+        // 同步移除 NetworkManager 的玩家資料
+        if (networkManager != null && networkManager.peerIdToPlayer.ContainsKey(peerId))
+        {
+            Player leavingPlayer = networkManager.peerIdToPlayer[peerId];
+            networkManager.playersInfo.Remove(leavingPlayer);
+            networkManager.peerIdToPlayer.Remove(peerId);
+        }
+    }
+
     void OnDestroy()
     {
+        WebRTCManager.OnPeerDisconnected_Static -= OnPeerDisconnectedInTutorial;
         WebRTCManager.OnDataMessageReceived_Static -= OnDataReceived;
         if (videoPlayer != null)
         {
