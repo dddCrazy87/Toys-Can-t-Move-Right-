@@ -154,7 +154,11 @@ public class TutorialManager : MonoBehaviour
         if (demoImage != null) demoImage.gameObject.SetActive(false);
         if (demoAnimator != null) demoAnimator.gameObject.SetActive(false);
         if (videoRawImage != null) videoRawImage.gameObject.SetActive(true);
-        if (videoPlayer != null) videoPlayer.isLooping = true;
+        if (videoPlayer != null)
+        {
+            videoPlayer.gameObject.SetActive(true);
+            videoPlayer.isLooping = true;
+        }
 
         currentTutorialPhase = "right";
         instructionText.text = "請在手機上練習點擊";
@@ -392,6 +396,7 @@ public class TutorialManager : MonoBehaviour
 
     void PlayStepVideo(string step)
     {
+        Debug.Log($"[Video] PlayStepVideo called: step={step}, videoPlayer={videoPlayer != null}");
         if (videoPlayer == null) return;
         VideoClip clipToPlay = null;
         switch (step)
@@ -404,10 +409,30 @@ public class TutorialManager : MonoBehaviour
             case "tap": clipToPlay = tapTutorialVideo; break;
             case "swipe": clipToPlay = swipeTutorialVideo; break;
         }
-        if (clipToPlay != null) { videoPlayer.clip = clipToPlay; videoPlayer.Prepare(); }
+        Debug.Log($"[Video] clip={clipToPlay?.name ?? "NULL"}");
+        if (clipToPlay != null)
+        {
+            videoPlayer.clip = clipToPlay;
+            videoPlayer.Prepare();
+            Debug.Log($"[Video] Preparing clip: {clipToPlay.name}");
+        }
+        else
+        {
+            Debug.LogWarning($"[Video] No clip found for step: {step}");
+        }
     }
 
-    void OnVideoPrepared(VideoPlayer vp) { if (videoRawImage != null) videoRawImage.texture = vp.texture; vp.Play(); }
+    void OnVideoPrepared(VideoPlayer vp)
+    {
+        Debug.Log($"[Video] OnVideoPrepared: texture={vp.texture != null}, rawImage={videoRawImage != null}");
+        if (videoRawImage != null)
+        {
+            Debug.Log($"[Video] rawImage.active={videoRawImage.gameObject.activeSelf}, parent.active={videoRawImage.transform.parent?.gameObject.activeSelf}");
+            videoRawImage.texture = vp.texture;
+        }
+        vp.Play();
+        Debug.Log($"[Video] Playing! isPlaying={vp.isPlaying}");
+    }
     void OnVideoFinished(VideoPlayer vp) { }
 
     private void PlayStepSound(string stepName)

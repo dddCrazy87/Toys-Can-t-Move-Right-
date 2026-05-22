@@ -1029,6 +1029,7 @@ MonoBehaviour:
   pathMode: 0
   folderPath: C:/Users/Accelerator/Desktop/test
   fileName: leaderboard.json
+  firebaseUrl: ' https://toydontmove-default-rtdb.asia-southeast1.firebasedatabase.app '
 --- !u!1001 &870319987
 PrefabInstance:
   m_ObjectHideFlags: 0

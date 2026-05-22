@@ -95,7 +95,7 @@ public class GameRestartManager : MonoBehaviour
             txt.text = item.name;
 
             // update ranker
-            if (gameManager) jsonScoreManager.AddPlayerRecord(item.name, item.point, item.skin, item.color);
+            if (gameManager) jsonScoreManager.AddPlayerRecord(item.name, item.point, item.skin, item.color, gameManager.selectedLevel);
         }
 
         // 顯示明信片 Toast 提示
