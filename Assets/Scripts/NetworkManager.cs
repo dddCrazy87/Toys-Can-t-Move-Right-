@@ -43,6 +43,8 @@ public class SpyVotingStartMessage : BaseMessage { public string message; }
 public class NumberSelectMessage : BaseMessage { public int number; }
 [System.Serializable]
 public class VoteSubmitMessage : BaseMessage { public int votedTargetId; }
+[System.Serializable]
+public class SpyGameResetMessage : BaseMessage { }
 #endregion
 
 public class NetworkManager : MonoBehaviour
@@ -548,6 +550,12 @@ public class NetworkManager : MonoBehaviour
             type = "spy_voting_start",
             message = "請投票抓出內鬼！"
         };
+        StartCoroutine(BroadcastMessageWithRetry(JsonUtility.ToJson(msg), 3, 0.3f));
+    }
+
+    public void BroadcastSpyGameReset()
+    {
+        BaseMessage msg = new BaseMessage { type = "spy_game_reset" };
         StartCoroutine(BroadcastMessageWithRetry(JsonUtility.ToJson(msg), 3, 0.3f));
     }
 

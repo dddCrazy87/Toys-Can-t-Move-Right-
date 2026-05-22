@@ -9,6 +9,7 @@ public class Spy_UIManager : MonoBehaviour
     [Header("UI 參考")]
     public TextMeshProUGUI targetText;
     public TextMeshProUGUI gameStateText;
+    public TextMeshProUGUI trialText;
     [Header("動態歷史紀錄設定")]
     public GameObject historyItemPrefab;
     public Transform historyContainer;
@@ -25,6 +26,7 @@ public class Spy_UIManager : MonoBehaviour
         ClearHistoryContainer();
 
         // 訂閱事件
+        SpyGameManager.Instance.OnGameStarted += HandleGameStarted;
         SpyGameManager.Instance.OnRoundStarted += UpdateRoundTargetUI;
         SpyGameManager.Instance.OnRoundResolved += UpdateHistoryUI;
         SpyGameManager.Instance.OnVotingPhaseStarted += ShowVotingUI;
@@ -35,6 +37,7 @@ public class Spy_UIManager : MonoBehaviour
     {
         if (SpyGameManager.Instance != null)
         {
+            SpyGameManager.Instance.OnGameStarted -= HandleGameStarted;
             SpyGameManager.Instance.OnRoundStarted -= UpdateRoundTargetUI;
             SpyGameManager.Instance.OnRoundResolved -= UpdateHistoryUI;
             SpyGameManager.Instance.OnVotingPhaseStarted -= ShowVotingUI;
@@ -151,6 +154,14 @@ public class Spy_UIManager : MonoBehaviour
 
         gameStateText.text = $"遊戲結束！\n{winnerStr}\n壞人是：{badGuyName}";
         targetText.text = "";
+    }
+
+    private void HandleGameStarted()
+    {
+        ClearHistoryContainer();
+        targetText.text = "遊戲初始化";
+        trialText.text = SpyGameManager.Instance.isTrial ? "【本輪為試玩練習】" : "【本輪為正式遊戲】";
+        gameStateText.text = $"分配玩家身分中...";
     }
 }
 

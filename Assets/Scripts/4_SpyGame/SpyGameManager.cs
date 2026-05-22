@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using UnityEngine.SceneManagement;
 using System.Collections;
+using TMPro;
 
 // 遊戲狀態枚舉
 public enum GameState
@@ -78,10 +78,11 @@ public class SpyGameManager : MonoBehaviour
     public float votingTime = 180f;
     [Header("開局動畫設定")]
     public GameStartCountDown gameStartCountDown;
-
-    [Header("結算按鈕")]
-    public GameObject ggButton;
     public string nextSceneName = "";
+    [Header("試玩與結算設定")]
+    public bool isTrial = true; // 預設第一把是試玩
+    public GameObject ggButton;
+    public TextMeshProUGUI ggButtonText; // 用來修改按鈕文字
 
     [Header("當前遊戲狀態 (唯讀測試用)")]
     public GameState currentState;
@@ -428,19 +429,39 @@ public class SpyGameManager : MonoBehaviour
         Debug.Log($"====================");
 
         OnGameEnded?.Invoke(finalResult);
-        ggButton.SetActive(true);
+        if (ggButton != null) ggButton.SetActive(true);
 
-        foreach (var p in players.Values)
+        if (isTrial) { if (ggButtonText != null) ggButtonText.text = "正式遊戲"; }
+        else
         {
-            if (finalResult == GameResult.GoodGuysWin)
+            if (ggButtonText != null) ggButtonText.text = "前往頒獎";
+            foreach (var p in players.Values)
             {
-                if (p.role == Role.GoodGuy) gameManager.IncreasePlayerPoint(p.playerId, 1);
-            }
-            else
-            {
-                if (p.role == Role.BadGuy) gameManager.IncreasePlayerPoint(p.playerId, 1);
+                if (finalResult == GameResult.GoodGuysWin)
+                {
+                    if (p.role == Role.GoodGuy) gameManager.IncreasePlayerPoint(p.playerId, 1);
+                }
+                else
+                {
+                    if (p.role == Role.BadGuy) gameManager.IncreasePlayerPoint(p.playerId, 1);
+                }
             }
         }
+    }
+
+    public void OnGGButtonClicked()
+    {
+        if (isTrial)
+        {
+            isTrial = false;
+            if (ggButton != null) ggButton.SetActive(false);
+
+            if (networkManager != null) networkManager.BroadcastSpyGameReset();
+
+            currentState = GameState.WaitingToStart;
+            StartGame();
+        }
+        else LoadNextScene();
     }
 
     public void LoadNextScene()
