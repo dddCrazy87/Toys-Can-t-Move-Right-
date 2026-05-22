@@ -55,7 +55,7 @@ public class NetworkManager : MonoBehaviour
     public Dictionary<string, Player> peerIdToPlayer = new();
     private List<string> selectedSkinColor = new();
 
-    private static string hostPeerId = null;
+    private string hostPeerId = null;
     public string unityPeerId { get; private set; }
     private Dictionary<string, float> lastIdentifyTime = new();  // 防止重複 identify
     private const float IDENTIFY_COOLDOWN = 1f;  // 1 秒內不重複處理
@@ -242,8 +242,8 @@ public class NetworkManager : MonoBehaviour
             BroadcastInitialToPeer(senderPeerId, chosenColor);
         }
 
-        // 若無 Host 則指定第一個玩家為 Host
-        if (hostPeerId == null)
+        // 若無 Host 或舊 Host 已斷線，則指定新 Host
+        if (string.IsNullOrEmpty(hostPeerId) || !peerIdToPlayer.ContainsKey(hostPeerId))
         {
             hostPeerId = senderPeerId;
             Debug.Log($"{senderPeerId} ({identity.nickname}) is now the host.");
@@ -353,7 +353,8 @@ public class NetworkManager : MonoBehaviour
             hostId = hostPeerId
         };
         string jsonMessage = JsonUtility.ToJson(hostMessage);
-        webRTCConnection.SendDataChannelMessage(jsonMessage);
+        // 改用重試機制，確保手機端一定能收到
+        StartCoroutine(BroadcastMessageWithRetry(jsonMessage, 3, 0.3f));
         Debug.Log("Broadcasting Host Update: " + jsonMessage);
     }
 
