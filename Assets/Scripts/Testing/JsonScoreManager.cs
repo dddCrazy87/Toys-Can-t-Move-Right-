@@ -83,13 +83,13 @@ public class JsonScoreManager : MonoBehaviour
 
     private IEnumerator PostToFirebase(PlayerRecord record)
     {
-        if (string.IsNullOrEmpty(firebaseUrl))
+        if (string.IsNullOrWhiteSpace(firebaseUrl) || !firebaseUrl.StartsWith("http"))
         {
-            Debug.LogWarning("[Firebase] URL 未設定，跳過雲端寫入。請在 Inspector 中設定 Firebase URL。");
+            Debug.LogWarning("[Firebase] URL 未設定或格式不正確，跳過雲端寫入。請在 Inspector 中設定 Firebase URL。");
             yield break;
         }
         string levelKey = string.IsNullOrEmpty(record.levelName) ? "unknown" : record.levelName;
-        string url = $"{firebaseUrl}/leaderboard/{levelKey}.json";
+        string url = $"{firebaseUrl.TrimEnd('/')}/leaderboard/{levelKey}.json";
         string json = JsonUtility.ToJson(record);
 
         using var request = new UnityWebRequest(url, "POST");
