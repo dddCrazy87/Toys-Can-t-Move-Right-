@@ -261,26 +261,27 @@ public class SpyGameManager : MonoBehaviour
         {
             if (p.currentSelectedNumber == 0)
             {
-                if (p.role == Role.BadGuy)
-                {
-                    bool hasChosen1 = p.selectedNumbersHistory.Contains(1);
-                    bool hasChosen5 = p.selectedNumbersHistory.Contains(5);
-
-                    if (currentRoundIndex == 3)
-                    {
-                        if (!hasChosen1 && !hasChosen5) p.currentSelectedNumber = UnityEngine.Random.Range(0, 2) == 0 ? 1 : 5;
-                        else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
-                    }
-                    else if (currentRoundIndex == 4)
-                    {
-                        if (!hasChosen1 && !hasChosen5) p.currentSelectedNumber = UnityEngine.Random.Range(0, 2) == 0 ? 1 : 5;
-                        else if (!hasChosen1) p.currentSelectedNumber = 1;
-                        else if (!hasChosen5) p.currentSelectedNumber = 5;
-                        else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
-                    }
-                    else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
-                }
-                else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
+                // if (p.role == Role.BadGuy)
+                // {
+                //     bool hasChosen1 = p.selectedNumbersHistory.Contains(1);
+                //     bool hasChosen5 = p.selectedNumbersHistory.Contains(5);
+                //
+                //     if (currentRoundIndex == 3)
+                //     {
+                //         if (!hasChosen1 && !hasChosen5) p.currentSelectedNumber = UnityEngine.Random.Range(0, 2) == 0 ? 1 : 5;
+                //         else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
+                //     }
+                //     else if (currentRoundIndex == 4)
+                //     {
+                //         if (!hasChosen1 && !hasChosen5) p.currentSelectedNumber = UnityEngine.Random.Range(0, 2) == 0 ? 1 : 5;
+                //         else if (!hasChosen1) p.currentSelectedNumber = 1;
+                //         else if (!hasChosen5) p.currentSelectedNumber = 5;
+                //         else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
+                //     }
+                //     else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
+                // }
+                // else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
+                p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
 
                 Debug.Log($"Player {p.playerId} ({(p.role == Role.BadGuy ? "壞人" : "好人")}) 選擇超時，系統自動代選數字: {p.currentSelectedNumber}");
             }
