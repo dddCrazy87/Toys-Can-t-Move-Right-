@@ -152,6 +152,9 @@ public class TutorialManager : MonoBehaviour
         }
 
         if (demoImage != null) demoImage.gameObject.SetActive(false);
+        if (demoAnimator != null) demoAnimator.gameObject.SetActive(false);
+        if (videoRawImage != null) videoRawImage.gameObject.SetActive(true);
+        if (videoPlayer != null) videoPlayer.isLooping = true;
 
         currentTutorialPhase = "right";
         instructionText.text = "請在手機上練習點擊";
@@ -360,7 +363,7 @@ public class TutorialManager : MonoBehaviour
 
         switch (step)
         {
-            case "calibrate": text = "請將手機置於平面，按下校正按鈕！"; animatorIndex = -1; break;
+            case "calibrate": text = "請將手機拿直向，按下校正按鈕！"; animatorIndex = -1; break;
             case "forward": text = "很棒！向前傾斜手機"; animatorIndex = 0; break;
             case "left": text = "很好！向左傾斜手機"; animatorIndex = 1; break;
             case "right": text = "做得好！向右傾斜手機"; animatorIndex = 2; break;
