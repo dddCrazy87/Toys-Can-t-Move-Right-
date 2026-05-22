@@ -483,33 +483,47 @@ public class NetworkManager : MonoBehaviour
     public void BroadcastSpyGameInit(Dictionary<int, string> playerRoles)
     {
         if (webRTCConnection == null) return;
+        StartCoroutine(BroadcastSpyGameInitWithRetry(playerRoles, 5, 1f));
+    }
 
-        // 🌟 1. 建立一份所有人暱稱的清單（根據 p.index 確保順序是 0, 1, 2, 3）
+    private IEnumerator BroadcastSpyGameInitWithRetry(Dictionary<int, string> playerRoles, int maxRetries, float interval)
+    {
+        // 建立一份所有人暱稱的清單（根據 p.index 確保順序是 0, 1, 2, 3）
         List<string> allNicknames = new List<string>();
-
-        // 使用 playersInfo 來取得所有人的名字，並照 index 排序
-        // (確保有引用 using System.Linq;)
         foreach (var p in playersInfo.OrderBy(player => player.index))
         {
             allNicknames.Add(p.name);
         }
 
-        foreach (var kvp in peerIdToPlayer)
+        for (int attempt = 0; attempt < maxRetries; attempt++)
         {
-            string peerId = kvp.Key;
-            Player p = kvp.Value;
-
-            if (playerRoles.ContainsKey(p.index))
+            foreach (var kvp in peerIdToPlayer)
             {
-                SpyGameInitMessage msg = new SpyGameInitMessage
-                {
-                    type = "spy_game_init",
-                    myPlayerId = p.index,
-                    role = playerRoles[p.index],
-                    playerNames = allNicknames
-                };
+                string peerId = kvp.Key;
+                Player p = kvp.Value;
 
-                webRTCConnection.SendDataChannelMessageToPeer(peerId, JsonUtility.ToJson(msg));
+                if (playerRoles.ContainsKey(p.index))
+                {
+                    SpyGameInitMessage msg = new SpyGameInitMessage
+                    {
+                        type = "spy_game_init",
+                        myPlayerId = p.index,
+                        role = playerRoles[p.index],
+                        playerNames = allNicknames
+                    };
+                    webRTCConnection.SendDataChannelMessageToPeer(peerId, JsonUtility.ToJson(msg));
+                }
+                else
+                {
+                    Debug.LogWarning($"[SpyGameInit] Player {p.name} (peerId={peerId}) index={p.index} 不在 playerRoles 中！");
+                }
+            }
+
+            Debug.Log($"[SpyGameInit] 廣播角色分配 (attempt {attempt + 1}/{maxRetries})");
+
+            if (attempt < maxRetries - 1)
+            {
+                yield return new WaitForSeconds(interval);
             }
         }
     }
