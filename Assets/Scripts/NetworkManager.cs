@@ -140,11 +140,7 @@ public class NetworkManager : MonoBehaviour
                     if (senderPeerId == hostPeerId)
                     {
                         Debug.Log("Host Requested Start Game！");
-                        if (gameManager != null) BroadcastLevelSelected(gameManager.selectedLevel);
-
-                        BroadcastNavigateToGame();
-                        gameManager.UpdatePlayerInfo(playersInfo);
-                        SceneManager.LoadScene("3_Tutorial");
+                        StartCoroutine(HandleStartGame());
                     }
                     break;
 
@@ -196,6 +192,18 @@ public class NetworkManager : MonoBehaviour
         {
             Debug.LogWarning($"Failed to process message ({senderPeerId}): {ex.Message} - {message}");
         }
+    }
+
+    private IEnumerator HandleStartGame()
+    {
+        // 先發送 level_selected，等 1 秒確保所有玩家收到
+        if (gameManager != null) BroadcastLevelSelected(gameManager.selectedLevel);
+        yield return new WaitForSeconds(1f);
+
+        // 再發送 navigate_to_game
+        BroadcastNavigateToGame();
+        gameManager.UpdatePlayerInfo(playersInfo);
+        SceneManager.LoadScene("3_Tutorial");
     }
 
     private void HandleIdentifyMessage(string message, string senderPeerId)
