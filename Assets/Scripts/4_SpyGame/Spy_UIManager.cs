@@ -22,7 +22,7 @@ public class Spy_UIManager : MonoBehaviour
         ColorUtility.TryParseHtmlString("#30C630", out successColor);
 
         targetText.text = "遊戲初始化";
-        gameStateText.text = "正在分配玩家身分...";
+        gameStateText.text = "分配玩家身分中...";
         ClearHistoryContainer();
 
         // 訂閱事件
@@ -159,9 +159,7 @@ public class Spy_UIManager : MonoBehaviour
     private void HandleGameStarted()
     {
         ClearHistoryContainer();
-        targetText.text = "遊戲初始化";
         trialText.text = SpyGameManager.Instance.isTrial ? "【本輪為試玩練習】" : "【本輪為正式遊戲】";
-        gameStateText.text = $"分配玩家身分中...";
     }
 }
 

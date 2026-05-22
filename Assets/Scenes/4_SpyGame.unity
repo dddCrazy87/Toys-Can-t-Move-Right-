@@ -289,7 +289,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -16.8, y: 84.9}
+  m_AnchoredPosition: {x: -16.8, y: 80.29999}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &58902504
@@ -1813,7 +1813,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 83.4, y: 99.6}
+  m_AnchoredPosition: {x: 83.4, y: 95}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &827201622
@@ -1850,7 +1850,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -107, y: -17}
+  m_AnchoredPosition: {x: -107, y: -13}
   m_SizeDelta: {x: 244.3714, y: 91.5429}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &827201624
@@ -1908,7 +1908,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -2889,7 +2889,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 1.699997, y: -47.90001}
+  m_AnchoredPosition: {x: 1.699997, y: -54.600014}
   m_SizeDelta: {x: -3.7422, y: -47.8998}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1268802427
@@ -3039,7 +3039,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 74.30002, y: 84.9}
+  m_AnchoredPosition: {x: 74.30002, y: 80.29999}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1314570548
@@ -3289,7 +3289,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -91.2, y: 84.9}
+  m_AnchoredPosition: {x: -91.2, y: 80.29999}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1414564655
@@ -3610,27 +3610,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneFadeInFadeOut: {fileID: 1851035173}
   imgUploader: {fileID: 148563382}
-  globalMinBound: 9
-  globalMaxBound: 15
   roundConfigs:
-  - intervalSize: 4
+  - minBound: 15
+    maxBound: 18
+    intervalSize: 4
     minTarget: 10
     maxTarget: 13
-  - intervalSize: 3
+  - minBound: 6
+    maxBound: 9
+    intervalSize: 3
     minTarget: 11
     maxTarget: 13
-  - intervalSize: 3
+  - minBound: 15
+    maxBound: 18
+    intervalSize: 3
     minTarget: 8
     maxTarget: 9
-  - intervalSize: 2
+  - minBound: 6
+    maxBound: 9
+    intervalSize: 2
     minTarget: 14
     maxTarget: 15
-  - intervalSize: 1
+  - minBound: 15
+    maxBound: 18
+    intervalSize: 1
     minTarget: 10
     maxTarget: 10
   countDownUI: {fileID: 398198368}
-  numberSelectionTime: 10
-  votingTime: 10
+  numberSelectionTime: 60
+  votingTime: 180
   gameStartCountDown: {fileID: 1128086800}
   nextSceneName: 5_GameRestart
   isTrial: 1

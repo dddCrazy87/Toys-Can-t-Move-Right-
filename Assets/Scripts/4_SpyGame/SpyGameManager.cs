@@ -31,7 +31,13 @@ public enum Role
 [System.Serializable]
 public struct RoundConfig
 {
-    [Tooltip("該回合的區間大小 (例如 4 代表上下界相差 4)")]
+    [Tooltip("正式遊戲時：該回合隨機區間的下界 (例如 10)")]
+    public int minBound;
+
+    [Tooltip("正式遊戲時：該回合隨機區間的上界 (例如 20)")]
+    public int maxBound;
+
+    [Tooltip("該回合的區間大小 (例如 4 代表包含 4 個數字，若起點為17，則為 17~20)")]
     public int intervalSize;
 
     [HideInInspector] public int minTarget;
@@ -65,10 +71,6 @@ public class SpyGameManager : MonoBehaviour
     public event Action OnVotingPhaseStarted;
     public event Action<GameResult> OnGameEnded;
 
-    [Header("隨機目標範圍設定")]
-    public int globalMinBound = 8;
-    public int globalMaxBound = 18;
-
     [Header("遊戲設定")]
     public RoundConfig[] roundConfigs = new RoundConfig[5];
 
@@ -76,9 +78,11 @@ public class SpyGameManager : MonoBehaviour
     public CountDownUI countDownUI;
     public float numberSelectionTime = 30f;
     public float votingTime = 180f;
+
     [Header("開局動畫設定")]
     public GameStartCountDown gameStartCountDown;
     public string nextSceneName = "";
+
     [Header("試玩與結算設定")]
     public bool isTrial = true; // 預設第一把是試玩
     public GameObject ggButton;
@@ -162,12 +166,25 @@ public class SpyGameManager : MonoBehaviour
 
         for (int i = 0; i < roundConfigs.Length; i++)
         {
+            // 根據是否為試玩，決定這回合的上下界
+            // 試玩時固定 6~18，正式版時讀取 Inspector 的設定
+            int currentMinBound = isTrial ? 6 : roundConfigs[i].minBound;
+            int currentMaxBound = isTrial ? 18 : roundConfigs[i].maxBound;
+
+            // 區間寬度對應的數值差 (依然套用 Inspector 設定的區間大小)
             int diff = Mathf.Max(0, roundConfigs[i].intervalSize - 1);
-            int maxPossibleMin = globalMaxBound - diff;
 
-            if (maxPossibleMin < globalMinBound) maxPossibleMin = globalMinBound;
+            // 最大可能的區間起點，確保加上 diff 後不會超過當前的上限
+            int maxPossibleMin = currentMaxBound - diff;
 
-            roundConfigs[i].minTarget = UnityEngine.Random.Range(globalMinBound, maxPossibleMin + 1);
+            // 保險機制：如果設定的值小於區間寬度，強制修正
+            if (maxPossibleMin < currentMinBound)
+                maxPossibleMin = currentMinBound;
+
+            // 在允許的範圍內隨機決定該回合的 minTarget
+            roundConfigs[i].minTarget = UnityEngine.Random.Range(currentMinBound, maxPossibleMin + 1);
+
+            // 計算出 maxTarget
             roundConfigs[i].maxTarget = roundConfigs[i].minTarget + diff;
         }
 
@@ -184,7 +201,7 @@ public class SpyGameManager : MonoBehaviour
         successfulRounds = 0;
         roundHistories.Clear();
 
-        Debug.Log($"抓內鬼開始！壞人是 Player {badGuyId}");
+        Debug.Log($"抓內鬼開始！目前是 {(isTrial ? "試玩階段" : "正式關卡")}，壞人是 Player {badGuyId}");
 
         networkManager.BroadcastSpyGameInit(roleDict);
         OnGameStarted?.Invoke();
@@ -261,28 +278,7 @@ public class SpyGameManager : MonoBehaviour
         {
             if (p.currentSelectedNumber == 0)
             {
-                // if (p.role == Role.BadGuy)
-                // {
-                //     bool hasChosen1 = p.selectedNumbersHistory.Contains(1);
-                //     bool hasChosen5 = p.selectedNumbersHistory.Contains(5);
-                //
-                //     if (currentRoundIndex == 3)
-                //     {
-                //         if (!hasChosen1 && !hasChosen5) p.currentSelectedNumber = UnityEngine.Random.Range(0, 2) == 0 ? 1 : 5;
-                //         else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
-                //     }
-                //     else if (currentRoundIndex == 4)
-                //     {
-                //         if (!hasChosen1 && !hasChosen5) p.currentSelectedNumber = UnityEngine.Random.Range(0, 2) == 0 ? 1 : 5;
-                //         else if (!hasChosen1) p.currentSelectedNumber = 1;
-                //         else if (!hasChosen5) p.currentSelectedNumber = 5;
-                //         else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
-                //     }
-                //     else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
-                // }
-                // else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
                 p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
-
                 Debug.Log($"Player {p.playerId} ({(p.role == Role.BadGuy ? "壞人" : "好人")}) 選擇超時，系統自動代選數字: {p.currentSelectedNumber}");
             }
         }
@@ -317,7 +313,7 @@ public class SpyGameManager : MonoBehaviour
 
         OnRoundResolved?.Invoke(currentRoundIndex, submittedNumbers);
 
-        // 新增規則：好人只要成功 3 次，立刻獲勝，跳過投票階段
+        // 好人只要成功 3 次，立刻獲勝，跳過投票階段
         if (successfulRounds >= 3)
         {
             Debug.Log("好人已達成 3 次任務成功，直接獲勝並跳過投票！");
@@ -397,7 +393,7 @@ public class SpyGameManager : MonoBehaviour
 
         GameResult finalResult;
 
-        // 新增規則：平票或沒投出壞人，皆為壞人贏
+        // 平票或沒投出壞人，皆為壞人贏
         if (maxVotedPlayers.Count > 1)
         {
             Debug.Log("投票結果：平票，壞人勝利！");
@@ -440,11 +436,11 @@ public class SpyGameManager : MonoBehaviour
             {
                 if (finalResult == GameResult.GoodGuysWin)
                 {
-                    if (p.role == Role.GoodGuy) gameManager.IncreasePlayerPoint(p.playerId, 1);
+                    if (p.role == Role.GoodGuy) gameManager.IncreasePlayerPoint(p.playerId, 10);
                 }
                 else
                 {
-                    if (p.role == Role.BadGuy) gameManager.IncreasePlayerPoint(p.playerId, 1);
+                    if (p.role == Role.BadGuy) gameManager.IncreasePlayerPoint(p.playerId, 10);
                 }
             }
         }
@@ -504,4 +500,5 @@ public class SpyGameManager : MonoBehaviour
         sceneFadeInFadeOut.LoadNextSceneWithFadeOut();
     }
 }
+
 

@@ -245,7 +245,7 @@ public class TutorialManager : MonoBehaviour
         PlayStepSound("complete");
 
         currentTutorialPhase = "complete";
-        instructionText.text = "所有人都看完了規則，準備開始遊戲！";
+        instructionText.text = "所有人都看完規則，開始遊戲！";
         BroadcastTutorialStep("complete", "準備開始遊戲！");
 
         if (spySlideImage != null) spySlideImage.gameObject.SetActive(false);
