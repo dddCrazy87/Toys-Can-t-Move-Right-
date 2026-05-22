@@ -188,6 +188,13 @@ public class SpyGameManager : MonoBehaviour
         networkManager.BroadcastSpyGameInit(roleDict);
         OnGameStarted?.Invoke();
 
+        StartCoroutine(StartFirstRoundAfterDelay());
+    }
+
+    private IEnumerator StartFirstRoundAfterDelay()
+    {
+        // 給 init 廣播足夠時間讓所有玩家收到（init 間隔 1 秒，至少等 1.5 秒）
+        yield return new WaitForSeconds(1.5f);
         StartNewRound();
     }
 
