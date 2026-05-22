@@ -78,36 +78,28 @@ public class Spy_UIManager : MonoBehaviour
         RoundConfig config = SpyGameManager.Instance.roundConfigs[roundIndex];
         bool isSuccess = sum >= config.minTarget && sum <= config.maxTarget;
 
-        // 設定第一個與第二個文字 (不管隱藏與否，這兩個資訊都是公開的)
         roundText.text = $"第{roundIndex + 1}輪";
         targetRangeText.text = (config.minTarget == config.maxTarget) ? $"{config.minTarget}" : $"{config.minTarget} ～ {config.maxTarget}";
 
-        // 依照前兩輪與後三輪規則給予顯示內容
         if (roundIndex < 2)
         {
-            // 前兩輪：完全公開
             numbersText.text = $"[{string.Join(", ", submittedNumbers)}]";
-            // 成功顯示綠色，失敗顯示紅色
             numbersText.color = isSuccess ? successColor : Color.red;
 
             gameStateText.text = $"第{roundIndex + 1}輪結算完畢！({(isSuccess ? "成功" : "失敗")})";
         }
         else
         {
-            // 後三輪：完全隱藏 (不顯示數字、總和)
             numbersText.text = "[???]";
-            numbersText.color = Color.gray; // 用灰色表示未揭曉
+            numbersText.color = Color.gray;
 
             gameStateText.text = $"第{roundIndex + 1}輪結算完畢！(結果隱藏)";
         }
     }
 
-    private void ShowVotingUI()
+    private void RevealAllHistories()
     {
-        targetText.text = "目標：抓出壞人！";
-        gameStateText.text = "請在手機上進行最後投票";
-
-        // 進入投票階段，把過去 5 輪生成出來的 UI 全部翻開，更新實際數據與成敗
+        // 進入結算或投票階段時，把過去生成出來的 UI 全部翻開，更新實際數據與成敗
         for (int i = 0; i < SpyGameManager.Instance.roundHistories.Count; i++)
         {
             if (i >= spawnedItems.Count) break;
@@ -116,23 +108,31 @@ public class Spy_UIManager : MonoBehaviour
             int sum = 0;
             foreach (int num in history) sum += num;
 
-            // 重新計算該回合的成敗
             RoundConfig config = SpyGameManager.Instance.roundConfigs[i];
             bool isSuccess = sum >= config.minTarget && sum <= config.maxTarget;
 
             TextMeshProUGUI[] texts = spawnedItems[i].GetComponentsInChildren<TextMeshProUGUI>();
             if (texts.Length >= 3)
             {
-                // 將原本隱藏的內容揭曉
-                // 第 0 個(輪數) 和 第 1 個(區間) 已經是正確的，只需更新第 2 個文字
                 texts[2].text = $"[{string.Join(", ", history)}]";
                 texts[2].color = isSuccess ? successColor : Color.red;
             }
         }
     }
 
+    private void ShowVotingUI()
+    {
+        targetText.text = "目標：抓出壞人！";
+        gameStateText.text = "請在手機上進行最後投票";
+
+        RevealAllHistories();
+    }
+
     private void ShowGameEndUI(GameResult result)
     {
+        // 確保提早獲勝跳過投票時，也能翻開紀錄
+        RevealAllHistories();
+
         string winnerStr = (result == GameResult.GoodGuysWin) ? "<color=#0055FF>好人勝利！</color>" : "<color=#FF0000>壞人獨贏！</color>";
 
         int badGuyId = -1;
@@ -149,9 +149,9 @@ public class Spy_UIManager : MonoBehaviour
             if (badPlayer != null) badGuyName = badPlayer.name;
         }
 
-        // 更新大螢幕的文字
         gameStateText.text = $"遊戲結束！\n{winnerStr}\n壞人是：{badGuyName}";
         targetText.text = "";
     }
 }
+
 

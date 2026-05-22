@@ -9,10 +9,10 @@ using System.Collections;
 public enum GameState
 {
     WaitingToStart,
-    NumberSelecting, // 玩家正在選數字的 30 秒
-    RoundResolving,  // 結算當前回合數字
-    Voting,          // 最後的 3 分鐘投票
-    GameEnd          // 遊戲結束，顯示勝負
+    NumberSelecting,
+    RoundResolving,
+    Voting,
+    GameEnd
 }
 
 public enum GameResult
@@ -24,11 +24,10 @@ public enum GameResult
 // 玩家身分枚舉
 public enum Role
 {
-    GoodGuy, // 好人
-    BadGuy   // 壞人
+    GoodGuy,
+    BadGuy
 }
 
-// 單一回合的設定檔
 [System.Serializable]
 public struct RoundConfig
 {
@@ -39,13 +38,12 @@ public struct RoundConfig
     [HideInInspector] public int maxTarget;
 }
 
-// 玩家資料模型
 public class PlayerData
 {
-    public int playerId; // 0, 1, 2, 3
+    public int playerId;
     public Role role;
-    public int currentSelectedNumber; // 當前回合選擇的數字 (0代表還沒選)
-    public int votedPlayerId;         // 投票給誰 (-1代表還沒投)
+    public int currentSelectedNumber;
+    public int votedPlayerId;
 
     public List<int> selectedNumbersHistory = new();
 }
@@ -61,27 +59,23 @@ public class SpyGameManager : MonoBehaviour
 
     public static SpyGameManager Instance { get; private set; }
 
-    // 這區 UI 事件廣播
-    public event Action OnGameStarted;               // 遊戲開始，分發身分
-    public event Action<int, int> OnRoundStarted;    // 回合開始 (傳遞最小、最大區間)
-    public event Action<int, List<int>> OnRoundResolved; // 回合結算 (傳遞回合數、該回合大家出的數字組合)
-    public event Action OnVotingPhaseStarted;        // 進入投票階段
-    public event Action<GameResult> OnGameEnded;     // 遊戲結束，傳遞最終勝負結果
+    public event Action OnGameStarted;
+    public event Action<int, int> OnRoundStarted;
+    public event Action<int, List<int>> OnRoundResolved;
+    public event Action OnVotingPhaseStarted;
+    public event Action<GameResult> OnGameEnded;
 
     [Header("隨機目標範圍設定")]
-    [Tooltip("隨機產生的目標下界")]
     public int globalMinBound = 8;
-    [Tooltip("隨機產生的目標上界")]
     public int globalMaxBound = 18;
 
     [Header("遊戲設定")]
-    [Tooltip("設定五個回合的區間大小，會越來越窄")]
     public RoundConfig[] roundConfigs = new RoundConfig[5];
 
     [Header("倒數計時設定")]
-    public CountDownUI countDownUI;          // 綁定倒數 UI 腳本
-    public float numberSelectionTime = 30f;  // 選擇數字階段限時
-    public float votingTime = 180f;          // 投票階段限時
+    public CountDownUI countDownUI;
+    public float numberSelectionTime = 30f;
+    public float votingTime = 180f;
     [Header("開局動畫設定")]
     public GameStartCountDown gameStartCountDown;
 
@@ -91,14 +85,12 @@ public class SpyGameManager : MonoBehaviour
 
     [Header("當前遊戲狀態 (唯讀測試用)")]
     public GameState currentState;
-    public int currentRoundIndex = 0; // 0~4 代表第一到第五回合
-    public int successfulRounds = 0;  // 成功回合數 (達到3次整體任務即算成功)
+    public int currentRoundIndex = 0;
+    public int successfulRounds = 0;
 
 
-    // 玩家字典 (Key: playerId, Value: PlayerData)
     public Dictionary<int, PlayerData> players = new Dictionary<int, PlayerData>();
 
-    // 紀錄每一回合大家出的數字 (無序的，用來顯示在歷史紀錄)
     public List<List<int>> roundHistories = new List<List<int>>();
 
     private void Awake()
@@ -149,7 +141,6 @@ public class SpyGameManager : MonoBehaviour
         }
         else
         {
-            // 測試模式 (沒有網路玩家時)
             for (int i = 0; i < 4; i++)
             {
                 players.Add(i, new PlayerData { playerId = i, currentSelectedNumber = 0, votedPlayerId = -1 });
@@ -168,13 +159,11 @@ public class SpyGameManager : MonoBehaviour
         int badGuyId = playerIds[UnityEngine.Random.Range(0, playerIds.Count)];
         Dictionary<int, string> roleDict = new Dictionary<int, string>();
 
-        // --- 隨機決定本場遊戲每個回合的目標區間 ---
         for (int i = 0; i < roundConfigs.Length; i++)
         {
             int diff = Mathf.Max(0, roundConfigs[i].intervalSize - 1);
             int maxPossibleMin = globalMaxBound - diff;
 
-            // 防呆：如果設定的區間跨度大於全域範圍，強行將 minTarget 設定為下界
             if (maxPossibleMin < globalMinBound) maxPossibleMin = globalMinBound;
 
             roundConfigs[i].minTarget = UnityEngine.Random.Range(globalMinBound, maxPossibleMin + 1);
@@ -202,7 +191,6 @@ public class SpyGameManager : MonoBehaviour
         StartNewRound();
     }
 
-    /// 玩家提交數字 (由手機端呼叫)
     public void SubmitNumber(int playerId, int number)
     {
         if (currentState != GameState.NumberSelecting) return;
@@ -214,7 +202,6 @@ public class SpyGameManager : MonoBehaviour
         CheckAllNumbersSubmitted();
     }
 
-    /// 玩家提交投票 (由手機端呼叫)
     public void SubmitVote(int playerId, int votedTargetId)
     {
         if (currentState != GameState.Voting) return;
@@ -226,15 +213,10 @@ public class SpyGameManager : MonoBehaviour
         CheckAllVotesSubmitted();
     }
 
-    // ==========================================
-    // ▲ API 結束 ▲
-    // ==========================================
-
     private void StartNewRound()
     {
         currentState = GameState.NumberSelecting;
 
-        // 清空所有人這回合的選擇
         foreach (var p in players.Values)
         {
             p.currentSelectedNumber = 0;
@@ -244,7 +226,6 @@ public class SpyGameManager : MonoBehaviour
         Debug.Log($"--- 第 {currentRoundIndex + 1} 回合開始 ---");
         Debug.Log($"目標區間: {currentConfig.minTarget} ~ {currentConfig.maxTarget}");
 
-        // 啟動 30 秒倒數，並設定超時回呼
         if (countDownUI != null)
         {
             countDownUI.StartCountdown(numberSelectionTime, OnNumberSelectionTimeout);
@@ -256,13 +237,10 @@ public class SpyGameManager : MonoBehaviour
 
     private void CheckAllNumbersSubmitted()
     {
-        // 檢查是否還有玩家沒選數字 (0 代表沒選)
         if (players.Values.Any(p => p.currentSelectedNumber == 0)) return;
 
-        // 若所有人提前完成，停止倒數計時
         if (countDownUI != null) countDownUI.StopCountdown();
 
-        // 全員提交完畢，進入結算
         currentState = GameState.RoundResolving;
         ResolveRound();
     }
@@ -275,19 +253,16 @@ public class SpyGameManager : MonoBehaviour
         {
             if (p.currentSelectedNumber == 0)
             {
-                // ▼ 修改：針對壞人與好人超時做不同處理 ▼
                 if (p.role == Role.BadGuy)
                 {
                     bool hasChosen1 = p.selectedNumbersHistory.Contains(1);
                     bool hasChosen5 = p.selectedNumbersHistory.Contains(5);
 
-                    // 第四輪 (index為3)    
                     if (currentRoundIndex == 3)
                     {
                         if (!hasChosen1 && !hasChosen5) p.currentSelectedNumber = UnityEngine.Random.Range(0, 2) == 0 ? 1 : 5;
                         else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
                     }
-                    // 第五輪 (index為4)
                     else if (currentRoundIndex == 4)
                     {
                         if (!hasChosen1 && !hasChosen5) p.currentSelectedNumber = UnityEngine.Random.Range(0, 2) == 0 ? 1 : 5;
@@ -295,10 +270,8 @@ public class SpyGameManager : MonoBehaviour
                         else if (!hasChosen5) p.currentSelectedNumber = 5;
                         else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
                     }
-                    // 第一到三輪
                     else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
                 }
-                // 好人超時一律隨機代選
                 else p.currentSelectedNumber = UnityEngine.Random.Range(1, 6);
 
                 Debug.Log($"Player {p.playerId} ({(p.role == Role.BadGuy ? "壞人" : "好人")}) 選擇超時，系統自動代選數字: {p.currentSelectedNumber}");
@@ -314,7 +287,6 @@ public class SpyGameManager : MonoBehaviour
 
         List<int> submittedNumbers = players.Values.Select(p => p.currentSelectedNumber).ToList();
 
-        // 洗牌
         for (int i = 0; i < submittedNumbers.Count; i++)
         {
             int temp = submittedNumbers[i];
@@ -336,6 +308,15 @@ public class SpyGameManager : MonoBehaviour
 
         OnRoundResolved?.Invoke(currentRoundIndex, submittedNumbers);
 
+        // 新增規則：好人只要成功 3 次，立刻獲勝，跳過投票階段
+        if (successfulRounds >= 3)
+        {
+            Debug.Log("好人已達成 3 次任務成功，直接獲勝並跳過投票！");
+            currentState = GameState.GameEnd;
+            ExecuteGameEnd(GameResult.GoodGuysWin);
+            return;
+        }
+
         currentRoundIndex++;
         if (currentRoundIndex < 5) StartNewRound();
         else StartVotingPhase();
@@ -344,11 +325,10 @@ public class SpyGameManager : MonoBehaviour
     private void StartVotingPhase()
     {
         currentState = GameState.Voting;
-        Debug.Log("--- 進入最後投票階段 ---");
+        Debug.Log("--- 任務失敗，進入最後投票階段 ---");
 
         foreach (var p in players.Values) p.votedPlayerId = -1;
 
-        // 啟動 3 分鐘 (180秒) 倒數，並設定超時回呼
         if (countDownUI != null)
         {
             countDownUI.StartCountdown(votingTime, OnVotingTimeout);
@@ -360,10 +340,8 @@ public class SpyGameManager : MonoBehaviour
 
     private void CheckAllVotesSubmitted()
     {
-        // 檢查是否還有玩家沒投票 (-1 代表沒選)
         if (players.Values.Any(p => p.votedPlayerId == -1)) return;
 
-        // 若所有人提前投票完成，停止倒數計時
         if (countDownUI != null) countDownUI.StopCountdown();
 
         currentState = GameState.GameEnd;
@@ -372,7 +350,6 @@ public class SpyGameManager : MonoBehaviour
 
     private void OnVotingTimeout()
     {
-        // 確保還在投票階段
         if (currentState != GameState.Voting) return;
 
         List<int> validTargets = players.Keys.ToList();
@@ -381,25 +358,20 @@ public class SpyGameManager : MonoBehaviour
         {
             if (p.votedPlayerId == -1)
             {
-                // 超時未選的玩家，隨機投給場上任一玩家
                 p.votedPlayerId = validTargets[UnityEngine.Random.Range(0, validTargets.Count)];
                 Debug.Log($"Player {p.playerId} 投票超時，系統自動投票給 Player {p.votedPlayerId}");
             }
         }
 
-        // 代選完畢後，呼叫檢查函式繼續遊戲結算與廣播流程
         CheckAllVotesSubmitted();
     }
 
     private void ResolveGameEnd()
     {
-        Debug.Log("遊戲結束，準備結算勝負！");
-
-        bool isTaskSuccess = successfulRounds >= 3;
-        Debug.Log($"整體任務狀態: {(isTaskSuccess ? "成功" : "失敗")} (成功次數: {successfulRounds}/5)");
+        Debug.Log("投票結束，準備結算勝負！");
 
         Dictionary<int, int> voteCounts = new Dictionary<int, int>();
-        for (int i = 0; i < 4; i++) voteCounts[i] = 0;
+        foreach (int key in players.Keys) voteCounts[key] = 0;
 
         foreach (var p in players.Values)
         {
@@ -416,10 +388,11 @@ public class SpyGameManager : MonoBehaviour
 
         GameResult finalResult;
 
+        // 新增規則：平票或沒投出壞人，皆為壞人贏
         if (maxVotedPlayers.Count > 1)
         {
-            Debug.Log("投票結果：平票");
-            finalResult = isTaskSuccess ? GameResult.GoodGuysWin : GameResult.BadGuyWins;
+            Debug.Log("投票結果：平票，壞人勝利！");
+            finalResult = GameResult.BadGuyWins;
         }
         else
         {
@@ -433,11 +406,16 @@ public class SpyGameManager : MonoBehaviour
             }
             else
             {
-                Debug.Log($"投票結果：好人 (Player {highestVotedPlayerId}) 被誤認為內鬼！");
+                Debug.Log($"投票結果：好人 (Player {highestVotedPlayerId}) 被誤認為內鬼！壞人勝利！");
                 finalResult = GameResult.BadGuyWins;
             }
         }
 
+        ExecuteGameEnd(finalResult);
+    }
+
+    private void ExecuteGameEnd(GameResult finalResult)
+    {
         Debug.Log($"====================");
         Debug.Log($"最終勝負：{(finalResult == GameResult.GoodGuysWin ? "好人陣營勝利！" : "壞人獨贏！")}");
         Debug.Log($"====================");

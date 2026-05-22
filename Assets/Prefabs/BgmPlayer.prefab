@@ -49,7 +49,7 @@ MonoBehaviour:
   gameStartBgm: {fileID: 8300000, guid: 81060ca1e0e48a645908bfb71d1c76c5, type: 3}
   toyboxBgm: {fileID: 8300000, guid: f3af29349bc71014cb2ca07ec69715ec, type: 3}
   colorPaperBgm: {fileID: 8300000, guid: 4971c9a10dcdf44f0b379f093476c879, type: 3}
-  SpyGameBgm: {fileID: 8300000, guid: a1576a0878ed6324696de8f85d795eaa, type: 3}
+  SpyGameBgm: {fileID: 8300000, guid: f531ed8765fb79842a723d09632ec913, type: 3}
   leaderboardBgm: {fileID: 8300000, guid: eb12d5dd0a73de6408d350912699d73a, type: 3}
 --- !u!82 &1652820354960105657
 AudioSource:

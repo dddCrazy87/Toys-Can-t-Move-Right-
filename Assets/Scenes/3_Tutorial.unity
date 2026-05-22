@@ -288,6 +288,7 @@ RectTransform:
   m_Children:
   - {fileID: 1982752347}
   - {fileID: 1404894288}
+  - {fileID: 1060740480}
   m_Father: {fileID: 1384175019}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -420,6 +421,81 @@ MonoBehaviour:
   fadeInSpeed: 0.5
   fadeOutSpeed: 0
   nextSceneName: 4_ColorPaper
+--- !u!1 &1060740479
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1060740480}
+  - component: {fileID: 1060740482}
+  - component: {fileID: 1060740481}
+  m_Layer: 5
+  m_Name: SpySlide
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1060740480
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060740479}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.13, y: 1.13, z: 1.13}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 752502281}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -59.973}
+  m_SizeDelta: {x: 768, y: 432}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1060740481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060740479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 91dce3f17c939014d90bf6bf313739e0, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1060740482
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060740479}
+  m_CullTransparentMesh: 1
 --- !u!1001 &1135512104
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -895,6 +971,18 @@ MonoBehaviour:
     soundEffect: {fileID: 8300000, guid: c1291e18c89704b4cbe190d4e99686de, type: 3}
   audioSource: {fileID: 0}
   tutorialSceneFadeOut: {fileID: 930943927}
+  spyTutorialSlides:
+  - slideImage: {fileID: 21300000, guid: 3a32d15d31d9c2f44ab0287c52b15c4e, type: 3}
+    instructionText: "3 \u4F4D\u597D\u4EBA vs 1 \u4F4D\u58DE\u4EBA\u7684\u5FC3\u6A5F\u5C0D\u6C7A\uFF01"
+  - slideImage: {fileID: 21300000, guid: 3dfc8e9cb919d0946a36b139f3f58c5b, type: 3}
+    instructionText: "\u51711\u5206\u9418\u8A0E\u8AD6\uFF0C\u6E4A\u51FA\u76EE\u6A19\u5340\u9593\uFF01"
+  - slideImage: {fileID: 21300000, guid: 91dce3f17c939014d90bf6bf313739e0, type: 3}
+    instructionText: "\u7D50\u679C\u533F\u540D\u63ED\u66C9\uFF0C\u8ACB\u8A18\u4F4F\u6BCF\u500B\u7DDA\u7D22"
+  - slideImage: {fileID: 21300000, guid: b7e73724851509d46928c75b75a90aef, type: 3}
+    instructionText: "\u58DE\u4EBA\u5C08\u5C6C\u9650\u5236\uFF1A\u5FC5\u9808\u8D70\u5411\u6975\u7AEF\uFF01"
+  - slideImage: {fileID: 21300000, guid: 07a675dff447fb04a92634b3ac22fd26, type: 3}
+    instructionText: "\u6700\u5F8C\u4E09\u5206\u9418\u8A0E\u8AD6\uFF0C\u6295\u7968\u627E\u51FA\u58DE\u4EBA\uFF01"
+  spySlideImage: {fileID: 1060740481}
 --- !u!4 &1417823199
 Transform:
   m_ObjectHideFlags: 0
