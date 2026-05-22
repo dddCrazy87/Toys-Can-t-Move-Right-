@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 
 [Serializable]
 public class PlayerRecord
@@ -10,6 +12,8 @@ public class PlayerRecord
     public int score;
     public string skin;
     public string color;
+    public string levelName;
+    public string date;
 }
 
 [Serializable]
@@ -49,22 +53,61 @@ public class JsonScoreManager : MonoBehaviour
     // 對外 API
     // ------------------------------------------------------------
 
-    public void AddPlayerRecord(string pName, int pScore, string pSkin, string pColor)
+    public void AddPlayerRecord(string pName, int pScore, string pSkin, string pColor, string pLevelName = "")
     {
         if (cache == null || cache.records == null)
         {
             LoadFromDiskIfExists();
         }
 
-        cache.records.Add(new PlayerRecord
+        var record = new PlayerRecord
         {
             name = pName,
             score = pScore,
             skin = pSkin,
-            color = pColor
-        });
+            color = pColor,
+            levelName = pLevelName,
+            date = System.DateTime.Now.ToString("yyyy-MM-dd")
+        };
 
+        cache.records.Add(record);
         SaveToDisk();
+
+        // 同步寫入 Firebase
+        StartCoroutine(PostToFirebase(record));
+    }
+
+    [Header("Firebase 設定")]
+    [Tooltip("Firebase Realtime Database URL（在 Inspector 中設定）")]
+    public string firebaseUrl = "";
+
+    private IEnumerator PostToFirebase(PlayerRecord record)
+    {
+        if (string.IsNullOrEmpty(firebaseUrl))
+        {
+            Debug.LogWarning("[Firebase] URL 未設定，跳過雲端寫入。請在 Inspector 中設定 Firebase URL。");
+            yield break;
+        }
+        string levelKey = string.IsNullOrEmpty(record.levelName) ? "unknown" : record.levelName;
+        string url = $"{firebaseUrl}/leaderboard/{levelKey}.json";
+        string json = JsonUtility.ToJson(record);
+
+        using var request = new UnityWebRequest(url, "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogWarning($"[Firebase] 寫入失敗: {request.error}");
+        }
+        else
+        {
+            Debug.Log($"[Firebase] 寫入成功: {record.name} - {record.score} ({record.levelName})");
+        }
     }
 
     public List<PlayerRecord> GetAllRecords()
