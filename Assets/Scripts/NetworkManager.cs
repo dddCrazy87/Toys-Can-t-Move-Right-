@@ -100,6 +100,14 @@ public class NetworkManager : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "2_Setting")
         {
             Player leavingPlayer = peerIdToPlayer[senderPeerId];
+
+            // 歸還顏色，讓新玩家可以使用
+            if (!string.IsNullOrEmpty(leavingPlayer.color) && !selectedSkinColor.Contains(leavingPlayer.color))
+            {
+                selectedSkinColor.Add(leavingPlayer.color);
+                Debug.Log($"[NetworkManager] 歸還顏色: {leavingPlayer.color}");
+            }
+
             playersInfo.Remove(leavingPlayer);
             peerIdToPlayer.Remove(senderPeerId);
             lastIdentifyTime.Remove(senderPeerId);
@@ -234,6 +242,11 @@ public class NetworkManager : MonoBehaviour
         }
         else
         {
+            if (selectedSkinColor.Count == 0)
+            {
+                Debug.LogWarning($"[NetworkManager] 沒有剩餘顏色可分配給 {senderPeerId}，房間已滿。");
+                return;
+            }
             int randomIndex = UnityEngine.Random.Range(0, selectedSkinColor.Count);
             string chosenColor = selectedSkinColor[randomIndex];
 
