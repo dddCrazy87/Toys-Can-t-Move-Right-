@@ -84,9 +84,9 @@ public class SpyGameManager : MonoBehaviour
     public string nextSceneName = "";
 
     [Header("試玩與結算設定")]
-    public bool isTrial = true; // 預設第一把是試玩
+    public bool isTrial = true;
     public GameObject ggButton;
-    public TextMeshProUGUI ggButtonText; // 用來修改按鈕文字
+    public TextMeshProUGUI ggButtonText;
 
     [Header("當前遊戲狀態 (唯讀測試用)")]
     public GameState currentState;
@@ -155,6 +155,7 @@ public class SpyGameManager : MonoBehaviour
 
     public void StartGame()
     {
+        if (isTrial) ggButton.SetActive(true); else ggButton.SetActive(false);
         if (bgmPlayer) bgmPlayer.ChangeBgm();
         if (currentState != GameState.WaitingToStart && currentState != GameState.GameEnd) return;
 
@@ -168,8 +169,8 @@ public class SpyGameManager : MonoBehaviour
         {
             // 根據是否為試玩，決定這回合的上下界
             // 試玩時固定 6~18，正式版時讀取 Inspector 的設定
-            int currentMinBound = isTrial ? 6 : roundConfigs[i].minBound;
-            int currentMaxBound = isTrial ? 18 : roundConfigs[i].maxBound;
+            int currentMinBound = isTrial ? 8 : roundConfigs[i].minBound;
+            int currentMaxBound = isTrial ? 16 : roundConfigs[i].maxBound;
 
             // 區間寬度對應的數值差 (依然套用 Inspector 設定的區間大小)
             int diff = Mathf.Max(0, roundConfigs[i].intervalSize - 1);
@@ -428,7 +429,7 @@ public class SpyGameManager : MonoBehaviour
         OnGameEnded?.Invoke(finalResult);
         if (ggButton != null) ggButton.SetActive(true);
 
-        if (isTrial) { if (ggButtonText != null) ggButtonText.text = "正式遊戲"; }
+        if (isTrial) { if (ggButtonText != null) ggButtonText.text = "結束試玩"; }
         else
         {
             if (ggButtonText != null) ggButtonText.text = "前往頒獎";

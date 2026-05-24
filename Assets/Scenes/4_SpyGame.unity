@@ -448,7 +448,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u524D\u5F80\u9812\u734E"
+  m_text: "\u8DF3\u904E\u8A66\u73A9"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6f9285ee9609846edaa057d3811938a6, type: 2}
   m_sharedMaterial: {fileID: -2150730345847515237, guid: 6f9285ee9609846edaa057d3811938a6, type: 2}
@@ -1326,7 +1326,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &470366563
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1344,7 +1344,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -110, y: -130}
+  m_AnchoredPosition: {x: -110, y: -150.2}
   m_SizeDelta: {x: 140, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &470366564
@@ -3622,22 +3622,22 @@ MonoBehaviour:
     minTarget: 11
     maxTarget: 13
   - minBound: 15
-    maxBound: 18
+    maxBound: 17
     intervalSize: 3
     minTarget: 8
     maxTarget: 9
-  - minBound: 6
+  - minBound: 8
     maxBound: 9
     intervalSize: 2
     minTarget: 14
     maxTarget: 15
-  - minBound: 15
-    maxBound: 18
+  - minBound: 8
+    maxBound: 16
     intervalSize: 1
     minTarget: 10
     maxTarget: 10
   countDownUI: {fileID: 398198368}
-  numberSelectionTime: 60
+  numberSelectionTime: 90
   votingTime: 180
   gameStartCountDown: {fileID: 1128086800}
   nextSceneName: 5_GameRestart
