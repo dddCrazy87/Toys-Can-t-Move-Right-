@@ -237,8 +237,15 @@ public class NetworkManager : MonoBehaviour
             Player oldPlayer = peerIdToPlayer[senderPeerId];
             oldPlayer.name = identity.nickname;
             oldPlayer.skin = identity.characterName;
-            Debug.Log($"Player {oldPlayer.name} reconnected!");
+            Debug.Log($"Player {oldPlayer.name} reconnected! skin={identity.characterName}");
             BroadcastInitialToPeer(senderPeerId, oldPlayer.color);
+
+            // 更新大廳 UI（角色可能換了）
+            if (SceneManager.GetActiveScene().name == "2_Setting")
+            {
+                LobbyUI lobbyUI = FindFirstObjectByType<LobbyUI>();
+                if (lobbyUI != null) lobbyUI.UpdateLobbyUI();
+            }
         }
         else
         {
