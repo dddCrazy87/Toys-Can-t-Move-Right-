@@ -216,9 +216,10 @@ public class NetworkManager : MonoBehaviour
 
     private void HandleIdentifyMessage(string message, string senderPeerId)
     {
-        // 防止短時間內重複處理同一玩家的 identify
+        // 防止短時間內重複處理同一玩家的 identify（已存在的玩家不受冷卻限制，允許即時更換角色）
         float currentTime = Time.time;
-        if (lastIdentifyTime.ContainsKey(senderPeerId))
+        bool isExistingPlayer = peerIdToPlayer.ContainsKey(senderPeerId);
+        if (!isExistingPlayer && lastIdentifyTime.ContainsKey(senderPeerId))
         {
             if (currentTime - lastIdentifyTime[senderPeerId] < IDENTIFY_COOLDOWN)
             {
