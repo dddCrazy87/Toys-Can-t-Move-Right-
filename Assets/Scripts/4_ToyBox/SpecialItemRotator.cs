@@ -16,13 +16,9 @@ public class SpecialItemRotator : MonoBehaviour
 
     private void Update()
     {
-        // 【關鍵判斷】
         // 如果這個道具有 ItemData，且 owner 不為空 (代表已經被玩家撿起來了)
         // 就停止原地旋轉，讓 ItemFollow 負責它的物理轉向。
-        if (data != null && data.owner != null)
-        {
-            return;
-        }
+        if (data != null && data.owner != null) return;
 
         // 沿著世界座標的 Y 軸 (向上) 緩慢旋轉
         transform.Rotate(Vector3.up * rotationSpeed * Time.deltaTime, Space.World);

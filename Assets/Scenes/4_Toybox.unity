@@ -5040,7 +5040,7 @@ MonoBehaviour:
   sceneFadeInFadeOut: {fileID: 1476519531}
   gameTimeLimit: 90
   gameOverAudio: {fileID: 1709939695}
-  instructionUI: {fileID: 1757113899}
+  instructionUI: {fileID: 0}
   imgUploader: {fileID: 817025212}
 --- !u!4 &1709939694
 Transform:
@@ -5248,7 +5248,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1757113899
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -71,6 +71,9 @@ public class SpyGameManager : MonoBehaviour
     public event Action<int, List<int>> OnRoundResolved;
     public event Action OnVotingPhaseStarted;
     public event Action<GameResult> OnGameEnded;
+    [Header("音效")]
+    public AudioSource newRoundAudio;
+    public AudioSource voteRoundAudio;
 
     [Header("遊戲設定")]
     public RoundConfig[] roundConfigs = new RoundConfig[5];
@@ -248,22 +251,18 @@ public class SpyGameManager : MonoBehaviour
     {
         currentState = GameState.NumberSelecting;
 
-        foreach (var p in players.Values)
-        {
-            p.currentSelectedNumber = 0;
-        }
+        foreach (var p in players.Values) p.currentSelectedNumber = 0;
 
         RoundConfig currentConfig = roundConfigs[currentRoundIndex];
         Debug.Log($"--- 第 {currentRoundIndex + 1} 回合開始 ---");
         Debug.Log($"目標區間: {currentConfig.minTarget} ~ {currentConfig.maxTarget}");
 
-        if (countDownUI != null)
-        {
-            countDownUI.StartCountdown(numberSelectionTime, OnNumberSelectionTimeout);
-        }
+        if (countDownUI != null) countDownUI.StartCountdown(numberSelectionTime, OnNumberSelectionTimeout);
 
         OnRoundStarted?.Invoke(currentConfig.minTarget, currentConfig.maxTarget);
         networkManager.BroadcastSpyRoundStart(currentRoundIndex, currentConfig.minTarget, currentConfig.maxTarget);
+
+        newRoundAudio.Play();
     }
 
     private void CheckAllNumbersSubmitted()
@@ -347,6 +346,8 @@ public class SpyGameManager : MonoBehaviour
 
         OnVotingPhaseStarted?.Invoke();
         networkManager?.BroadcastSpyVotingStart();
+
+        voteRoundAudio.Play();
     }
 
     private void CheckAllVotesSubmitted()
@@ -386,10 +387,7 @@ public class SpyGameManager : MonoBehaviour
 
         foreach (var p in players.Values)
         {
-            if (p.votedPlayerId != -1)
-            {
-                voteCounts[p.votedPlayerId]++;
-            }
+            if (p.votedPlayerId != -1) voteCounts[p.votedPlayerId]++;
         }
 
         int maxVotes = voteCounts.Values.Max();
@@ -440,14 +438,8 @@ public class SpyGameManager : MonoBehaviour
             if (ggButtonText != null) ggButtonText.text = "前往頒獎";
             foreach (var p in players.Values)
             {
-                if (finalResult == GameResult.GoodGuysWin)
-                {
-                    if (p.role == Role.GoodGuy) gameManager.IncreasePlayerPoint(p.playerId, 10);
-                }
-                else
-                {
-                    if (p.role == Role.BadGuy) gameManager.IncreasePlayerPoint(p.playerId, 10);
-                }
+                if (finalResult == GameResult.GoodGuysWin) if (p.role == Role.GoodGuy) gameManager.IncreasePlayerPoint(p.playerId, 10);
+                else if (p.role == Role.BadGuy) gameManager.IncreasePlayerPoint(p.playerId, 10);
             }
         }
     }
@@ -490,17 +482,14 @@ public class SpyGameManager : MonoBehaviour
 
             if (!string.IsNullOrEmpty(uploadedUrl))
             {
-                Debug.Log($"[ToyBoxGameManager] 圖片網址: {uploadedUrl}");
+                Debug.Log($"[SpyGameManager] 圖片網址: {uploadedUrl}");
                 if (gameManager) gameManager.hasPostcard = true;
             }
-            else
-            {
-                Debug.LogWarning("[ToyBoxGameManager] 上傳失敗");
-            }
+            else Debug.LogWarning("[SpyGameManager] 上傳失敗");
         }
         else
         {
-            Debug.LogWarning("[ToyBoxGameManager] imgUploader 未設定，跳過截圖上傳");
+            Debug.LogWarning("[SpyGameManager] imgUploader 未設定，跳過截圖上傳");
             yield return new WaitForSeconds(0.5f);
         }
 

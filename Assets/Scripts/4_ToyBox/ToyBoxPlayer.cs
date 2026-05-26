@@ -132,17 +132,33 @@ public class ToyBoxPlayer : MonoBehaviour
 
             case SpecialItemType.Freezer:
                 GameManager gm = FindFirstObjectByType<GameManager>();
+
+                // 先取得第一名的名單
                 var topPlayers = gm.GetNo1Player();
+
+                // 判斷自己是否在第一名的名單中
+                bool amIFirstPlace = false;
+                foreach (var pInfo in topPlayers)
+                {
+                    if (pInfo.index == playerController.playerIndex)
+                    {
+                        amIFirstPlace = true;
+                        break;
+                    }
+                }
+
+                // 決定要冰凍的目標：如果是第一名，改找第二名；否則就找第一名
+                // 注意：這裡假設你在 GameManager 中有實作 GetNo2Player() 的方法
+                var targetPlayersInfo = amIFirstPlace ? gm.GetNo2Player() : topPlayers;
+
                 List<PlayerController> targets = new List<PlayerController>();
 
-                foreach (var playerInfo in topPlayers)
+                foreach (var playerInfo in targetPlayersInfo)
                 {
+                    // 如果不是單人遊戲，且目標是自己，則跳過 (防呆)
                     if (gm.playersInfo.Count != 1 && playerInfo.index == playerController.playerIndex) continue;
 
-                    if (gm.playerControllers.TryGetValue(playerInfo.index, out PlayerController targetPc))
-                    {
-                        targets.Add(targetPc);
-                    }
+                    if (gm.playerControllers.TryGetValue(playerInfo.index, out PlayerController targetPc)) targets.Add(targetPc);
                 }
 
                 if (targets.Count > 0)
@@ -153,33 +169,18 @@ public class ToyBoxPlayer : MonoBehaviour
                         foreach (var target in targets)
                         {
                             // 加上 null 檢查，防止等待特效的期間玩家斷線離開遊戲
-                            if (target != null)
-                            {
-                                target.StartFrozen(freezeDuration);
-                                Debug.Log($"[ToyBoxPlayer] 成功冰凍了第一名玩家: {target.playerName}");
-                            }
+                            if (target != null) target.StartFrozen(freezeDuration);
                         }
                     };
-                }
-                else
-                {
-                    Debug.Log("[ToyBoxPlayer] 第一名是自己或沒找到目標，不消耗冰凍道具");
                 }
                 break;
         }
 
         // --- 階段 2：啟動協程來處理有時間差的步驟 ---
-        if (canConsume)
-        {
-            StartCoroutine(ExecuteSkillSequence(triggerEffectAction));
-        }
-        else if (currentSpecialItem != SpecialItemType.Freezer)
-        {
-            Debug.Log($"[ToyBoxPlayer] 機關冷卻中，不消耗道具！");
-        }
+        if (canConsume) StartCoroutine(ExecuteSkillSequence(triggerEffectAction));
     }
 
-    // ++ 新增：處理時間延遲的協程 ++
+    // 處理時間延遲的協程
     private IEnumerator ExecuteSkillSequence(Action effectAction)
     {
         // 標記正在使用道具，鎖定輸入

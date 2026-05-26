@@ -58,6 +58,7 @@ public class Blocker : MonoBehaviour
         yield return new WaitForSeconds(activeDuration);
 
         // 3. 從指定位置移回初始位置
+        FindFirstObjectByType<GameSoundEffect>()?.PlayBlockerSound();
         yield return StartCoroutine(MoveToPosition(initialPosition));
 
         isActive = false; // 恢復可觸發狀態

@@ -3403,7 +3403,11 @@ MonoBehaviour:
   getItemAudio: {fileID: 731985920}
   stealItemAudio: {fileID: 731985919}
   getPointAudio: {fileID: 731985918}
-  playerCollisionAudio: {fileID: 731985920}
+  getSpecialAudio: {fileID: 0}
+  useSpectialAudio: {fileID: 0}
+  freezerAudio: {fileID: 0}
+  blockerAudio: {fileID: 0}
+  fingerAudio: {fileID: 0}
 --- !u!4 &731985922
 Transform:
   m_ObjectHideFlags: 0
@@ -3961,6 +3965,9 @@ MonoBehaviour:
       avatarSprite: {fileID: 21300000, guid: 82701331d4548b54fb114bbde1c570b2, type: 3}
     - color: yellow
       avatarSprite: {fileID: 21300000, guid: 2bb340e4daf2d944d947f0f18452837a, type: 3}
+  blockerIcon: {fileID: 0}
+  freezerIcon: {fileID: 0}
+  fingerToyIcon: {fileID: 0}
 --- !u!4 &998241342
 Transform:
   m_ObjectHideFlags: 0
@@ -5061,7 +5068,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1649095191
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5520,7 +5527,7 @@ MonoBehaviour:
   sceneFadeInFadeOut: {fileID: 1307851075}
   gameTimeLimit: 90
   gameOverAudio: {fileID: 1785652565}
-  instructionUI: {fileID: 1649095191}
+  instructionUI: {fileID: 0}
   colorGrid: {fileID: 1099799380}
   paintCanvas: {fileID: 62564402}
   brushSize: 0.012

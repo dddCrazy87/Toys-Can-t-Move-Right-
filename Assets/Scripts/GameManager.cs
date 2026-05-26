@@ -111,6 +111,30 @@ public class GameManager : MonoBehaviour
         return ps;
     }
 
+    public List<Player> GetNo2Player()
+    {
+        List<Player> ps = new();
+
+        if (playersInfo == null || !playersInfo.Any()) return ps;
+
+        int highestPoint = int.MinValue;
+        foreach (var player in playersInfo)
+        {
+            if (player.point > highestPoint) highestPoint = player.point;
+        }
+        foreach (var player in playersInfo)
+        {
+            if (player.point == highestPoint) continue;
+
+            if (ps.Count == 0) ps.Add(player);
+            else if (player.point < ps[0].point) continue;
+            else if (player.point == ps[0].point) ps.Add(player);
+            else { ps.Clear(); ps.Add(player); }
+        }
+
+        return ps;
+    }
+
     // ------------- Reset -------------
 
     public void ResetGameData()
