@@ -176,11 +176,13 @@ public class TutorialManager : MonoBehaviour
                 foreach (PlayerCardUI card in playerCardUIMap.Values) card.SetStepStatus(false);
                 slideNextReadyPeers.Clear();
 
-                // 廣播當前 Slide 狀態給 Web
-                BroadcastSlideState(i, slide.instructionText);
-
-                // 等待所有人按下下一頁
-                yield return new WaitUntil(() => slideNextReadyPeers.Count >= networkManager.playersInfo.Count);
+                // 加入不斷廣播機制，確保沒人漏接
+                while (slideNextReadyPeers.Count < networkManager.playersInfo.Count)
+                {
+                    BroadcastSlideState(i, slide.instructionText);
+                    // 每秒發送一次當前狀態，直到所有人都準備好
+                    yield return new WaitForSeconds(1.0f);
+                }
 
                 if (i < config.slides.Count - 1) PlayStepSound("forward");
                 yield return new WaitForSeconds(0.5f); // 停頓讓大家看到全員打勾
