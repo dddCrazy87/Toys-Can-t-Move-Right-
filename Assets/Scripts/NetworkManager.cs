@@ -217,10 +217,14 @@ public class NetworkManager : MonoBehaviour
     private void HandleIdentifyMessage(string message, string senderPeerId)
     {
         // 防止短時間內重複處理同一玩家的 identify
+        // 已存在的玩家用較短冷卻（0.2秒），允許快速更換角色
         float currentTime = Time.time;
+        bool isExistingPlayer = peerIdToPlayer.ContainsKey(senderPeerId);
+        float cooldown = isExistingPlayer ? 0.2f : IDENTIFY_COOLDOWN;
+
         if (lastIdentifyTime.ContainsKey(senderPeerId))
         {
-            if (currentTime - lastIdentifyTime[senderPeerId] < IDENTIFY_COOLDOWN)
+            if (currentTime - lastIdentifyTime[senderPeerId] < cooldown)
             {
                 Debug.Log($"[NetworkManager] 忽略重複的 identify（冷卻中）: {senderPeerId}");
                 return;

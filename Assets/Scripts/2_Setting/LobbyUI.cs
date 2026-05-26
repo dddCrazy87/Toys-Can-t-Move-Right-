@@ -50,12 +50,16 @@ public class LobbyUI : MonoBehaviour
         RebuildPlayerList();
     }
 
+    // 用來記錄每張卡片對應的 skin，檢測角色是否變更
+    private List<string> displayedSkins = new List<string>();
+
     void RebuildPlayerList()
     {
+        bool needsRebuild = false;
 
         if (cardContainer.childCount != networkManager.playersInfo.Count)
         {
-            ForceRebuild();
+            needsRebuild = true;
         }
         else
         {
@@ -66,11 +70,26 @@ public class LobbyUI : MonoBehaviour
 
                 TextMeshProUGUI nameText = card.GetComponentInChildren<TextMeshProUGUI>();
 
-                if (nameText.text != player.name)
+                // 檢查名字或角色是否變更
+                if (nameText.text != player.name ||
+                    i >= displayedSkins.Count ||
+                    displayedSkins[i] != player.skin)
                 {
-                    ForceRebuild();
+                    needsRebuild = true;
                     break;
                 }
+            }
+        }
+
+        if (needsRebuild)
+        {
+            ForceRebuild();
+
+            // 更新記錄的 skin 列表
+            displayedSkins.Clear();
+            foreach (Player player in networkManager.playersInfo)
+            {
+                displayedSkins.Add(player.skin);
             }
         }
     }
