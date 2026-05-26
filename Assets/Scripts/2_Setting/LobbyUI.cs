@@ -52,27 +52,8 @@ public class LobbyUI : MonoBehaviour
 
     void RebuildPlayerList()
     {
-
-        if (cardContainer.childCount != networkManager.playersInfo.Count)
-        {
-            ForceRebuild();
-        }
-        else
-        {
-            for (int i = 0; i < networkManager.playersInfo.Count; i++)
-            {
-                Player player = networkManager.playersInfo[i];
-                Transform card = cardContainer.GetChild(i);
-
-                TextMeshProUGUI nameText = card.GetComponentInChildren<TextMeshProUGUI>();
-
-                if (nameText.text != player.name)
-                {
-                    ForceRebuild();
-                    break;
-                }
-            }
-        }
+        // 人數、名字、角色任一有變就重建
+        ForceRebuild();
     }
 
     void ForceRebuild()
