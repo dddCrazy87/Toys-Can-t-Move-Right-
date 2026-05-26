@@ -142,6 +142,20 @@ public class ColorPaperGameManager : MonoBehaviour
         // 停止畫圖
         StopPlayerBrushes();
 
+        // 鎖定所有玩家的移動與控制
+        if (gameManager != null)
+        {
+            foreach (var kvp in gameManager.playerControllers)
+            {
+                PlayerController player = kvp.Value;
+                if (player != null)
+                {
+                    player.ForceStopMotion();
+                    player.enabled = false;
+                }
+            }
+        }
+
         // 最終更新一次分數 UI
         UpdateScoreUI();
 

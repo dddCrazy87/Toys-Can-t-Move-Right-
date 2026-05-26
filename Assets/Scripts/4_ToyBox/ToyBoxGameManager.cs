@@ -87,6 +87,20 @@ public class ToyBoxGameManager : MonoBehaviour
 
     void OnCountdownFinished()
     {
+        // 鎖定所有玩家的移動與控制
+        if (gameManager != null)
+        {
+            foreach (var kvp in gameManager.playerControllers)
+            {
+                PlayerController player = kvp.Value;
+                if (player != null)
+                {
+                    player.ForceStopMotion();
+                    player.enabled = false;
+                }
+            }
+        }
+
         if (bgmPlayer) bgmPlayer.PauseBGM();
         gameOverAudio.Play();
         StartCoroutine(EndGameRoutine());
