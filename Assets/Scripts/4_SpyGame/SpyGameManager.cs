@@ -421,6 +421,7 @@ public class SpyGameManager : MonoBehaviour
         }
 
         ExecuteGameEnd(finalResult);
+        newRoundAudio.Play();
     }
 
     private void ExecuteGameEnd(GameResult finalResult)

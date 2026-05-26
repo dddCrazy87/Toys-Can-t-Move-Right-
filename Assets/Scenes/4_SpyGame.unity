@@ -4628,8 +4628,8 @@ MonoBehaviour:
     minTarget: 10
     maxTarget: 10
   countDownUI: {fileID: 398198368}
-  numberSelectionTime: 5
-  votingTime: 5
+  numberSelectionTime: 90
+  votingTime: 180
   gameStartCountDown: {fileID: 1128086800}
   nextSceneName: 5_GameRestart
   isTrial: 1
@@ -4727,7 +4727,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 43dc1078399f3624dacfc98bd45054fd, type: 3}
   m_Resource: {fileID: 8300000, guid: 43dc1078399f3624dacfc98bd45054fd, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.7
+  m_Volume: 0.8
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -4824,7 +4824,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 46f4d5f3999bfe04ca0ae12305ee3964, type: 3}
   m_Resource: {fileID: 8300000, guid: 46f4d5f3999bfe04ca0ae12305ee3964, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.7
+  m_Volume: 0.8
   m_Pitch: 1
   Loop: 0
   Mute: 0
