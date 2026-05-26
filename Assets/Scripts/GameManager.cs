@@ -233,7 +233,7 @@ public class GameManager : MonoBehaviour
         curOp = op switch
         {
             "回到首頁" => ESCMenuOp.BackToHome,
-            "修改成員" => ESCMenuOp.BackToLobby,
+            "回到大廳" => ESCMenuOp.BackToLobby,
             "重置隊伍" => ESCMenuOp.BackToLobbyAndReset,
             "結束遊戲" => ESCMenuOp.CloseGame,
             "重玩一次" => ESCMenuOp.Replay,
@@ -243,7 +243,7 @@ public class GameManager : MonoBehaviour
         warnMsgTxt.text = curOp switch
         {
             ESCMenuOp.BackToHome => "回到首頁",
-            ESCMenuOp.BackToLobby => "修改成員",
+            ESCMenuOp.BackToLobby => "回到大廳",
             ESCMenuOp.BackToLobbyAndReset => "重置隊伍",
             ESCMenuOp.CloseGame => "結束遊戲",
             ESCMenuOp.Replay => "重玩一次",
