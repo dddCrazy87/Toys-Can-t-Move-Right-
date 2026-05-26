@@ -206,6 +206,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject escMenu;
     [SerializeField] private GameObject warnMsg;
     [SerializeField] private TextMeshProUGUI warnMsgTxt;
+    [SerializeField] private Button replayBtn;
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -218,10 +219,14 @@ public class GameManager : MonoBehaviour
             BgmPlayer bgmPlayer = FindFirstObjectByType<BgmPlayer>();
             if (isGamePause && bgmPlayer) bgmPlayer.PauseBGM();
             if (!isGamePause && bgmPlayer) bgmPlayer.PlayBGM();
+
+            Scene curScene = SceneManager.GetActiveScene();
+            if (curScene.name[0] != '4') replayBtn.interactable = false;
+            else replayBtn.interactable = true;
         }
     }
 
-    public enum ESCMenuOp { BackToHome, BackToLobby, BackToLobbyAndReset, CloseGame }
+    public enum ESCMenuOp { BackToHome, BackToLobby, BackToLobbyAndReset, CloseGame, Replay }
     ESCMenuOp curOp = ESCMenuOp.BackToHome;
     public void ESCMenuAction(string op)
     {
@@ -231,6 +236,7 @@ public class GameManager : MonoBehaviour
             "修改成員" => ESCMenuOp.BackToLobby,
             "重置隊伍" => ESCMenuOp.BackToLobbyAndReset,
             "結束遊戲" => ESCMenuOp.CloseGame,
+            "重玩一次" => ESCMenuOp.Replay,
             _ => ESCMenuOp.BackToHome
         };
 
@@ -240,6 +246,7 @@ public class GameManager : MonoBehaviour
             ESCMenuOp.BackToLobby => "修改成員",
             ESCMenuOp.BackToLobbyAndReset => "重置隊伍",
             ESCMenuOp.CloseGame => "結束遊戲",
+            ESCMenuOp.Replay => "重玩一次",
             _ => "非法操作"
         };
         warnMsg.SetActive(true);
@@ -311,6 +318,11 @@ public class GameManager : MonoBehaviour
                     networkManager.webRTCConnection.Disconnect();
                 }
                 Application.Quit();
+                break;
+
+            case ESCMenuOp.Replay:
+                Scene curScene = SceneManager.GetActiveScene();
+                if (curScene.name[0] == '4') SceneManager.LoadScene(curScene.name);
                 break;
 
             default:
