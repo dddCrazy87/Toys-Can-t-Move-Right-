@@ -433,7 +433,7 @@ GameObject:
   - component: {fileID: 1060740482}
   - component: {fileID: 1060740481}
   m_Layer: 5
-  m_Name: SpySlide
+  m_Name: Slide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -947,6 +947,7 @@ MonoBehaviour:
   demoAnimator: {fileID: 1982752350}
   playerProgressCardPrefab: {fileID: 1082749384594711011, guid: 379d8be3489e24bc0bf463df1b423f68, type: 3}
   demoImage: {fileID: 1982752348}
+  slideImageDisplay: {fileID: 1060740481}
   videoPlayer: {fileID: 1982752351}
   videoRawImage: {fileID: 1708173374}
   calibrateVideo: {fileID: 32900000, guid: 352b42f7ed3574f428dec2eda778cc0e, type: 3}
@@ -956,6 +957,37 @@ MonoBehaviour:
   backwardVideo: {fileID: 32900000, guid: 57359ada0b06b4d2fb051b81440952e6, type: 3}
   tapTutorialVideo: {fileID: 32900000, guid: 489530af28e124550937fc01bce828f9, type: 3}
   swipeTutorialVideo: {fileID: 32900000, guid: e1fb16d6ee13e42a5b3d6c64bd030be5, type: 3}
+  levelConfigs:
+  - levelName: 4_TapEat
+    slides:
+    - slideImage: {fileID: 21300000, guid: 3a32d15d31d9c2f44ab0287c52b15c4e, type: 3}
+      instructionText: '?'
+    - slideImage: {fileID: 21300000, guid: 3dfc8e9cb919d0946a36b139f3f58c5b, type: 3}
+      instructionText: '?'
+    - slideImage: {fileID: 21300000, guid: 91dce3f17c939014d90bf6bf313739e0, type: 3}
+      instructionText: '?'
+    calibrationType: 2
+  - levelName: 4_Toybox
+    slides:
+    - slideImage: {fileID: 21300000, guid: 3a32d15d31d9c2f44ab0287c52b15c4e, type: 3}
+      instructionText: '?'
+    - slideImage: {fileID: 21300000, guid: 3dfc8e9cb919d0946a36b139f3f58c5b, type: 3}
+      instructionText: '?'
+    calibrationType: 1
+  - levelName: 4_ColorPaper
+    slides: []
+    calibrationType: 1
+  - levelName: 4_SpyGame
+    slides:
+    - slideImage: {fileID: 21300000, guid: 3a32d15d31d9c2f44ab0287c52b15c4e, type: 3}
+      instructionText: "3 \u4F4D\u597D\u4EBA vs 1 \u4F4D\u58DE\u4EBA\u7684\u5FC3\u6A5F\u5C0D\u6C7A\uFF01"
+    - slideImage: {fileID: 21300000, guid: 3dfc8e9cb919d0946a36b139f3f58c5b, type: 3}
+      instructionText: "\u51711\u5206\u9418\u8A0E\u8AD6\uFF0C\u6E4A\u51FA\u76EE\u6A19\u5340\u9593\uFF01"
+    - slideImage: {fileID: 21300000, guid: 91dce3f17c939014d90bf6bf313739e0, type: 3}
+      instructionText: "\u7D50\u679C\u533F\u540D\u63ED\u66C9\uFF0C\u8ACB\u8A18\u4F4F\u6BCF\u500B\u7DDA\u7D22"
+    - slideImage: {fileID: 21300000, guid: b7e73724851509d46928c75b75a90aef, type: 3}
+      instructionText: "\u6700\u5F8C\u4E09\u5206\u9418\u8A0E\u8AD6\uFF0C\u6295\u7968\u627E\u51FA\u58DE\u4EBA\uFF01"
+    calibrationType: 0
   tiltThreshold: 0.7
   stepDemoImages: []
   stepAudioMap:
@@ -971,16 +1003,6 @@ MonoBehaviour:
     soundEffect: {fileID: 8300000, guid: c1291e18c89704b4cbe190d4e99686de, type: 3}
   audioSource: {fileID: 0}
   tutorialSceneFadeOut: {fileID: 930943927}
-  spyTutorialSlides:
-  - slideImage: {fileID: 21300000, guid: 3a32d15d31d9c2f44ab0287c52b15c4e, type: 3}
-    instructionText: 1
-  - slideImage: {fileID: 21300000, guid: 3dfc8e9cb919d0946a36b139f3f58c5b, type: 3}
-    instructionText: 1
-  - slideImage: {fileID: 21300000, guid: 91dce3f17c939014d90bf6bf313739e0, type: 3}
-    instructionText: 1
-  - slideImage: {fileID: 21300000, guid: b7e73724851509d46928c75b75a90aef, type: 3}
-    instructionText: 1
-  spySlideImage: {fileID: 1060740481}
 --- !u!4 &1417823199
 Transform:
   m_ObjectHideFlags: 0

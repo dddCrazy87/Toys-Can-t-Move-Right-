@@ -282,9 +282,15 @@ public class NetworkManager : MonoBehaviour
         // 每次有玩家 identify（含重連）都廣播 host_update，確保重玩時 Web 端能收到房主資訊
         BroadcastHostUpdate();
 
+        // if (gameManager != null && !string.IsNullOrEmpty(gameManager.selectedLevel))
+        // {
+        //     BroadcastLevelSelected(gameManager.selectedLevel);
+        // }
+
         if (gameManager != null && !string.IsNullOrEmpty(gameManager.selectedLevel))
         {
-            BroadcastLevelSelected(gameManager.selectedLevel);
+            LevelSelectedMessage levelMsg = new() { type = "level_selected", level = gameManager.selectedLevel };
+            webRTCConnection.SendDataChannelMessageToPeer(senderPeerId, JsonUtility.ToJson(levelMsg));
         }
     }
 

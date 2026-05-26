@@ -14,27 +14,40 @@ public class StepAudioMapping
     public AudioClip soundEffect;
 }
 
-public enum TutorialStep { Calibrate, TiltLeft, TiltRight, MiniGame, Finished }
-
 [System.Serializable]
 public class TutorialStepMessage : BaseMessage
 {
     public string step;
 }
 
+// 擴充原本的 Instruction Message，加入 slideIndex
 [System.Serializable]
 public class TutorialInstructionMessage : BaseMessage
 {
     public string step;
     public string message;
+    public int slideIndex;
 }
 
+// 泛用化的幻燈片類別
 [System.Serializable]
-public class SpyTutorialSlide
+public class TutorialSlide
 {
     public Sprite slideImage;
     [TextArea(2, 5)]
     public string instructionText;
+}
+
+// 支援的校正模式
+public enum CalibrationType { None, Gyro, TapSwipe, Timer }
+
+// 每一關專屬的教學設定
+[System.Serializable]
+public class LevelTutorialConfig
+{
+    public string levelName;
+    public List<TutorialSlide> slides = new List<TutorialSlide>();
+    public CalibrationType calibrationType = CalibrationType.Gyro;
 }
 
 public class PlayerTutorialProgress
@@ -61,6 +74,9 @@ public class TutorialManager : MonoBehaviour
     public GameObject playerProgressCardPrefab;
     public Image demoImage;
 
+    [Tooltip("用於顯示 Slide 的 UI Image (原 SpySlideImage)")]
+    public Image slideImageDisplay;
+
     [Header("Video Player Settings")]
     public VideoPlayer videoPlayer;
     public RawImage videoRawImage;
@@ -71,6 +87,9 @@ public class TutorialManager : MonoBehaviour
     public VideoClip backwardVideo;
     public VideoClip tapTutorialVideo;
     public VideoClip swipeTutorialVideo;
+
+    [Header("Tutorial Configs Per Level")]
+    public List<LevelTutorialConfig> levelConfigs = new List<LevelTutorialConfig>();
 
     [Header("Tutorial Settings")]
     [Range(0.1f, 1.0f)]
@@ -84,16 +103,7 @@ public class TutorialManager : MonoBehaviour
     [Header("SceneFadeInFadeOut")]
     [SerializeField] private TutorialSceneFadeOut tutorialSceneFadeOut;
 
-    [Header("Spy Game Tutorial Settings")]
-    public List<SpyTutorialSlide> spyTutorialSlides = new List<SpyTutorialSlide>();
-
-    [Tooltip("請把剛剛在 Canvas 底下新建的 SpySlideImage 拖進來")]
-    public Image spySlideImage;
-
-    private int currentSpySlideIndex = 0;
-
-    // ▼ 新增：用來記錄「哪些玩家已經點過下一頁」的點名簿 ▼
-    private HashSet<string> spyNextReadyPeers = new HashSet<string>();
+    private HashSet<string> slideNextReadyPeers = new HashSet<string>();
 
     // --- 私有變數 ---
     private NetworkManager networkManager;
@@ -101,7 +111,7 @@ public class TutorialManager : MonoBehaviour
     private Dictionary<string, PlayerTutorialProgress> playerProgressMap = new Dictionary<string, PlayerTutorialProgress>();
     private Dictionary<string, PlayerCardUI> playerCardUIMap = new Dictionary<string, PlayerCardUI>();
 
-    private string currentTutorialPhase = "calibrate";
+    private string currentTutorialPhase = "init";
     private bool isAdvancing = false;
     private bool isSimplifiedTutorial = false;
 
@@ -129,10 +139,8 @@ public class TutorialManager : MonoBehaviour
 
         InitializePlayerProgress();
 
-        if (!IsGyroLevel())
-        {
-            StartCoroutine(RunSimplifiedTutorial());
-        }
+        // 統一由協程控制教學流程
+        StartCoroutine(RunTutorialSequence());
     }
 
     private bool IsGyroLevel()
@@ -141,47 +149,97 @@ public class TutorialManager : MonoBehaviour
         return level == "4_ColorPaper" || level == "4_Toybox";
     }
 
-    private IEnumerator RunSimplifiedTutorial()
+    private IEnumerator RunTutorialSequence()
     {
-        isSimplifiedTutorial = true;
-        string selectedLevel = gameManager.selectedLevel;
+        string selectedLevel = gameManager?.selectedLevel ?? "4_ColorPaper";
+        LevelTutorialConfig config = levelConfigs.FirstOrDefault(c => c.levelName == selectedLevel);
 
-        if (selectedLevel == "4_SpyGame")
+        // --- 階段 1：Slide 簡報教學 ---
+        bool hasSlides = config != null && config.slides != null && config.slides.Count > 0;
+        if (hasSlides)
         {
-            yield return StartCoroutine(RunSpyTutorial());
+            currentTutorialPhase = "slide";
+            instructionText.text = "";
+
+            if (slideImageDisplay != null) slideImageDisplay.gameObject.SetActive(true);
+            if (videoRawImage != null && videoRawImage.transform.parent != null)
+                videoRawImage.transform.parent.gameObject.SetActive(false);
+
+            for (int i = 0; i < config.slides.Count; i++)
+            {
+                TutorialSlide slide = config.slides[i];
+
+                if (slideImageDisplay != null)
+                    slideImageDisplay.sprite = slide.slideImage; // 自動替換或清空
+
+                // 重置點名簿與卡片狀態
+                foreach (PlayerCardUI card in playerCardUIMap.Values) card.SetStepStatus(false);
+                slideNextReadyPeers.Clear();
+
+                // 廣播當前 Slide 狀態給 Web
+                BroadcastSlideState(i, slide.instructionText);
+
+                // 等待所有人按下下一頁
+                yield return new WaitUntil(() => slideNextReadyPeers.Count >= networkManager.playersInfo.Count);
+
+                if (i < config.slides.Count - 1) PlayStepSound("forward");
+                yield return new WaitForSeconds(0.5f); // 停頓讓大家看到全員打勾
+            }
+
+            if (slideImageDisplay != null) slideImageDisplay.gameObject.SetActive(false);
+            if (videoRawImage != null && videoRawImage.transform.parent != null)
+                videoRawImage.transform.parent.gameObject.SetActive(true);
+        }
+
+        foreach (PlayerCardUI card in playerCardUIMap.Values) card.SetStepStatus(false);
+
+        // --- 階段 2：操作校正教學 ---
+        CalibrationType calType = config != null ? config.calibrationType : (IsGyroLevel() ? CalibrationType.Gyro : CalibrationType.Timer);
+
+        if (calType == CalibrationType.Gyro)
+        {
+            currentTutorialPhase = "calibrate";
+            UpdateInstructionText();
+            // 陀螺儀為事件驅動，我們結束協程，讓 OnDataReceived 接手後續的步驟推進
             yield break;
         }
-
-        if (demoImage != null) demoImage.gameObject.SetActive(false);
-        if (demoAnimator != null) demoAnimator.gameObject.SetActive(false);
-        if (videoRawImage != null) videoRawImage.gameObject.SetActive(true);
-        if (videoPlayer != null)
+        else if (calType == CalibrationType.TapSwipe)
         {
-            videoPlayer.gameObject.SetActive(true);
-            videoPlayer.isLooping = true;
+            isSimplifiedTutorial = true;
+            if (demoImage != null) demoImage.gameObject.SetActive(false);
+            if (demoAnimator != null) demoAnimator.gameObject.SetActive(false);
+            if (videoRawImage != null) videoRawImage.gameObject.SetActive(true);
+            if (videoPlayer != null) { videoPlayer.gameObject.SetActive(true); videoPlayer.isLooping = true; }
+
+            currentTutorialPhase = "right";
+            instructionText.text = "請在手機上練習點擊";
+            if (tapTutorialVideo != null) PlayStepVideo("tap");
+            BroadcastTutorialStep("right", "請在手機上練習點擊");
+            yield return new WaitUntil(() => playerProgressMap.Values.All(p => p.completedRight));
+
+            PlayStepSound("forward");
+            foreach (PlayerCardUI card in playerCardUIMap.Values) card.SetStepStatus(false);
+            yield return new WaitForSeconds(0.5f);
+
+            currentTutorialPhase = "backward";
+            instructionText.text = "請在手機上練習滑動丟棄";
+            if (swipeTutorialVideo != null) PlayStepVideo("swipe");
+            BroadcastTutorialStep("backward", "請在手機上練習滑動丟棄");
+            yield return new WaitUntil(() => playerProgressMap.Values.All(p => p.completedBackward));
+        }
+        else if (calType == CalibrationType.Timer)
+        {
+            isSimplifiedTutorial = true;
+            currentTutorialPhase = "calibrate"; // Web 的計時器會發送 calibrate
+            BroadcastTutorialStep("timer", "請看大螢幕指示");
+            yield return new WaitUntil(() => playerProgressMap.Values.All(p => p.completedCalibration));
         }
 
-        currentTutorialPhase = "right";
-        instructionText.text = "請在手機上練習點擊";
-        if (tapTutorialVideo != null) PlayStepVideo("tap");
-        BroadcastTutorialStep("right", "請在手機上練習點擊");
-
-        yield return new WaitUntil(() => playerProgressMap.Values.All(p => p.completedRight));
-
-        PlayStepSound("forward");
-        foreach (PlayerCardUI card in playerCardUIMap.Values) card.SetStepStatus(false);
-        yield return new WaitForSeconds(0.5f);
-
-        currentTutorialPhase = "backward";
-        instructionText.text = "請在手機上練習滑動丟棄";
-        if (swipeTutorialVideo != null) PlayStepVideo("swipe");
-        BroadcastTutorialStep("backward", "請在手機上練習滑動丟棄");
-
-        yield return new WaitUntil(() => playerProgressMap.Values.All(p => p.completedBackward));
-
+        // --- 階段 3：完成與轉場 ---
         PlayStepSound("complete");
-        yield return new WaitForSeconds(1.0f);
+        currentTutorialPhase = "complete";
         instructionText.text = "準備開始遊戲！";
+        BroadcastTutorialStep("complete", "準備開始遊戲！");
         yield return new WaitForSeconds(1.0f);
 
         networkManager.BroadcastNavigateToPlaying();
@@ -190,86 +248,11 @@ public class TutorialManager : MonoBehaviour
         tutorialSceneFadeOut.LoadNextSceneWithFadeOut();
     }
 
-    private IEnumerator RunSpyTutorial()
-    {
-        currentSpySlideIndex = 0;
-
-        // 隱藏不相干的背景影片容器
-        if (videoRawImage != null && videoRawImage.transform.parent != null)
-        {
-            videoRawImage.transform.parent.gameObject.SetActive(false);
-        }
-
-        if (spyTutorialSlides == null || spyTutorialSlides.Count == 0)
-        {
-            Debug.LogWarning("[TutorialManager] 投影片數量為 0，將略過抓內鬼教學。");
-        }
-        else
-        {
-            if (spySlideImage != null) spySlideImage.gameObject.SetActive(true);
-
-            while (currentSpySlideIndex < spyTutorialSlides.Count)
-            {
-                SpyTutorialSlide currentSlide = spyTutorialSlides[currentSpySlideIndex];
-                instructionText.text = currentSlide.instructionText;
-
-                if (spySlideImage != null && currentSlide.slideImage != null)
-                {
-                    spySlideImage.sprite = currentSlide.slideImage;
-                }
-
-                // 換頁時，所有玩家的卡片重置為「未完成」
-                foreach (PlayerCardUI card in playerCardUIMap.Values)
-                {
-                    card.SetStepStatus(false);
-                }
-
-                spyNextReadyPeers.Clear();
-
-                // 等待所有玩家點擊
-                yield return new WaitUntil(() => spyNextReadyPeers.Count >= networkManager.playersInfo.Count);
-
-                // ▼ 新增：除了最後一頁以外，大家點完換頁時播放過場提示音 (比照其他關卡) ▼
-                if (currentSpySlideIndex < spyTutorialSlides.Count - 1)
-                {
-                    PlayStepSound("forward");
-                }
-
-                // 停頓 0.5 秒讓大家看到全員打勾，再切換下一頁
-                yield return new WaitForSeconds(0.5f);
-                currentSpySlideIndex++;
-            }
-        }
-
-
-        PlayStepSound("complete");
-
-        currentTutorialPhase = "complete";
-        instructionText.text = "所有人都看完規則，開始遊戲！";
-        BroadcastTutorialStep("complete", "準備開始遊戲！");
-
-        if (spySlideImage != null) spySlideImage.gameObject.SetActive(false);
-        if (videoRawImage != null && videoRawImage.transform.parent != null)
-        {
-            videoRawImage.transform.parent.gameObject.SetActive(true);
-        }
-
-        yield return new WaitForSeconds(1.0f);
-
-
-        networkManager.BroadcastNavigateToPlaying();
-        gameManager.UpdatePlayerInfo(networkManager.playersInfo);
-        tutorialSceneFadeOut.SetNextScene(gameManager.selectedLevel);
-        tutorialSceneFadeOut.LoadNextSceneWithFadeOut();
-    }
-
     private void OnPeerDisconnectedInTutorial(string peerId)
     {
         if (!playerProgressMap.ContainsKey(peerId)) return;
 
-        Debug.Log($"[TutorialManager] 玩家 {peerId} 在教學中斷線，自動完成所有步驟（保留玩家資料等待重連）");
-
-        // 自動完成所有教學步驟，避免 WaitUntil 卡住
+        Debug.Log($"[TutorialManager] 玩家 {peerId} 在教學中斷線，自動完成所有步驟");
         PlayerTutorialProgress progress = playerProgressMap[peerId];
         progress.completedCalibration = true;
         progress.completedForward = true;
@@ -277,11 +260,8 @@ public class TutorialManager : MonoBehaviour
         progress.completedRight = true;
         progress.completedBackward = true;
 
-        // UI 卡片標記為完成
-        if (playerCardUIMap.ContainsKey(peerId))
-        {
-            playerCardUIMap[peerId].SetStepStatus(true);
-        }
+        if (playerCardUIMap.ContainsKey(peerId)) playerCardUIMap[peerId].SetStepStatus(true);
+        if (!slideNextReadyPeers.Contains(peerId)) slideNextReadyPeers.Add(peerId); // 防呆：斷線視為已點擊 Slide
     }
 
     void OnDestroy()
@@ -314,15 +294,7 @@ public class TutorialManager : MonoBehaviour
                 cardUI.SetStepStatus(false);
             }
         }
-
-        if (IsGyroLevel())
-        {
-            UpdateInstructionText();
-        }
-        else
-        {
-            if (videoPlayer != null) videoPlayer.Stop();
-        }
+        if (videoPlayer != null) videoPlayer.Stop();
     }
 
     private void OnDataReceived(string message, string senderPeerId)
@@ -330,18 +302,17 @@ public class TutorialManager : MonoBehaviour
         try
         {
             BaseMessage baseData = JsonUtility.FromJson<BaseMessage>(message);
-            if (baseData.type == "tutorial_spy_next")
-            {
-                if (!spyNextReadyPeers.Contains(senderPeerId))
-                {
-                    spyNextReadyPeers.Add(senderPeerId);
-                    Debug.Log($"[TutorialManager] 玩家 {senderPeerId} 準備好切換下一頁 ({spyNextReadyPeers.Count}/{networkManager.playersInfo.Count})");
 
-                    // ▼ 新增：收到訊號時，把該名玩家的卡片設為「已完成」(打勾) ▼
+            // 處理 Slide 換頁訊號
+            if (baseData.type == "tutorial_slide_next")
+            {
+                if (!slideNextReadyPeers.Contains(senderPeerId))
+                {
+                    slideNextReadyPeers.Add(senderPeerId);
+                    Debug.Log($"[TutorialManager] 玩家 {senderPeerId} 準備好切換下一頁 ({slideNextReadyPeers.Count}/{networkManager.playersInfo.Count})");
+
                     if (playerCardUIMap.ContainsKey(senderPeerId))
-                    {
                         playerCardUIMap[senderPeerId].SetStepStatus(true);
-                    }
                 }
                 return;
             }
@@ -371,7 +342,7 @@ public class TutorialManager : MonoBehaviour
             else if (data.type == "tutorial_step_complete")
             {
                 TutorialStepMessage msg = JsonUtility.FromJson<TutorialStepMessage>(message);
-                if (msg.step == "calibrate" && currentTutorialPhase == "calibrate" && !progress.completedCalibration) { progress.completedCalibration = true; playerCardUIMap[senderPeerId].SetStepStatus(true); progressMade = true; }
+                if (msg.step == "calibrate" && (currentTutorialPhase == "calibrate" || currentTutorialPhase == "timer") && !progress.completedCalibration) { progress.completedCalibration = true; playerCardUIMap[senderPeerId].SetStepStatus(true); progressMade = true; }
                 else if (msg.step == "forward" && currentTutorialPhase == "forward" && !progress.completedForward) { progress.completedForward = true; playerCardUIMap[senderPeerId].SetStepStatus(true); progressMade = true; }
                 else if (msg.step == "left" && currentTutorialPhase == "left" && !progress.completedLeft) { progress.completedLeft = true; playerCardUIMap[senderPeerId].SetStepStatus(true); progressMade = true; }
                 else if (msg.step == "right" && currentTutorialPhase == "right" && !progress.completedRight) { progress.completedRight = true; playerCardUIMap[senderPeerId].SetStepStatus(true); progressMade = true; }
@@ -411,6 +382,18 @@ public class TutorialManager : MonoBehaviour
         BroadcastTutorialStep(step, text);
     }
 
+    void BroadcastSlideState(int index, string message)
+    {
+        TutorialInstructionMessage tutorialMsg = new TutorialInstructionMessage
+        {
+            type = "tutorial_instruction",
+            step = "slide",
+            message = message,
+            slideIndex = index
+        };
+        networkManager.webRTCConnection.SendDataChannelMessage(JsonUtility.ToJson(tutorialMsg));
+    }
+
     void BroadcastTutorialStep(string step, string message)
     {
         TutorialInstructionMessage tutorialMsg = new TutorialInstructionMessage { type = "tutorial_instruction", step = step, message = message };
@@ -419,7 +402,6 @@ public class TutorialManager : MonoBehaviour
 
     void PlayStepVideo(string step)
     {
-        Debug.Log($"[Video] PlayStepVideo called: step={step}, videoPlayer={videoPlayer != null}");
         if (videoPlayer == null) return;
         VideoClip clipToPlay = null;
         switch (step)
@@ -432,30 +414,19 @@ public class TutorialManager : MonoBehaviour
             case "tap": clipToPlay = tapTutorialVideo; break;
             case "swipe": clipToPlay = swipeTutorialVideo; break;
         }
-        Debug.Log($"[Video] clip={clipToPlay?.name ?? "NULL"}");
         if (clipToPlay != null)
         {
             videoPlayer.clip = clipToPlay;
             videoPlayer.Prepare();
-            Debug.Log($"[Video] Preparing clip: {clipToPlay.name}");
-        }
-        else
-        {
-            Debug.LogWarning($"[Video] No clip found for step: {step}");
         }
     }
 
     void OnVideoPrepared(VideoPlayer vp)
     {
-        Debug.Log($"[Video] OnVideoPrepared: texture={vp.texture != null}, rawImage={videoRawImage != null}");
-        if (videoRawImage != null)
-        {
-            Debug.Log($"[Video] rawImage.active={videoRawImage.gameObject.activeSelf}, parent.active={videoRawImage.transform.parent?.gameObject.activeSelf}");
-            videoRawImage.texture = vp.texture;
-        }
+        if (videoRawImage != null) videoRawImage.texture = vp.texture;
         vp.Play();
-        Debug.Log($"[Video] Playing! isPlaying={vp.isPlaying}");
     }
+
     void OnVideoFinished(VideoPlayer vp) { }
 
     private void PlayStepSound(string stepName)
@@ -495,5 +466,4 @@ public class TutorialManager : MonoBehaviour
         isAdvancing = false;
     }
 }
-
 
