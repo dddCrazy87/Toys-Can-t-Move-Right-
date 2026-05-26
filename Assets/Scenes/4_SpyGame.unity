@@ -3134,6 +3134,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameStartCountDown
       objectReference: {fileID: 0}
+    - target: {fileID: 4245551661824348891, guid: 733130b8ca88f2e429eba967c05642d9, type: 3}
+      propertyPath: m_SortingOrder
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

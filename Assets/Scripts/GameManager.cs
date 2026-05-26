@@ -322,6 +322,7 @@ public class GameManager : MonoBehaviour
 
             case ESCMenuOp.Replay:
                 Scene curScene = SceneManager.GetActiveScene();
+                if (curScene.name == "4_SpyGame") networkManager.BroadcastSpyGameReset();
                 if (curScene.name[0] == '4') SceneManager.LoadScene(curScene.name);
                 break;
 
