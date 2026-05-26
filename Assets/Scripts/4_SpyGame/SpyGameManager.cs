@@ -470,6 +470,8 @@ public class SpyGameManager : MonoBehaviour
     public void LoadNextScene()
     {
         if (bgmPlayer) bgmPlayer.PauseBGM();
+        if (ggButton) ggButton.GetComponent<Button>().interactable = false;
+        if (ggButtonText) ggButtonText.text = "正在結算結果...";
         StartCoroutine(EndGameRoutine());
     }
 
