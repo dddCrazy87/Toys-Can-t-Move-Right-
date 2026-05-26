@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Collections;
+using UnityEngine.UI;
 using TMPro;
 
 // 遊戲狀態枚舉
@@ -87,6 +88,9 @@ public class SpyGameManager : MonoBehaviour
     public bool isTrial = true;
     public GameObject ggButton;
     public TextMeshProUGUI ggButtonText;
+    [Header("Ch Panel")]
+    public List<GameObject> chSlots;
+    public List<SkinColorMapping> skinColorsMapping;
 
     [Header("當前遊戲狀態 (唯讀測試用)")]
     public GameState currentState;
@@ -113,10 +117,11 @@ public class SpyGameManager : MonoBehaviour
         networkManager = FindFirstObjectByType<NetworkManager>();
         currentState = GameState.WaitingToStart;
         InitializeNetworkPlayers();
+        RefreshPlayerSlots();
         StartCoroutine(AutoStartGameCo());
     }
 
-    System.Collections.IEnumerator AutoStartGameCo()
+    IEnumerator AutoStartGameCo()
     {
         yield return new WaitForSeconds(0.5f);
         if (gameStartCountDown != null) gameStartCountDown.CountDownAndStartGame(StartGame);
@@ -499,6 +504,50 @@ public class SpyGameManager : MonoBehaviour
 
         if (networkManager) networkManager.BroadcastTerminate(uploadedUrl);
         sceneFadeInFadeOut.LoadNextSceneWithFadeOut();
+    }
+
+    public void RefreshPlayerSlots()
+    {
+        List<Player> playerInfo = gameManager.playersInfo;
+        if (playerInfo == null || chSlots == null || skinColorsMapping == null) return;
+
+        int loopCount = Mathf.Min(playerInfo.Count, chSlots.Count);
+
+        for (int i = 0; i < loopCount; i++)
+        {
+            Player currentPlayer = playerInfo[i];
+            GameObject chObject = chSlots[i];
+
+            if (currentPlayer == null || chObject == null) continue;
+
+            Transform nameTransform = chObject.transform.Find("name");
+            if (nameTransform != null)
+            {
+                TextMeshProUGUI playerNameText = nameTransform.GetComponent<TextMeshProUGUI>();
+                if (playerNameText != null) playerNameText.text = currentPlayer.name;
+            }
+            string playerSkin = currentPlayer.skin;
+            string playerColor = currentPlayer.color;
+            Sprite avatarToShow = null;
+
+            List<ColorAvatarMapping> avatarMappingList = skinColorsMapping.FirstOrDefault(x => x.skin == playerSkin)?.avatarMapping;
+
+            if (avatarMappingList != null)
+            {
+                ColorAvatarMapping mapping = avatarMappingList.FirstOrDefault(x => x.color == playerColor);
+                if (mapping != null) avatarToShow = mapping.avatarSprite;
+            }
+
+            if (avatarToShow != null)
+            {
+                Transform imgTransform = chObject.transform.Find("img");
+                if (imgTransform != null)
+                {
+                    Image uiImage = imgTransform.GetComponent<Image>();
+                    if (uiImage != null) uiImage.sprite = avatarToShow;
+                }
+            }
+        }
     }
 }
 
