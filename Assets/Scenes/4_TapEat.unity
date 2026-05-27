@@ -846,6 +846,9 @@ MonoBehaviour:
     type: 2
     bites: 3
     score: -1
+  normalWeight: 1
+  goldenWeight: 1
+  trashWeight: 1
   biteMaskPrefab: {fileID: 8270487571825665342, guid: 02908214832ad4cd6b83b28cd623f19c, type: 3}
   biteRadius: 2.8
   foodRadius: 0.9
@@ -2904,7 +2907,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a59249e17fec4ac1b534eede5743d6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameDuration: 60
+  gameDuration: 20
   bitesPerFood: 12
   countdownUI: {fileID: 2045264852}
   sceneFadeInFadeOut: {fileID: 2116341522}
@@ -3776,6 +3779,9 @@ MonoBehaviour:
     type: 2
     bites: 3
     score: -1
+  normalWeight: 1
+  goldenWeight: 1
+  trashWeight: 1
   biteMaskPrefab: {fileID: 8270487571825665342, guid: 02908214832ad4cd6b83b28cd623f19c, type: 3}
   biteRadius: 2.8
   foodRadius: 0.9
@@ -4425,6 +4431,9 @@ MonoBehaviour:
     type: 2
     bites: 3
     score: -1
+  normalWeight: 1
+  goldenWeight: 1
+  trashWeight: 1
   biteMaskPrefab: {fileID: 8270487571825665342, guid: 02908214832ad4cd6b83b28cd623f19c, type: 3}
   biteRadius: 2.8
   foodRadius: 0.9
@@ -4719,6 +4728,9 @@ MonoBehaviour:
     type: 2
     bites: 3
     score: -1
+  normalWeight: 1
+  goldenWeight: 1
+  trashWeight: 1
   biteMaskPrefab: {fileID: 8270487571825665342, guid: 02908214832ad4cd6b83b28cd623f19c, type: 3}
   biteRadius: 2.8
   foodRadius: 0.9
@@ -7252,6 +7264,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 205222958106418648, guid: 8764a5120dfb5894ca2d6901d666e1c1, type: 3}
+      propertyPath: m_text
+      value: 00:20
+      objectReference: {fileID: 0}
     - target: {fileID: 817622672497361128, guid: 8764a5120dfb5894ca2d6901d666e1c1, type: 3}
       propertyPath: m_Name
       value: CountDownUI

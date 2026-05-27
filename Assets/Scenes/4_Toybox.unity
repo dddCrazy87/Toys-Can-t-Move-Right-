@@ -4728,6 +4728,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 205222958106418648, guid: 8764a5120dfb5894ca2d6901d666e1c1, type: 3}
+      propertyPath: m_text
+      value: 00:30
+      objectReference: {fileID: 0}
     - target: {fileID: 817622672497361128, guid: 8764a5120dfb5894ca2d6901d666e1c1, type: 3}
       propertyPath: m_Name
       value: CountDownUI
@@ -7180,7 +7184,7 @@ MonoBehaviour:
   - {fileID: 7548753264995254563, guid: 3217406e64a43184ca72e57c45733a6f, type: 3}
   - {fileID: 7160573062004378829, guid: e5263e55bde39fb4bb939176bc0643c2, type: 3}
   xRange: {x: 5, y: 10}
-  yRange: {x: 1, y: 2}
+  yRange: {x: 3, y: 4}
   spawnPoints:
   - {fileID: 1464955142}
   - {fileID: 861012856}
@@ -7205,7 +7209,7 @@ MonoBehaviour:
   - {fileID: 210324572}
   - {fileID: 1284968142}
   - {fileID: 860103396}
-  maxItems: 12
+  maxItems: 14
 --- !u!4 &2030419504
 Transform:
   m_ObjectHideFlags: 0

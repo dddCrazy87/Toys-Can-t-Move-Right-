@@ -1463,6 +1463,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 205222958106418648, guid: 8764a5120dfb5894ca2d6901d666e1c1, type: 3}
+      propertyPath: m_text
+      value: 00:30
+      objectReference: {fileID: 0}
     - target: {fileID: 817622672497361128, guid: 8764a5120dfb5894ca2d6901d666e1c1, type: 3}
       propertyPath: m_Name
       value: CountDownUI
@@ -2273,14 +2277,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paintCanPrefab: {fileID: 2449767406601312969, guid: 3ad10ad03a4b44c219c5cfd32d0b3aa1, type: 3}
-  maxPaintCans: 2
+  maxPaintCans: 4
   spawnAreaMin: {x: -20.4, y: -6.6}
   spawnAreaMax: {x: 16.6, y: 18.2}
   spawnHeight: -3
-  minSpawnInterval: 8
-  maxSpawnInterval: 15
-  initialDelay: 10
-  respawnDelay: 3
+  minSpawnInterval: 3
+  maxSpawnInterval: 6
+  initialDelay: 2
+  respawnDelay: 1
   showSpawnArea: 1
 --- !u!4 &564380772
 Transform:
@@ -4104,14 +4108,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whiteBallPrefab: {fileID: 4758149935592808837, guid: 5e6aad57ffbf54b02b2aac62a2a51850, type: 3}
-  maxWhiteBalls: 1
+  maxWhiteBalls: 3
   spawnAreaMin: {x: -20.4, y: -6.6}
   spawnAreaMax: {x: 16.6, y: 18.2}
   spawnHeight: -3
-  minSpawnInterval: 20
-  maxSpawnInterval: 35
-  initialDelay: 15
-  respawnDelay: 8
+  minSpawnInterval: 8
+  maxSpawnInterval: 15
+  initialDelay: 5
+  respawnDelay: 3
   showSpawnArea: 1
 --- !u!1 &1099799379
 GameObject:
@@ -5525,7 +5529,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   countdownUI: {fileID: 2111259012}
   sceneFadeInFadeOut: {fileID: 1307851075}
-  gameTimeLimit: 90
+  gameTimeLimit: 30
   gameOverAudio: {fileID: 1785652565}
   instructionUI: {fileID: 0}
   colorGrid: {fileID: 1099799380}
