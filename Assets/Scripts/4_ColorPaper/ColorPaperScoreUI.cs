@@ -245,8 +245,13 @@ public class ColorPaperScoreUI : MonoBehaviour
 
         RectTransform avatarRect = avatarTransform?.GetComponent<RectTransform>();
         Image avatarImage = avatarTransform?.GetComponent<Image>();
-        TextMeshProUGUI percentText = barObj.GetComponentInChildren<TextMeshProUGUI>();
+
+        // 百分比文字（PercentText）
+        Transform percentTransform = FindChildRecursive(barObj.transform, "PercentText");
+        TextMeshProUGUI percentText = percentTransform?.GetComponent<TextMeshProUGUI>();
         RectTransform percentTextRect = percentText?.GetComponent<RectTransform>();
+        // 隱藏百分比文字
+        if (percentTransform != null) percentTransform.gameObject.SetActive(false);
 
         if (barFillRect == null || barFillImage == null)
         {
