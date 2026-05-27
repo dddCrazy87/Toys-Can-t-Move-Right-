@@ -399,7 +399,18 @@ public class TutorialManager : MonoBehaviour
     void BroadcastTutorialStep(string step, string message)
     {
         TutorialInstructionMessage tutorialMsg = new TutorialInstructionMessage { type = "tutorial_instruction", step = step, message = message };
-        networkManager.webRTCConnection.SendDataChannelMessage(JsonUtility.ToJson(tutorialMsg));
+        string json = JsonUtility.ToJson(tutorialMsg);
+        // 重試 3 次確保所有玩家收到
+        StartCoroutine(BroadcastTutorialStepWithRetry(json, 3, 0.3f));
+    }
+
+    private IEnumerator BroadcastTutorialStepWithRetry(string json, int retryCount, float interval)
+    {
+        for (int i = 0; i < retryCount; i++)
+        {
+            networkManager.webRTCConnection.SendDataChannelMessage(json);
+            if (i < retryCount - 1) yield return new WaitForSeconds(interval);
+        }
     }
 
     void PlayStepVideo(string step)
