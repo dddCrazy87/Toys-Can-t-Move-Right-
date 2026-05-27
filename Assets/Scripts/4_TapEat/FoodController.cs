@@ -19,8 +19,6 @@ public class FoodEntry
     public int bites = 5;
     [Tooltip("得分（Trash 為負分）")]
     public int score = 1;
-    [Tooltip("出現權重（越高越容易出現）")]
-    public float weight = 1f;
 }
 
 public class FoodController : MonoBehaviour
@@ -30,6 +28,14 @@ public class FoodController : MonoBehaviour
 
     [Header("Food Pool")]
     public FoodEntry[] foodPool;
+
+    [Header("食物類型出現權重")]
+    [Tooltip("普通食物的出現權重")]
+    public float normalWeight = 1f;
+    [Tooltip("金色食物的出現權重")]
+    public float goldenWeight = 1f;
+    [Tooltip("垃圾食物的出現權重")]
+    public float trashWeight = 1f;
 
     [Header("Bite Mask")]
     public GameObject biteMaskPrefab;
@@ -278,16 +284,24 @@ public class FoodController : MonoBehaviour
 
     private int GetWeightedRandomIndex()
     {
-        float totalWeight = 0f;
-        foreach (var food in foodPool) totalWeight += food.weight;
+        // 先用權重選類型
+        float totalWeight = normalWeight + goldenWeight + trashWeight;
         float random = Random.Range(0f, totalWeight);
-        float cumulative = 0f;
+        FoodType selectedType;
+        if (random < normalWeight) selectedType = FoodType.Normal;
+        else if (random < normalWeight + goldenWeight) selectedType = FoodType.Golden;
+        else selectedType = FoodType.Trash;
+
+        // 從該類型的食物裡隨機選一個
+        List<int> candidates = new List<int>();
         for (int i = 0; i < foodPool.Length; i++)
         {
-            cumulative += foodPool[i].weight;
-            if (random <= cumulative) return i;
+            if (foodPool[i].type == selectedType) candidates.Add(i);
         }
-        return foodPool.Length - 1;
+
+        // 如果該類型沒有食物，fallback 到完全隨機
+        if (candidates.Count == 0) return Random.Range(0, foodPool.Length);
+        return candidates[Random.Range(0, candidates.Count)];
     }
 
     private void ServeFood(int index)
