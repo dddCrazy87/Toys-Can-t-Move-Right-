@@ -19,6 +19,8 @@ public class FoodEntry
     public int bites = 5;
     [Tooltip("得分（Trash 為負分）")]
     public int score = 1;
+    [Tooltip("出現權重（越高越容易出現）")]
+    public float weight = 1f;
 }
 
 public class FoodController : MonoBehaviour
@@ -240,10 +242,10 @@ public class FoodController : MonoBehaviour
         // 恢復原始大小
         foodSpriteRenderer.transform.localScale = originalScale;
 
-        // 下一道食物（隨機從 pool 裡選）
+        // 下一道食物（加權隨機從 pool 裡選）
         if (foodPool != null && foodPool.Length > 0)
         {
-            currentFoodIndex = Random.Range(0, foodPool.Length);
+            currentFoodIndex = GetWeightedRandomIndex();
         }
         ServeFood(currentFoodIndex);
 
@@ -272,6 +274,20 @@ public class FoodController : MonoBehaviour
         foodSpriteRenderer.transform.localPosition = endPos;
         foodSpriteRenderer.transform.localScale = originalScale;
         isServing = false;
+    }
+
+    private int GetWeightedRandomIndex()
+    {
+        float totalWeight = 0f;
+        foreach (var food in foodPool) totalWeight += food.weight;
+        float random = Random.Range(0f, totalWeight);
+        float cumulative = 0f;
+        for (int i = 0; i < foodPool.Length; i++)
+        {
+            cumulative += foodPool[i].weight;
+            if (random <= cumulative) return i;
+        }
+        return foodPool.Length - 1;
     }
 
     private void ServeFood(int index)
