@@ -262,6 +262,17 @@ public class ColorPaperScoreUI : MonoBehaviour
             barColor = color;
         }
 
+        // 設定玩家名字
+        Transform playerNameTransform = FindChildRecursive(barObj.transform, "PlayerName");
+        if (playerNameTransform != null)
+        {
+            TextMeshProUGUI playerNameText = playerNameTransform.GetComponent<TextMeshProUGUI>();
+            if (playerNameText != null && gameManager.playersInfo.Count > playerId)
+            {
+                playerNameText.text = gameManager.playersInfo[playerId].name;
+            }
+        }
+
         // 設定頭像（從現有的 SkinColorMapping 獲取）
         if (avatarImage != null)
         {
