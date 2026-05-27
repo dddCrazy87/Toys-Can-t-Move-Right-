@@ -43,9 +43,13 @@ public class PlayerPointUiManager : MonoBehaviour
             Image icon = curPointUiType.GetChild(i).GetChild(0).GetComponent<Image>();
             icon.sprite = mapping.avatarSprite;
 
-            // 設定玩家名字（GetChild(3) = Name）
-            TextMeshProUGUI nameText = curPointUiType.GetChild(i).GetChild(3).GetComponent<TextMeshProUGUI>();
-            if (nameText != null) nameText.text = players[i].name;
+            // 設定玩家名字（找名為 "Name" 的子物件）
+            Transform nameTransform = curPointUiType.GetChild(i).Find("Name");
+            if (nameTransform != null)
+            {
+                TextMeshProUGUI nameText = nameTransform.GetComponent<TextMeshProUGUI>();
+                if (nameText != null) nameText.text = players[i].name;
+            }
 
             UpdatePlayerPointUi(i);
         }
