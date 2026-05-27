@@ -74,6 +74,8 @@ public class SpyGameManager : MonoBehaviour
     [Header("音效")]
     public AudioSource newRoundAudio;
     public AudioSource voteRoundAudio;
+    public AudioSource goodWinAudio;
+    public AudioSource badWinAudio;
 
     [Header("遊戲設定")]
     public RoundConfig[] roundConfigs = new RoundConfig[5];
@@ -421,7 +423,6 @@ public class SpyGameManager : MonoBehaviour
         }
 
         ExecuteGameEnd(finalResult);
-        newRoundAudio.Play();
     }
 
     private void ExecuteGameEnd(GameResult finalResult)
@@ -429,6 +430,9 @@ public class SpyGameManager : MonoBehaviour
         Debug.Log($"====================");
         Debug.Log($"最終勝負：{(finalResult == GameResult.GoodGuysWin ? "好人陣營勝利！" : "壞人獨贏！")}");
         Debug.Log($"====================");
+
+        if (finalResult == GameResult.GoodGuysWin) goodWinAudio.Play();
+        else if (finalResult == GameResult.BadGuyWins) badWinAudio.Play();
 
         OnGameEnded?.Invoke(finalResult);
         if (ggButton != null) ggButton.SetActive(true);
