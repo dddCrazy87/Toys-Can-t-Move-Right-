@@ -43,6 +43,9 @@ public class ItemManager : MonoBehaviour
     {
         yield return null; // 避免同一幀觸發兩次
 
+        // 檢查物件是否已被銷毀
+        if (item == null || player == null || data == null) yield break;
+
         if (data.owner == null)
         {
             CollectFree(player, item, data);
