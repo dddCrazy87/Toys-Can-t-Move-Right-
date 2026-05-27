@@ -34,7 +34,7 @@ public class TapActionMessage : BaseMessage { }
 
 // spy game
 [System.Serializable]
-public class SpyGameInitMessage : BaseMessage { public int myPlayerId; public string role; public List<string> playerNames; }
+public class SpyGameInitMessage : BaseMessage { public int myPlayerId; public string role; public List<string> playerNames; public List<string> playerSkins; public List<string> playerColors; }
 [System.Serializable]
 public class SpyRoundStartMessage : BaseMessage { public int roundIndex; public int minTarget; public int maxTarget; }
 [System.Serializable]
@@ -529,11 +529,15 @@ public class NetworkManager : MonoBehaviour
 
     private IEnumerator BroadcastSpyGameInitWithRetry(Dictionary<int, string> playerRoles, int maxRetries, float interval)
     {
-        // 建立一份所有人暱稱的清單（根據 p.index 確保順序是 0, 1, 2, 3）
+        // 建立所有人的暱稱、角色、顏色清單（根據 p.index 確保順序是 0, 1, 2, 3）
         List<string> allNicknames = new List<string>();
+        List<string> allSkins = new List<string>();
+        List<string> allColors = new List<string>();
         foreach (var p in playersInfo.OrderBy(player => player.index))
         {
             allNicknames.Add(p.name);
+            allSkins.Add(p.skin);
+            allColors.Add(p.color);
         }
 
         for (int attempt = 0; attempt < maxRetries; attempt++)
@@ -550,7 +554,9 @@ public class NetworkManager : MonoBehaviour
                         type = "spy_game_init",
                         myPlayerId = p.index,
                         role = playerRoles[p.index],
-                        playerNames = allNicknames
+                        playerNames = allNicknames,
+                        playerSkins = allSkins,
+                        playerColors = allColors
                     };
                     webRTCConnection.SendDataChannelMessageToPeer(peerId, JsonUtility.ToJson(msg));
                 }
