@@ -39,8 +39,14 @@ public class PlayerPointUiManager : MonoBehaviour
             if (avatarMappingList == null) continue;
             ColorAvatarMapping mapping = avatarMappingList.FirstOrDefault(x => x.color == players[i].color);
             if (mapping == null) continue;
+
             Image icon = curPointUiType.GetChild(i).GetChild(0).GetComponent<Image>();
             icon.sprite = mapping.avatarSprite;
+
+            // 設定玩家名字（GetChild(3) = Name）
+            TextMeshProUGUI nameText = curPointUiType.GetChild(i).GetChild(3).GetComponent<TextMeshProUGUI>();
+            if (nameText != null) nameText.text = players[i].name;
+
             UpdatePlayerPointUi(i);
         }
     }
