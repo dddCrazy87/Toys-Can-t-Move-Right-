@@ -18,7 +18,6 @@ public class PlayerController : MonoBehaviour
         playerName = name;
         playerIndex = id;
         playerColor = color;
-        if (playerIDUI != null) playerIDUI.text = name;
     }
 
     [Header("基礎玩家數值")]
