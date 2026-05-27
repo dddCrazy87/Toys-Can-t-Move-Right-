@@ -960,22 +960,34 @@ MonoBehaviour:
   levelConfigs:
   - levelName: 4_TapEat
     slides:
-    - slideImage: {fileID: 21300000, guid: 3a32d15d31d9c2f44ab0287c52b15c4e, type: 3}
-      instructionText: '?'
-    - slideImage: {fileID: 21300000, guid: 3dfc8e9cb919d0946a36b139f3f58c5b, type: 3}
-      instructionText: '?'
-    - slideImage: {fileID: 21300000, guid: 91dce3f17c939014d90bf6bf313739e0, type: 3}
-      instructionText: '?'
+    - slideImage: {fileID: 21300000, guid: 326f40333a31fa34e8dbeb78be2be3e7, type: 3}
+      instructionText: "\u8ACB\u770B\u904A\u6232\u87A2\u5E55\u7684\u898F\u5247"
+    - slideImage: {fileID: 21300000, guid: c79d67cddc20fa14581c11aff660225f, type: 3}
+      instructionText: "\u8ACB\u770B\u904A\u6232\u87A2\u5E55\u7684\u898F\u5247"
     calibrationType: 2
   - levelName: 4_Toybox
     slides:
-    - slideImage: {fileID: 21300000, guid: 3a32d15d31d9c2f44ab0287c52b15c4e, type: 3}
-      instructionText: '?'
-    - slideImage: {fileID: 21300000, guid: 3dfc8e9cb919d0946a36b139f3f58c5b, type: 3}
-      instructionText: '?'
+    - slideImage: {fileID: 21300000, guid: 1284cde6449684a438cffad3d2fe47d9, type: 3}
+      instructionText: "\u8ACB\u770B\u904A\u6232\u87A2\u5E55\u7684\u898F\u5247"
+    - slideImage: {fileID: 21300000, guid: 10d42c86b5481984395ad585cf149920, type: 3}
+      instructionText: "\u8ACB\u770B\u904A\u6232\u87A2\u5E55\u7684\u898F\u5247"
+    - slideImage: {fileID: 21300000, guid: 8b4f409cb0971474a8803b4faf228d6b, type: 3}
+      instructionText: "\u8ACB\u770B\u904A\u6232\u87A2\u5E55\u7684\u898F\u5247"
+    - slideImage: {fileID: 21300000, guid: 21cc56a08427f314ab601218ad93445b, type: 3}
+      instructionText: "\u8ACB\u770B\u904A\u6232\u87A2\u5E55\u7684\u898F\u5247"
+    - slideImage: {fileID: 21300000, guid: 0ac35674ce37eb14c81f17cb742507ed, type: 3}
+      instructionText: "\u8ACB\u770B\u904A\u6232\u87A2\u5E55\u7684\u898F\u5247"
     calibrationType: 1
   - levelName: 4_ColorPaper
-    slides: []
+    slides:
+    - slideImage: {fileID: 21300000, guid: 4454e52dbe3f3c4439d5ad69aa29a565, type: 3}
+      instructionText: "\u8ACB\u770B\u904A\u6232\u87A2\u5E55\u7684\u898F\u5247"
+    - slideImage: {fileID: 21300000, guid: cf3399ab5feabf5449f9041160385383, type: 3}
+      instructionText: "\u8ACB\u770B\u904A\u6232\u87A2\u5E55\u7684\u898F\u5247"
+    - slideImage: {fileID: 21300000, guid: 75ae04d36e43f994b9c0ba2be31cdfb1, type: 3}
+      instructionText: "\u8ACB\u770B\u904A\u6232\u87A2\u5E55\u7684\u898F\u5247"
+    - slideImage: {fileID: 21300000, guid: b13919b2c24206440a7aa877845ce45a, type: 3}
+      instructionText: "\u8ACB\u770B\u904A\u6232\u87A2\u5E55\u7684\u898F\u5247"
     calibrationType: 1
   - levelName: 4_SpyGame
     slides:

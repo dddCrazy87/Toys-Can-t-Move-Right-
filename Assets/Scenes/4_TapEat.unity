@@ -4827,9 +4827,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31413c20185c6ed41b61ef480eb2d27f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointUi_4Player: {fileID: 0}
-  pointUi_3Player: {fileID: 0}
-  pointUi_2Player: {fileID: 0}
+  pointUi_4Player: {fileID: 1388266569}
+  pointUi_3Player: {fileID: 981071527}
+  pointUi_2Player: {fileID: 1604473079}
   skinColorsMapping:
   - skin: deer
     prefabMapping: []
