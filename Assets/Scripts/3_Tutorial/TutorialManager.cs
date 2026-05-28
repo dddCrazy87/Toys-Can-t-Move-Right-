@@ -202,7 +202,13 @@ public class TutorialManager : MonoBehaviour
         {
             currentTutorialPhase = "calibrate";
             UpdateInstructionText();
-            // 陀螺儀為事件驅動，我們結束協程，讓 OnDataReceived 接手後續的步驟推進
+            // 持續廣播 calibrate 直到至少一個玩家完成校正，確保所有人都收到指令
+            while (!playerProgressMap.Values.Any(p => p.completedCalibration))
+            {
+                BroadcastTutorialStep("calibrate", "請將手機拿直向，按下校正按鈕！");
+                yield return new WaitForSeconds(2f);
+            }
+            // 之後由 OnDataReceived 接手後續步驟推進
             yield break;
         }
         else if (calType == CalibrationType.TapSwipe)
