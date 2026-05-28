@@ -4104,7 +4104,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whiteBallPrefab: {fileID: 4758149935592808837, guid: 5e6aad57ffbf54b02b2aac62a2a51850, type: 3}
+<<<<<<< Updated upstream
   maxWhiteBalls: 1
+=======
+  maxWhiteBalls: 2
+>>>>>>> Stashed changes
   spawnAreaMin: {x: -20.4, y: -6.6}
   spawnAreaMax: {x: 16.6, y: 18.2}
   spawnHeight: -3
