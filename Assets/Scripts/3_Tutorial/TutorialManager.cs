@@ -400,8 +400,8 @@ public class TutorialManager : MonoBehaviour
     {
         TutorialInstructionMessage tutorialMsg = new TutorialInstructionMessage { type = "tutorial_instruction", step = step, message = message };
         string json = JsonUtility.ToJson(tutorialMsg);
-        // 重試 3 次確保所有玩家收到
-        StartCoroutine(BroadcastTutorialStepWithRetry(json, 3, 0.3f));
+        // 重試 5 次確保所有玩家收到
+        StartCoroutine(BroadcastTutorialStepWithRetry(json, 5, 0.5f));
     }
 
     private IEnumerator BroadcastTutorialStepWithRetry(string json, int retryCount, float interval)
