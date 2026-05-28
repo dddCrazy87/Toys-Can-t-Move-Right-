@@ -107,7 +107,7 @@ Material:
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BrushHardness: 0.9
-    - _BrushOpacity: 1
+    - _BrushOpacity: 0.5
     - _BrushSize: 0.26999998
     - _BumpScale: 1
     - _ClearCoatMask: 0
