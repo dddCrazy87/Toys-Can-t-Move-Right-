@@ -222,8 +222,12 @@ public class TutorialManager : MonoBehaviour
             currentTutorialPhase = "right";
             instructionText.text = "請在手機上練習點擊";
             if (tapTutorialVideo != null) PlayStepVideo("tap");
-            BroadcastTutorialStep("right", "請在手機上練習點擊");
-            yield return new WaitUntil(() => playerProgressMap.Values.All(p => p.completedRight));
+            // 持續廣播直到所有人完成點擊練習
+            while (!playerProgressMap.Values.All(p => p.completedRight))
+            {
+                BroadcastTutorialStep("right", "請在手機上練習點擊");
+                yield return new WaitForSeconds(2f);
+            }
 
             PlayStepSound("forward");
             foreach (PlayerCardUI card in playerCardUIMap.Values) card.SetStepStatus(false);
@@ -232,15 +236,23 @@ public class TutorialManager : MonoBehaviour
             currentTutorialPhase = "backward";
             instructionText.text = "請在手機上練習滑動丟棄";
             if (swipeTutorialVideo != null) PlayStepVideo("swipe");
-            BroadcastTutorialStep("backward", "請在手機上練習滑動丟棄");
-            yield return new WaitUntil(() => playerProgressMap.Values.All(p => p.completedBackward));
+            // 持續廣播直到所有人完成滑動練習
+            while (!playerProgressMap.Values.All(p => p.completedBackward))
+            {
+                BroadcastTutorialStep("backward", "請在手機上練習滑動丟棄");
+                yield return new WaitForSeconds(2f);
+            }
         }
         else if (calType == CalibrationType.Timer)
         {
             isSimplifiedTutorial = true;
-            currentTutorialPhase = "calibrate"; // Web 的計時器會發送 calibrate
-            BroadcastTutorialStep("timer", "請看大螢幕指示");
-            yield return new WaitUntil(() => playerProgressMap.Values.All(p => p.completedCalibration));
+            currentTutorialPhase = "calibrate";
+            // 持續廣播直到所有人完成
+            while (!playerProgressMap.Values.All(p => p.completedCalibration))
+            {
+                BroadcastTutorialStep("timer", "請看大螢幕指示");
+                yield return new WaitForSeconds(2f);
+            }
         }
 
         // --- 階段 3：完成與轉場 ---
